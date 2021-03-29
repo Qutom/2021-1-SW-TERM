@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/page_main"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_schedule_24"
+        android:title="현재 일정">
+    </item>
+
+    <item
+        android:id="@+id/page_schedule"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_calendar_today_24"
+        android:title="시간표">
+    </item>
+
+    <item
+        android:id="@+id/page_travel"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_map_24"
+        android:title="탐색">
+    </item>
+</menu>
