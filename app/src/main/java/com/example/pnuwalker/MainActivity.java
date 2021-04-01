@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -15,6 +16,7 @@ public class MainActivity extends AppCompatActivity {
     private MainFragment mainFragment;
     private SchduleFragment schduleFragment;
     private TravelFragment travelFragment;
+    private ScheduleSearchFragment scheduleSearchFragment;
     private BottomNavigationView bottomNavigation;
     private FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         mainFragment = new MainFragment();
         schduleFragment = new SchduleFragment();
         travelFragment = new TravelFragment();
+        scheduleSearchFragment = new ScheduleSearchFragment();
         bottomNavigation = findViewById(R.id.navigationView);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragmentLayout, mainFragment).commitAllowingStateLoss();
@@ -49,5 +52,14 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    public void onFragmentChanged(int index) {
+        if (index == 1) {
+            fragmentManager.beginTransaction().replace(R.id.fragmentLayout, schduleFragment).commit();
+        }
+        else if (index == 0) {
+            fragmentManager.beginTransaction().replace(R.id.fragmentLayout, scheduleSearchFragment).commit();
+        }
     }
 }

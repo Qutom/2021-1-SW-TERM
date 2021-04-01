@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="date_year">
+        <item>2021</item>
+        <item>2020</item>
+        <item>2019</item>
+        <item>2018</item>
+    </string-array>
+
+    <string-array name="date_term">
+        <item>1학기</item>
+        <item>2학기</item>
+    </string-array>
+
+    <string-array name="grade">
+        <item>전학년</item>
+        <item>1학년</item>
+        <item>2학년</item>
+        <item>3학년</item>
+        <item>4학년</item>
+    </string-array>
+
+    <string-array name="college">
+        <item>간호대학</item>
+        <item>경영대학</item>
+        <item>경제통상대학</item>
+        <item>공과대학</item>
+        <item>관광컨벤션학부</item>
+        <item>나노과학기술대학</item>
+        <item>대외교류본부</item>
+        <item>법과대학</item>
+        <item>사범대학</item>
+        <item>사회과학대학</item>
+        <item>상과대학</item>
+        <item>생명자원과학대학</item>
+        <item>생활환경대학</item>
+        <item>스포츠과학부</item>
+        <item>약학대학</item>
+        <item>예술대학</item>
+        <item>의과대학</item>
+        <item>이공대학</item>
+        <item>인문대학</item>
+        <item>자연과학대학</item>
+        <item>자유전공학부</item>
+        <item>정보의생명공학대학</item>
+        <item>치과대학</item>
+        <item>치의학전문대학원(학석사통합과정)</item>
+        <item>한의학전문대학원(학석사통합과정)</item>
+    </string-array>
+
+    <string-array name="간호대학">
+        <item>간호학과</item>
+    </string-array>
+
+    <string-array name="경영대학">
+        <item>경영학과</item>
+        <item>핀테크융합전공</item>
+    </string-array>
+
+    <string-array name="경제통상대학">
+        <item>경제학부</item>
+        <item>공공정책학부</item>
+        <item>관광컨벤션학과</item>
+        <item>국제학부</item>
+        <item>무역학부</item>
+    </string-array>
+
+    <string-array name="공과대학">
+        <item>건설융합학부</item>
+        <item>고분자공학과</item>
+        <item>기계공학부</item>
+        <item>발전공학과</item>
+        <item>빅데이터연계전공</item>
+        <item>산업공학과</item>
+        <item>산업수학소프트웨어연계전공</item>
+        <item>에너지IoT연계전공</item>
+        <item>유기소재시스템공학과</item>
+        <item>임베디드소프트웨어연계전공</item>
+        <item>재료공학부</item>
+        <item>전기공학과</item>
+        <item>전기컴퓨터공학부</item>
+        <item>전자공학과</item>
+        <item>정보컴퓨터공학부</item>
+        <item>조선·해양공학과</item>
+        <item>조선·해양공학과</item>
+        <item>항공우주공학과</item>
+        <item>화공생명·환경공학부</item>
+        <item>화공생명공학부</item>
+    </string-array>
+
+    <string-array name="관광컨벤션학부">
+        <item>관광컨벤션학부</item>
+    </string-array>
+
+    <string-array name="나노과학기술대학">
+        <item>광메카트로닉스공학과</item>
+        <item>나노메카트로닉스공학과</item>
+        <item>나노에너지공학과</item>
+    </string-array>
+
+    <string-array name="대외교류본부">
+        <item>대외교류본부</item>
+    </string-array>
+
+    <string-array name="법과대학">
+        <item></item>
+    </string-array>
+
+    <string-array name="사범대학">
+        <item>교육학과</item>
+        <item>국어교육과</item>
+        <item>독어교육과</item>
+        <item>물리교육과</item>
+        <item>불어교육과</item>
+        <item>생물교육과</item>
+        <item>수학교육과</item>
+        <item>역사교육과</item>
+        <item>영어교육과</item>
+        <item>유아교육과</item>
+        <item>윤리교육과</item>
+        <item>일반사회교육과</item>
+        <item>지구과학교육과</item>
+        <item>지리교육과</item>
+        <item>체육교육과</item>
+        <item>통합과학전공</item>
+        <item>통합사회전공</item>
+        <item>특수교육과</item>
+        <item>화학교육과</item>
+    </string-array>
+
+    <string-array name="사회과학대학">
+        <item></item>
+    </string-array>
+
+    <string-array name="상과대학">
+        <item></item>
+    </string-array>
+
+    <string-array name="생명자원과학대학">
+        <item></item>
+    </string-array>
+
+    <string-array name="생활환경대학">
+        <item></item>
+    </string-array>
+
+    <string-array name="스포츠과학부">
+        <item></item>
+    </string-array>
+
+    <string-array name="약학대학">
+        <item></item>
+    </string-array>
+
+    <string-array name="예술대학">
+        <item></item>
+    </string-array>
+
+    <string-array name="의과대학">
+        <item></item>
+    </string-array>
+
+    <string-array name="이공대학">
+        <item></item>
+    </string-array>
+
+    <string-array name="인문대학">
+        <item></item>
+    </string-array>
+
+    <string-array name="자연과학대학">
+        <item></item>
+    </string-array>
+
+    <string-array name="자유전공학부">
+        <item></item>
+    </string-array>
+
+    <string-array name="정보의생명공학대학">
+        <item></item>
+    </string-array>
+
+    <string-array name="치과대학">
+        <item></item>
+    </string-array>
+
+    <string-array name="치의학전문대학원">
+        <item></item>
+    </string-array>
+
+    <string-array name="한의학전문대학원">
+        <item></item>
+    </string-array>
+</resources>
