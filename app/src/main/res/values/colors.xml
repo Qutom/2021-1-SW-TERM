@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="blue_bottom_bar">#2B2B2B</color>
+    <color name="blue_bottom_bar">#040A97</color>
     <color name="blue_icon_unselected">#4E659F</color>
     <color name="blue_icon_selected">#0CBD01</color>
     <color name="purple_200">#FFBB86FC</color>
@@ -10,4 +10,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00F44336</color>
+    <color name="common_gray">#5C5C5C</color>
+    <color name="search_radius_circle">#0FBCFBBD</color>
 </resources>

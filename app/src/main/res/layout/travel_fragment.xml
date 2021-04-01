@@ -1,25 +1,183 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.sothree.slidinguppanel.SlidingUpPanelLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/main_layout"
     android:gravity="bottom"
-    >
+    app:umanoOverlay="true"
+    app:umanoPanelHeight="40dp"
+    app:umanoShadowHeight="0dp"
+    android:background="@drawable/slider_bg">
 
     <RelativeLayout
-        android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:id="@+id/map_layout">
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:id="@+id/map_layout">
+        </RelativeLayout>
+
+        <TableLayout
+            android:layout_width="340dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/search_bar_bg"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:stretchColumns="0">
+
+            <TableRow>
+
+                <EditText
+                    android:id="@+id/search_textinput"
+                    android:layout_width="280dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_height="wrap_content"
+                    android:hint="건물명, 카테고리 검색..."
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:maxLines="1">
+                </EditText>
+
+                <ImageButton
+                    android:id="@+id/text_search_btn"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:src="@drawable/ic_baseline_search_24"></ImageButton>
+            </TableRow>
+        </TableLayout>
     </RelativeLayout>
 
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="450dp"
+        android:orientation="vertical"
+        android:background="@drawable/slider_bg"
+        android:id="@+id/slider_layout"
+        >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="9dp"
+            android:text="검색"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:textSize="16dp"
+            android:gravity="center_horizontal">
+        </TextView>
+
+        <TableLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:stretchColumns="*">
+
+            <TableRow>
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="문구점"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:textSize="16dp"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:gravity="center"
+                    android:id="@+id/search_supplies_btn">
+                </Button>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="음식점"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:textSize="16dp"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:gravity="center"
+                    android:id="@+id/search_food_btn">
+                </Button>
+
+            </TableRow>
+
+            <TableRow>
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="문화사"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:textSize="16dp"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:gravity="center"
+                    android:id="@+id/search_print_btn">
+                </Button>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="카페"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:textSize="16dp"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:gravity="center"
+                    android:id="@+id/search_cafe_btn">
+                </Button>
+            </TableRow>
+
+            <TableRow>
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="편의점"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:textSize="16dp"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:gravity="center"
+                    android:id="@+id/search_constore_btn">
+                </Button>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="서점"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:textSize="16dp"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:gravity="center"
+                    android:id="@+id/search_bookstore_btn">
+                </Button>
+            </TableRow>
+
+            <TableRow>
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="PC방"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:textSize="16dp"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:gravity="center"
+                    android:id="@+id/search_pc_btn">
+                </Button>
+
+            </TableRow>
+
+        </TableLayout>
     </LinearLayout>
 
 
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
