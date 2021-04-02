@@ -55,7 +55,6 @@ public class TravelFragment extends Fragment implements  View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.travel_fragment, container, false);
         init(view);
-
         return view;
     }
 
@@ -172,15 +171,48 @@ public class TravelFragment extends Fragment implements  View.OnClickListener {
         searchPCBtn.setOnClickListener(this);
 
         //필수 마커 생성
-
+        addEssentialMarker();
 
         //필수 PolyLine 생성
+        addEssentialPolyLine();
 
 
     }
 
     private void addEssentialMarker() {
         //부산대 건물에 대한 마커 생성
+        String[] pnuStrings = getResources().getStringArray(R.array.pnu_buildings);
+        String[] pnuDescrption = getResources().getStringArray(R.array.pnu_buliding_description);
+
+        int number;
+        String name;
+        String description;
+        double latitude;
+        double longtitude;
+
+        //temp = [number, name, latitude, longtitude, descrption]
+        String[] temp = new String[5];
+
+        for (int i = 0; i < pnuStrings.length; i++ ) {
+            temp = pnuStrings[i].split(",");
+            temp[5] = pnuDescrption[i];
+
+            number = Integer.valueOf(temp[0]);
+            name = temp[1];
+            latitude = Double.valueOf(temp[2]);
+            longtitude = Double.valueOf(temp[3]);
+            description = temp[4];
+
+
+
+        }
+        //100번대
+        //200번대
+        //300번대
+        //400번대
+        //500번대
+        //600번대
+        //700번대
 
         //CLOPY 마커 생성
 
@@ -258,8 +290,9 @@ public class TravelFragment extends Fragment implements  View.OnClickListener {
         Activity activity = getActivity();
 
         BitmapFactory.Options options = new BitmapFactory.Options();
+
         options.inSampleSize = 2;
-        Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.poi_dot, options);
+        Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.map_pin_red, options);
 
 
         for (int i = 0; i < points.size(); i++) {
@@ -273,4 +306,5 @@ public class TravelFragment extends Fragment implements  View.OnClickListener {
         }
 
     }
+
 }

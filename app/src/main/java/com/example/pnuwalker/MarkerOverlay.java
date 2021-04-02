@@ -108,6 +108,24 @@ public class MarkerOverlay extends TMapMarkerItem2 {
         canvas.translate(x - marginX, y - marginY);
         canvas.drawBitmap(getIcon(), 0, 0, null);
         canvas.restore();
+
+        if (showCallout) {
+            canvas.save();
+            canvas.rotate(-mapView.getRotate(), mapView.getCenterPointX(), mapView.getCenterPointY());
+
+            balloonView.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
+                    MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+
+            int nTempX =  x - balloonView.getMeasuredWidth() / 2;
+            int nTempY =  y - marginY - balloonView.getMeasuredHeight();
+
+            canvas.translate(nTempX, nTempY);
+            balloonView.draw(canvas);
+
+
+            canvas.restore();
+        }
+
     }
 
     @Override
