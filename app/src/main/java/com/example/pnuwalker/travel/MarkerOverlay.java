@@ -1,8 +1,10 @@
-package com.example.pnuwalker;
+package com.example.pnuwalker.travel;
 
+import com.example.pnuwalker.R;
 import com.skt.Tmap.TMapMarkerItem2;
 import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapView;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -10,16 +12,24 @@ import android.graphics.Canvas;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 
 public class MarkerOverlay extends TMapMarkerItem2 {
 
     private DisplayMetrics dm = null;
 
     private Context 	mContext = null;
-    private BalloonOverlayView balloonView = null;
+    private MarkerInfoLayout markerInfoLayout;
 
+    private String name;
+    private String description;
+    private String buildingNumber;
 
     @Override
     public Bitmap getIcon() {
@@ -46,27 +56,21 @@ public class MarkerOverlay extends TMapMarkerItem2 {
         super.setPosition(dx, dy);
     }
 
-    /**
-     * 풍선뷰 영역을 설정한다.
-     */
     @Override
     public void setCalloutRect(Rect rect) {
         super.setCalloutRect(rect);
     }
 
-    public MarkerOverlay(Context context, String labelName, String id) {
+    public MarkerOverlay(Context context, String buildingNumber, String name , String description,  String id, MarkerInfoLayout layout) {
         this.mContext = context;
+        this.buildingNumber = buildingNumber;
+        this.name = name;
+        this.description = description;
 
         dm = new DisplayMetrics();
         WindowManager wmgr = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
         context.getDisplay().getMetrics(dm);
-
-        balloonView = new BalloonOverlayView(mContext, labelName, id);
-
-        balloonView.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
-                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-
-        balloonView.layout(0, 0, balloonView.getMeasuredWidth(), balloonView.getMeasuredHeight());
+        markerInfoLayout = layout;
     }
 
     @Override
@@ -108,30 +112,17 @@ public class MarkerOverlay extends TMapMarkerItem2 {
         canvas.translate(x - marginX, y - marginY);
         canvas.drawBitmap(getIcon(), 0, 0, null);
         canvas.restore();
-
-        if (showCallout) {
-            canvas.save();
-            canvas.rotate(-mapView.getRotate(), mapView.getCenterPointX(), mapView.getCenterPointY());
-
-            balloonView.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
-                    MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-
-            int nTempX =  x - balloonView.getMeasuredWidth() / 2;
-            int nTempY =  y - marginY - balloonView.getMeasuredHeight();
-
-            canvas.translate(nTempX, nTempY);
-            balloonView.draw(canvas);
-
-
-            canvas.restore();
-        }
-
     }
 
     @Override
     public boolean onSingleTapUp(PointF point, TMapView mapView) {
-        mapView.showCallOutViewWithMarkerItemID(this.getID());
-        System.out.println(getID());
+        setMarkerInfoLayout();
         return true;
+    }
+
+    private void setMarkerInfoLayout() {
+        markerInfoLayout.setName(name);
+        markerInfoLayout.setBuildingNumber(buildingNumber);
+        markerInfoLayout.setVisibility(View.VISIBLE);
     }
 }
