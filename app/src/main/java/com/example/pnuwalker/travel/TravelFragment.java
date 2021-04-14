@@ -77,7 +77,7 @@ public class TravelFragment extends Fragment implements View.OnClickListener {
 
     //TMap,TMapData, Button등 각종 객체를 생성하고 설정
     private void init(View view) {
-        markerInfo = new MarkerInfoLayout(view);
+
 
         mapLayout = view.findViewById(R.id.map_layout);
         tMapView = new TMapView(getActivity());
@@ -94,12 +94,47 @@ public class TravelFragment extends Fragment implements View.OnClickListener {
         currentLocation = new TMapPoint(35.23380020523731, 129.08102472195395 );
         tMapData = new TMapData();
 
+        //markerInfoLayout 설정
+        markerInfo = new MarkerInfoLayout(view);
+
+        //버튼 설정
+        markerInfo.setBtnClickListener(MarkerInfoLayout.DETAIL, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), PNUbuildingDetailActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        markerInfo.setBtnClickListener(MarkerInfoLayout.START, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), PNUbuildingDetailActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        markerInfo.setBtnClickListener(MarkerInfoLayout.END, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), PNUbuildingDetailActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        markerInfo.setBtnClickListener(MarkerInfoLayout.SCHEDULE, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), PNUbuildingDetailActivity.class);
+                startActivity(intent);
+            }
+        });
+
         //맵 액션 설정
         //Long Click시 이름이 (ReverseGeoCoding) 인 이름의 마커를 생성하고 MarkerInfo 창을 띄움
         tMapView.setOnLongClickListenerCallback(new TMapView.OnLongClickListenerCallback() {
             @Override
             public void onLongPressEvent(ArrayList markerlist,ArrayList poilist, TMapPoint point) {
-                
                 markerInfo.setBuildingNumber("");
                 markerInfo.setName("사용자 선택");
                 markerInfo.setVisibility(View.VISIBLE);
@@ -116,14 +151,6 @@ public class TravelFragment extends Fragment implements View.OnClickListener {
             public boolean onPressEvent(ArrayList<TMapMarkerItem> markerlist, ArrayList<TMapPOIItem> poilist, TMapPoint point, PointF pointf) {
                 markerInfo.setVisibility(View.INVISIBLE);
                 return false;
-            }
-        });
-
-        tMapView.setOnMarkerClickEvent(new TMapView.OnCalloutMarker2ClickCallback() {
-            @Override
-            public void onCalloutMarker2ClickEvent(String id, TMapMarkerItem2 markerItem2) {
-                Intent intent = new Intent(getActivity(), PNUbuildingDetailActivity.class);
-                startActivity(intent);
             }
         });
 
@@ -153,24 +180,7 @@ public class TravelFragment extends Fragment implements View.OnClickListener {
                 }
             }
         });
-        //버튼 설정
-        /*
-        searchCafeBtn = (Button)view.findViewById(R.id.search_cafe_btn);
-        searchFoodBtn = (Button)view.findViewById(R.id.search_food_btn);
-        searchSupplyBtn = (Button)view.findViewById(R.id.search_supplies_btn);
-        searchPrintBtn = (Button)view.findViewById(R.id.search_print_btn);
-        searchConStoreBtn = (Button)view.findViewById(R.id.search_constore_btn);
-        searchBookStoreBtn = (Button)view.findViewById(R.id.search_bookstore_btn);
-        searchPCBtn = (Button)view.findViewById(R.id.search_pc_btn);
 
-        searchCafeBtn.setOnClickListener(this);
-        searchFoodBtn.setOnClickListener(this);
-        searchSupplyBtn.setOnClickListener(this);
-        searchPrintBtn.setOnClickListener(this);
-        searchConStoreBtn.setOnClickListener(this);
-        searchBookStoreBtn.setOnClickListener(this);
-        searchPCBtn.setOnClickListener(this);
-        */
         //필수 마커 생성
         addEssentialMarker();
 
@@ -315,7 +325,7 @@ public class TravelFragment extends Fragment implements View.OnClickListener {
 
         for (int i = 0; i < points.size(); i++) {
             String id = "s_result" + i;
-            MarkerOverlay marker = new MarkerOverlay(getContext(), Integer.toString(i), names.get(i), descriptions.get(i) ,"s_result" + i , markerInfo);;
+            MarkerOverlay marker = new MarkerOverlay(getContext(), Integer.toString(i), names.get(i), descriptions.get(i) ,"s_result" + i , markerInfo);
             marker.setID("s_result" + i);
             marker.setTMapPoint(points.get(i));
             marker.setIcon(icon);

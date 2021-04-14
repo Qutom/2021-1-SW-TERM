@@ -73,6 +73,33 @@
                 android:textStyle="bold"
                 android:layout_below="@id/marker_info_buildingnumber"/>
 
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="자세히"
+                android:id="@+id/marker_info_btndetail">
+            </Button>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="출발"
+                android:id="@+id/marker_info_btnstart">
+            </Button>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="도착"
+                android:id="@+id/marker_info_btnend">
+            </Button>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="일정 등록"
+                android:id="@+id/marker_info_btnschedule">
+            </Button>
         </RelativeLayout>
     </RelativeLayout>
 
