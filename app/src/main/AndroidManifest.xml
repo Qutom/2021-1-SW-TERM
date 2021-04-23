@@ -3,6 +3,8 @@
     package="com.example.pnuwalker">
 
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" ></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -18,8 +20,10 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".travel.PNUbuildingDetailActivity">
-        </activity>
+        <activity android:name=".travel.PNUbuildingDetailActivity"></activity>
+        <activity android:name=".AddScheduleActivity"></activity>
+
+
 
     </application>
 

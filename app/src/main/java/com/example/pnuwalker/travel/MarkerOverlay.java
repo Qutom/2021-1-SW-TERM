@@ -124,5 +124,7 @@ public class MarkerOverlay extends TMapMarkerItem2 {
         markerInfoLayout.setName(name);
         markerInfoLayout.setBuildingNumber(buildingNumber);
         markerInfoLayout.setVisibility(View.VISIBLE);
+        markerInfoLayout.setTMapPoint(getTMapPoint());
+        markerInfoLayout.setBtnDetailActive(true);
     }
 }

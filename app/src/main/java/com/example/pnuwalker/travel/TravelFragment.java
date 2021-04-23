@@ -1,7 +1,9 @@
 package com.example.pnuwalker.travel;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -10,6 +12,8 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -26,41 +30,41 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.pnuwalker.AddScheduleActivity;
+import com.example.pnuwalker.FindPNUPath;
+import com.example.pnuwalker.MainActivity;
 import com.example.pnuwalker.R;
 import com.skt.Tmap.TMapCircle;
 import com.skt.Tmap.TMapData;
+import com.skt.Tmap.TMapGpsManager;
 import com.skt.Tmap.TMapMarkerItem;
 import com.skt.Tmap.TMapMarkerItem2;
 import com.skt.Tmap.TMapPOIItem;
 import com.skt.Tmap.TMapPoint;
+import com.skt.Tmap.TMapPolyLine;
 import com.skt.Tmap.TMapView;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public class TravelFragment extends Fragment implements View.OnClickListener {
-    SlidingUpPanelLayout slidingUpPanelLayout;
+public class TravelFragment extends Fragment implements View.OnClickListener ,TMapGpsManager.onLocationChangedCallback {
     TMapView tMapView;
     TMapData tMapData;
     RelativeLayout mapLayout;
     MarkerInfoLayout markerInfo;
+    FindPNUPath findPNUPath;
     TMapPoint currentLocation;
     EditText inputText;
-
-    Button searchCafeBtn;
-    Button searchFoodBtn;
-    Button searchSupplyBtn;
-    Button searchPCBtn;
-    Button searchPrintBtn;
-    Button searchConStoreBtn;
-    Button searchBookStoreBtn;
+    TMapGpsManager gps;
 
     TMapPoint pathFindStartPoint;
     TMapPoint pathFindEndPoint;
-    int pathFindPointSelectMode = 0; // 0 = None, 1 = Select Start, 2 = Select End
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -77,8 +81,7 @@ public class TravelFragment extends Fragment implements View.OnClickListener {
 
     //TMap,TMapData, Button등 각종 객체를 생성하고 설정
     private void init(View view) {
-
-
+        findPNUPath = new FindPNUPath();
         mapLayout = view.findViewById(R.id.map_layout);
         tMapView = new TMapView(getActivity());
         mapLayout.addView(tMapView);
@@ -109,23 +112,59 @@ public class TravelFragment extends Fragment implements View.OnClickListener {
         markerInfo.setBtnClickListener(MarkerInfoLayout.START, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PNUbuildingDetailActivity.class);
-                startActivity(intent);
+                TMapPoint point = markerInfo.getTMapPoint();
+                pathFindStartPoint = point;
+
+                tMapView.removeMarkerItem("start");
+
+                TMapMarkerItem marker = new TMapMarkerItem();
+                marker.setTMapPoint(point);
+                tMapView.addMarkerItem("start" ,marker);
+
+                if ( pathFindEndPoint != null ) {
+                    tMapView.removeTMapPolyLine("path1");
+                    //조정된 길찾기 알고리즘으로 대체될것임
+                    TMapPolyLine line = findPNUPath.getPathPointList(pathFindStartPoint, pathFindEndPoint);
+                    if (line == null)
+                        System.out.println("null");
+                    else
+                        tMapView.addTMapPolyLine("path1", line);
+                    System.out.println(String.format("%f, %f -> %f, %f로 길찾기를 수행", pathFindStartPoint.getLatitude() , pathFindStartPoint.getLongitude()
+                            , pathFindEndPoint.getLatitude(), pathFindEndPoint.getLongitude()) );
+                }
             }
         });
 
         markerInfo.setBtnClickListener(MarkerInfoLayout.END, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PNUbuildingDetailActivity.class);
-                startActivity(intent);
+                TMapPoint point = markerInfo.getTMapPoint();
+                pathFindEndPoint = point;
+
+                tMapView.removeMarkerItem("end");
+
+                TMapMarkerItem marker = new TMapMarkerItem();
+                marker.setTMapPoint(point);
+                tMapView.addMarkerItem("end" ,marker);
+
+                if ( pathFindStartPoint != null ) {
+                    tMapView.removeTMapPolyLine("path1");
+                    //조정된 길찾기 알고리즘으로 대체될것임
+                    TMapPolyLine line = findPNUPath.getPathPointList(pathFindStartPoint, pathFindEndPoint);
+                    if (line == null)
+                        System.out.println("null");
+                    else
+                        tMapView.addTMapPolyLine("path1", line);
+                    System.out.println(String.format("%f, %f -> %f, %f로 길찾기를 수행", pathFindStartPoint.getLatitude() , pathFindStartPoint.getLongitude()
+                    , pathFindEndPoint.getLatitude(), pathFindEndPoint.getLongitude()) );
+                }
             }
         });
 
         markerInfo.setBtnClickListener(MarkerInfoLayout.SCHEDULE, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PNUbuildingDetailActivity.class);
+                Intent intent = new Intent(getActivity(), AddScheduleActivity.class);
                 startActivity(intent);
             }
         });
@@ -135,9 +174,18 @@ public class TravelFragment extends Fragment implements View.OnClickListener {
         tMapView.setOnLongClickListenerCallback(new TMapView.OnLongClickListenerCallback() {
             @Override
             public void onLongPressEvent(ArrayList markerlist,ArrayList poilist, TMapPoint point) {
+
+                if (poilist != null) {
+
+                } else {
+
+                }
+
                 markerInfo.setBuildingNumber("");
                 markerInfo.setName("사용자 선택");
                 markerInfo.setVisibility(View.VISIBLE);
+                markerInfo.setTMapPoint(point);
+                markerInfo.setBtnDetailActive(false);
             }
         });
 
@@ -162,8 +210,10 @@ public class TravelFragment extends Fragment implements View.OnClickListener {
                 if ( actionId == EditorInfo.IME_ACTION_SEARCH) {
                     String text = String.valueOf(inputText.getText());
                     System.out.println(text);
+
                     if ( !text.equals("") )
                         searchKeywordPOI(currentLocation, text, 3);
+
                     return true;
                 }
                 return false;
@@ -187,7 +237,35 @@ public class TravelFragment extends Fragment implements View.OnClickListener {
         //필수 PolyLine 생성
         //addEssentialPolyLine();
 
+        //gps 설정
+        if(ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1); //위치권한 탐색 허용 관련 내용
+            }
+        }
 
+        gps = new TMapGpsManager(getActivity());
+        gps.setMinTime(1000);
+        gps.setMinDistance(1);
+        gps.setProvider(gps.GPS_PROVIDER);
+        gps.setProvider(gps.NETWORK_PROVIDER);
+        gps.setLocationCallback();
+
+        gps.OpenGps();
+        System.out.println("gps test");
+
+
+    }
+
+    //gps 연동
+    @Override
+    public void onLocationChange(Location location) {
+        double lat = location.getLatitude();
+        double lon = location.getLongitude();
+        tMapView.setCenterPoint(lon, lat);
+        tMapView.setLocationPoint(lon , lat);
+        System.out.println("aaa");
     }
 
     private void addEssentialMarker() {
@@ -263,7 +341,6 @@ public class TravelFragment extends Fragment implements View.OnClickListener {
         tMapData.findAroundKeywordPOI(searchPoint, keyword, radius, 200, new TMapData.FindAroundKeywordPOIListenerCallback() {
             @Override
             public void onFindAroundKeywordPOI(ArrayList<TMapPOIItem> arrayList) {
-
                 if (arrayList == null) {
                     Handler mHandler = new Handler(Looper.getMainLooper());
                     mHandler.postDelayed(new Runnable() {
@@ -274,7 +351,6 @@ public class TravelFragment extends Fragment implements View.OnClickListener {
                     }, 0);
                     return;
                 }
-
 
                 ArrayList<TMapPoint> points = new ArrayList<>();
                 ArrayList<String> names = new ArrayList<>();
@@ -297,11 +373,6 @@ public class TravelFragment extends Fragment implements View.OnClickListener {
                 drawCircle(searchPoint, radius);
             }
         });
-
-
-
-        if (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED)
-            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
     }
 
     
@@ -325,7 +396,7 @@ public class TravelFragment extends Fragment implements View.OnClickListener {
 
         for (int i = 0; i < points.size(); i++) {
             String id = "s_result" + i;
-            MarkerOverlay marker = new MarkerOverlay(getContext(), Integer.toString(i), names.get(i), descriptions.get(i) ,"s_result" + i , markerInfo);
+            MarkerOverlay marker = new MarkerOverlay(getContext(), "", names.get(i), descriptions.get(i) ,"s_result" + i , markerInfo);
             marker.setID("s_result" + i);
             marker.setTMapPoint(points.get(i));
             marker.setIcon(icon);
@@ -334,8 +405,7 @@ public class TravelFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    public Bitmap makeTextedIcon(int drawableId, String text, int TextSize, BitmapFactory.Options options){
-
+    public Bitmap makeTextedIcon(int drawableId, String text, int TextSize, BitmapFactory.Options options) {
         Bitmap bm = BitmapFactory.decodeResource(getResources(), drawableId ,options ).copy(Bitmap.Config.ARGB_8888, true);
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.FILL);

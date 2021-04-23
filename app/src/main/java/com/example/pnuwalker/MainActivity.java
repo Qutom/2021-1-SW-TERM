@@ -4,11 +4,23 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.pnuwalker.travel.TravelFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.skt.Tmap.TMapData;
+import com.skt.Tmap.TMapPoint;
+import com.skt.Tmap.TMapPolyLine;
+
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,42 +46,42 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
 
-                switch(item.getItemId()) {
-                    case R.id.page_main :
-                        if ( mainFragment != null ) {
+                switch (item.getItemId()) {
+                    case R.id.page_main:
+                        if (mainFragment != null) {
                             //MainFragment는 매번 정보를 새로 받아와야하므로, 새로고침됨
                             fragmentManager.beginTransaction().detach(mainFragment).attach(mainFragment).commit();
                             fragmentManager.beginTransaction().show(mainFragment).commit();
                         }
 
-                        if ( travelFragment != null )
+                        if (travelFragment != null)
                             fragmentManager.beginTransaction().hide(travelFragment).commit();
-                        if ( scheduleFragment != null)
+                        if (scheduleFragment != null)
                             fragmentManager.beginTransaction().hide(scheduleFragment).commit();
                         break;
 
-                    case R.id.page_schedule :
-                        if ( scheduleFragment == null ) {
+                    case R.id.page_schedule:
+                        if (scheduleFragment == null) {
                             scheduleFragment = new SchduleFragment();
                             fragmentManager.beginTransaction().add(R.id.fragmentLayout, scheduleFragment).commit();
                         }
-                        if ( mainFragment != null )
+                        if (mainFragment != null)
                             fragmentManager.beginTransaction().hide(mainFragment).commit();
-                        if ( travelFragment != null )
+                        if (travelFragment != null)
                             fragmentManager.beginTransaction().hide(travelFragment).commit();
-                        if ( scheduleFragment != null)
+                        if (scheduleFragment != null)
                             fragmentManager.beginTransaction().show(scheduleFragment).commit();
                         break;
-                    case R.id.page_travel :
-                        if ( travelFragment == null ) {
+                    case R.id.page_travel:
+                        if (travelFragment == null) {
                             travelFragment = new TravelFragment();
                             fragmentManager.beginTransaction().add(R.id.fragmentLayout, travelFragment).commit();
                         }
-                        if ( mainFragment != null )
+                        if (mainFragment != null)
                             fragmentManager.beginTransaction().hide(mainFragment).commit();
-                        if ( travelFragment != null )
+                        if (travelFragment != null)
                             fragmentManager.beginTransaction().show(travelFragment).commit();
-                        if ( scheduleFragment != null)
+                        if (scheduleFragment != null)
                             fragmentManager.beginTransaction().hide(scheduleFragment).commit();
                         break;
                     default:
@@ -85,8 +97,7 @@ public class MainActivity extends AppCompatActivity {
     public void onFragmentChanged(int index) {
         if (index == 1) {
             fragmentManager.beginTransaction().replace(R.id.fragmentLayout, scheduleFragment).commit();
-        }
-        else if (index == 0) {
+        } else if (index == 0) {
             fragmentManager.beginTransaction().replace(R.id.fragmentLayout, scheduleSearchFragment).commit();
         }
     }
