@@ -165,6 +165,7 @@ public class TravelFragment extends Fragment implements View.OnClickListener ,TM
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), AddScheduleActivity.class);
+                //intent.putExtra("aaa", 123);
                 startActivity(intent);
             }
         });
@@ -244,16 +245,6 @@ public class TravelFragment extends Fragment implements View.OnClickListener ,TM
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1); //위치권한 탐색 허용 관련 내용
             }
         }
-
-        gps = new TMapGpsManager(getActivity());
-        gps.setMinTime(1000);
-        gps.setMinDistance(1);
-        gps.setProvider(gps.GPS_PROVIDER);
-        gps.setProvider(gps.NETWORK_PROVIDER);
-        gps.setLocationCallback();
-
-        gps.OpenGps();
-        System.out.println("gps test");
 
 
     }

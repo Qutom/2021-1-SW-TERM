@@ -1,250 +1,229 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/linearLayout2"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:weightSum="4">
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_alignParentTop="true"
+            android:textSize="25sp"
+            android:textAlignment="center"
+            android:id="@+id/title_textview"
+            android:textStyle="bold"
+            android:text="일정 추가"
+            android:background="@drawable/layout_border_bottom">
+        </TextView>
+
+        <EditText
+            android:id="@+id/schedule_name_edittext"
+            android:background="@drawable/edittext_transparent_rectangle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/title_textview"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:textSize="50sp"
+            android:hint="일정 이름"></EditText>
+
+        <EditText
+            android:id="@+id/schedule_description_edittext"
+            android:background="@drawable/edittext_transparent_rectangle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/schedule_name_edittext"
+
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="5dp"
+            android:textSize="20sp"
+            android:hint="설명"></EditText>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/schedule_description_edittext"
+            android:id="@+id/point_layout">
+
+            <TableRow>
+
+                <ImageView
+                    android:id="@+id/img_start"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/ic_baseline_directions_walk_24"></ImageView>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/img_start"
+                    android:id="@+id/set_start_point_btn"
+                    android:layout_weight="9"
+                    android:text="출발">
+                </Button>
+            </TableRow>
+
+            <TableRow>
+
+                <ImageView
+                    android:id="@+id/img_end"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    app:srcCompat="@drawable/ic_baseline_flag_24"></ImageView>
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toLeftOf="@+id/img_start"
+                    android:layout_weight="9"
+                    android:id="@+id/set_end_point_btn"
+                    android:text="출발">
+                </Button>
+            </TableRow>
+        </TableLayout>
 
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#FFFFFF"
-            android:orientation="vertical"
-            android:layout_weight="1">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_below="@+id/point_layout"
+            android:id="@+id/schedule_type_select_layout"
+            android:orientation="horizontal">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#000000"
-                android:orientation="vertical"
-                android:id="@+id/frag_map_layout">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="map-zone"
-                    android:textColor="#FFFFFF"
-                    android:textSize="10pt" />
-
-            </RelativeLayout>
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#FF018786"
-            android:orientation="vertical"
-            android:layout_weight="3">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="4">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="schedule zone"
-                    android:textColor="#000000"
-                    android:textSize="15dp" />
-
-                <TextView
-                    android:id="@+id/frag_cur_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:text="현재 시간"
-                    android:textSize="15dp"
-                    android:textAlignment="center" />
-            </LinearLayout>
-
-            <TableLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#FFFFFFFF">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="2"
-                        android:gravity="center"
-                        android:text="할 일"
-                        android:textColor="#000000" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="2"
-                        android:gravity="center"
-                        android:text="장 소"
-                        android:textColor="#000000" />
-
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#FFFFFFFF">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="이전 일정"
-                        android:textColor="#000000" />
-                    />
-
-                    <TextView
-                        android:id="@+id/did_time"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="2"
-                        android:gravity="center"
-                        android:text=" "
-                        android:textColor="#000000" />
-                    <TextView
-                        android:id="@+id/did_site"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="2"
-                        android:gravity="center"
-                        android:text=" "
-                        android:textColor="#000000" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#FFFFFFFF">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="현재 일정"
-                        android:textColor="#000000" />
-                    />
-
-                    <TextView
-                        android:id="@+id/do_time"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="2"
-                        android:gravity="center"
-                        android:text=" "
-                        android:textColor="#000000" />
-                    <TextView
-                        android:id="@+id/do_site"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="2"
-                        android:gravity="center"
-                        android:text=" "
-                        android:textColor="#000000" />
-
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#FFFFFFFF">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="다음 일정"
-                        android:textColor="#000000" />
-                    />
-
-                    <TextView
-                        android:id="@+id/will_do_time"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="2"
-                        android:gravity="center"
-                        android:text=" "
-                        android:textColor="#000000" />
-                    <TextView
-                        android:id="@+id/will_do_site"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="2"
-                        android:gravity="center"
-                        android:text=" "
-                        android:textColor="#000000" />
-
-                </TableRow>
-            </TableLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="5">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="다음일정까지"
-                    android:textColor="#000000"
-                    android:textSize="15dp" />
-
-                <TextView
-                    android:id="@+id/time_to_next"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:text="현재 시간"
-                    android:textSize="15dp"
-                    android:textAlignment="center" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="남음"
-                    android:textColor="#000000"
-                    android:textSize="15dp" />
-
-            </LinearLayout>
             <Button
-                android:id="@+id/today_schedule"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="전체 일정경로"
-                android:textSize="15dp"
-                android:textAlignment="center" />
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:id="@+id/show_period_layout_btn"
+                style="?android:attr/borderlessButtonStyle"
+                android:background="@drawable/button_selected"
+                android:text="정규 일정">
+            </Button>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:id="@+id/show_temporary_layout_btn"
+                style="?android:attr/borderlessButtonStyle"
+                android:background="@drawable/button_unselected"
+                android:text="임시 일정">
+            </Button>
 
         </LinearLayout>
-    </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/schedule_type_select_layout"
+            android:orientation="vertical"
+            android:visibility="visible"
+            android:id="@+id/temporary_schedule_layout">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:text="날짜를 표시"
+                style="?android:attr/borderlessButtonStyle"
+                android:id="@+id/show_date_dialog_btn">
+            </Button>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:text="시작 시간을 표시"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_weight="1"
+                    android:id="@+id/show_start_time_dialog_btn">
+                </Button>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:text="~">
+                </TextView>
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:text="종료 시간을 표시"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_weight="1"
+                    android:id="@+id/show_end_time_dialog_btn">
+                </Button>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/schedule_type_select_layout"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:id="@+id/period_schedule_layout">
+
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                style="?android:attr/borderlessButtonStyle"
+                android:text="취소"
+                android:textSize="25sp"
+                android:id="@+id/cancel_btn">
+            </Button>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                style="?android:attr/borderlessButtonStyle"
+                android:text="완료"
+                android:textSize="25sp"
+                android:id="@+id/done_btn">
+            </Button>
+        </LinearLayout>
+    </RelativeLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
