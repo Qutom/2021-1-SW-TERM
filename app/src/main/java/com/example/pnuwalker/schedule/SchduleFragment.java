@@ -1,4 +1,4 @@
-package com.example.pnuwalker;
+package com.example.pnuwalker.schedule;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -6,9 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+
+import com.example.pnuwalker.MainActivity;
+import com.example.pnuwalker.R;
 
 public class SchduleFragment extends Fragment {
     private Schedule schedule = new Schedule();

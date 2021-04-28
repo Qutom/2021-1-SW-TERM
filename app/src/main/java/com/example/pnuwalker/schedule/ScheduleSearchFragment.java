@@ -1,8 +1,6 @@
-package com.example.pnuwalker;
+package com.example.pnuwalker.schedule;
 
 import android.app.AlertDialog;
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -15,6 +13,8 @@ import android.widget.ListView;
 import android.widget.Spinner;
 
 import androidx.fragment.app.Fragment;
+
+import com.example.pnuwalker.R;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;

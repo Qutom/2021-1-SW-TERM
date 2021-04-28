@@ -1,4 +1,4 @@
-package com.example.pnuwalker;
+package com.example.pnuwalker.schedule;
 
 public class Course {
     private String courseID;

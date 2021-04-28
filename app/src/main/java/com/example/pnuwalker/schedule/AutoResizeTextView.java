@@ -1,4 +1,4 @@
-package com.example.pnuwalker;
+package com.example.pnuwalker.schedule;
 
 import android.content.Context;
 import android.text.Layout.Alignment;

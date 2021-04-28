@@ -1,15 +1,6 @@
-package com.example.pnuwalker;
-
-import android.Manifest;
-import android.location.Location;
-import android.os.Build;
+package com.example.pnuwalker.main;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.skt.Tmap.TMapGpsManager;
-import com.skt.Tmap.TMapView;
-
-import static com.example.pnuwalker.MainFragment.frag_tMapView;
 
 public class MainFragGps extends AppCompatActivity  {
 

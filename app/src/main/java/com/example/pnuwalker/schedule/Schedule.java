@@ -1,7 +1,9 @@
-package com.example.pnuwalker;
+package com.example.pnuwalker.schedule;
 
 import android.content.Context;
-import android.widget.TextView;
+
+import com.example.pnuwalker.R;
+import com.example.pnuwalker.schedule.AutoResizeTextView;
 
 public class Schedule {
     private String monday[] = new String[25];

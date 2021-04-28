@@ -1,10 +1,9 @@
-package com.example.pnuwalker;
+package com.example.pnuwalker.schedule;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -12,6 +11,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+
+import com.example.pnuwalker.MainActivity;
+import com.example.pnuwalker.R;
+import com.example.pnuwalker.schedule.Course;
 
 import java.util.List;
 
