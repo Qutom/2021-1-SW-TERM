@@ -98,6 +98,9 @@ public class MarkerInfoLayout {
     public void setTMapPoint(TMapPoint point) { this.point = point; }
     public void setBtnDetailActive(boolean bool) { btnDetail.setActivated(bool); }
 
+    public String getName() { return (String) name.getText(); }
+    public double getLatitude() { return point.getLatitude(); }
+    public double getLongitude() { return point.getLongitude(); }
     public int getVisibility() { return layout.getVisibility(); }
     public TMapPoint getTMapPoint() { return point; }
 

@@ -103,7 +103,7 @@
     </string-array>
 
     <string-array name="법과대학">
-        <item></item>
+        <item>NULL</item>
     </string-array>
 
     <string-array name="사범대학">
@@ -129,66 +129,191 @@
     </string-array>
 
     <string-array name="사회과학대학">
-        <item></item>
+        <item>문헌정보학과</item>
+        <item>미디어커뮤니케이션학과</item>
+        <item>사회복지학과</item>
+        <item>사회학과</item>
+        <item>심리학과</item>
+        <item>정치외교학과</item>
+        <item>행정학과</item>
+
     </string-array>
 
     <string-array name="상과대학">
-        <item></item>
+        <item>NULL</item>
     </string-array>
 
     <string-array name="생명자원과학대학">
-        <item></item>
+        <item>동물생명자원과학과</item>
+        <item>바이오산업기계공학과</item>
+        <item>바이오소재과학과</item>
+        <item>바이오환경에너지학과</item>
+        <item>생명환경화학과</item>
+        <item>식물생명과학과</item>
+        <item>식품공학과</item>
+        <item>식품자원경제학과</item>
+        <item>원예생명과학과</item>
+        <item>원예생명과학과(재직자)</item>
+        <item>조경학과</item>
+        <item>조경학과</item>
+        <item>IT응용공학과</item>
     </string-array>
 
     <string-array name="생활환경대학">
-        <item></item>
+        <item>식품영양학과</item>
+        <item>실내환경디자인학과</item>
+        <item>아동가족학과</item>
+        <item>의류학과</item>
+        <item>주거환경학과</item>
     </string-array>
 
     <string-array name="스포츠과학부">
-        <item></item>
+        <item>스포츠과학부</item>
     </string-array>
 
     <string-array name="약학대학">
-        <item></item>
+        <item>약학부(6년제)</item>
     </string-array>
 
     <string-array name="예술대학">
-        <item></item>
+        <item>디자인학과</item>
+        <item>무용학과</item>
+        <item>미술학과</item>
+        <item>예술문화영상학과</item>
+        <item>음악학과</item>
+        <item>조형학과</item>
+        <item>한국음악학과</item>
     </string-array>
 
     <string-array name="의과대학">
-        <item></item>
+        <item>의예과</item>
+        <item>의학과</item>
     </string-array>
 
     <string-array name="이공대학">
-        <item></item>
+        <item>기계공학과</item>
     </string-array>
 
     <string-array name="인문대학">
-        <item></item>
+        <item>고고학과</item>
+        <item>국어국문학과</item>
+        <item>노어노문학과</item>
+        <item>독어독문학과</item>
+        <item>불어불문학과</item>
+        <item>사학과</item>
+        <item>언어정보학과</item>
+        <item>영어영문학과</item>
+        <item>일어일문학과</item>
+        <item>중어중문학과</item>
+        <item>철학과</item>
+        <item>한문학과</item>
     </string-array>
 
     <string-array name="자연과학대학">
-        <item></item>
+        <item>대기환경과학과</item>
+        <item>물리학과</item>
+        <item>미생물학과</item>
+        <item>분자생물학과</item>
+        <item>생명과학과</item>
+        <item>수학과</item>
+        <item>의생명과학전공</item>
+        <item>지질환경과학과</item>
+        <item>치의예과</item>
+        <item>통계학과</item>
+        <item>해양학과</item>
+        <item>화학과</item>
     </string-array>
 
     <string-array name="자유전공학부">
-        <item></item>
+        <item>자유전공학부</item>
     </string-array>
 
     <string-array name="정보의생명공학대학">
-        <item></item>
+        <item>의생명융합공학부</item>
+        <item>정보컴퓨터공학부</item>
     </string-array>
 
     <string-array name="치과대학">
-        <item></item>
+        <item>치의학과(학석사통합과정)</item>
     </string-array>
 
     <string-array name="치의학전문대학원">
-        <item></item>
+        <item>치의학과(학석사통합과정)</item>
     </string-array>
 
     <string-array name="한의학전문대학원">
-        <item></item>
+        <item>한의학과(학석사통합과정)</item>
+    </string-array>
+
+    <string-array name="국제학부">
+        <item>글로벌스터디즈 프로그램</item>
+        <item>한국.동아시아학전공</item>
+    </string-array>
+
+    <string-array name="건설융합학부">
+        <item>건축공학전공</item>
+        <item>건축학전공</item>
+        <item>도시공학전공</item>
+        <item>토목공학전공</item>
+    </string-array>
+
+    <string-array name="전기컴퓨터공학부">
+        <item>정보컴퓨터공학전공</item>
+    </string-array>
+
+    <string-array name="화공생명환경공학부">
+        <item>화공생명공학전공</item>
+        <item>환경공학전공</item>
+    </string-array>
+
+    <string-array name="약학부">
+        <item>약학전공</item>
+        <item>제약학전공</item>
+    </string-array>
+
+    <string-array name="디자인학과">
+        <item>디자인앤테크놀로지전공</item>
+        <item>시각디자인전공</item>
+        <item>애니메이션전공</item>
+    </string-array>
+
+    <string-array name="무용학과">
+        <item>발레전공</item>
+        <item>한국무용전공</item>
+        <item>현대무용전공</item>
+    </string-array>
+
+    <string-array name="미술학과">
+        <item>서양화전공</item>
+        <item>조소전공</item>
+        <item>한국화전공</item>
+    </string-array>
+
+    <string-array name="음악학과">
+        <item>관현타악전공</item>
+        <item>성악전공</item>
+        <item>작곡전공</item>
+        <item>피아노전공</item>
+    </string-array>
+
+    <string-array name="조형학과">
+        <item>가구목칠전공</item>
+        <item>도예전공</item>
+        <item>섬유금속전공</item>
+    </string-array>
+
+    <string-array name="한국음악학과">
+        <item>관악.타악전공</item>
+        <item>이론.작곡전공</item>
+        <item>현악.성악전공</item>
+    </string-array>
+
+    <string-array name="의생명융합공학부">
+        <item>데이터사이언스전공</item>
+        <item>의생명공학전공</item>
+    </string-array>
+
+    <string-array name="나머지">
+        <item>[전체]</item>
     </string-array>
 </resources>

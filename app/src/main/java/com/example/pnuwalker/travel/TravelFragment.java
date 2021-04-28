@@ -124,7 +124,8 @@ public class TravelFragment extends Fragment implements View.OnClickListener ,TM
                 if ( pathFindEndPoint != null ) {
                     tMapView.removeTMapPolyLine("path1");
                     //조정된 길찾기 알고리즘으로 대체될것임
-                    TMapPolyLine line = findPNUPath.getPathPointList(pathFindStartPoint, pathFindEndPoint);
+                    findPNUPath.findPath(pathFindStartPoint, pathFindEndPoint, false);
+                    TMapPolyLine line = findPNUPath.getPolyLine();
                     if (line == null)
                         System.out.println("null");
                     else
@@ -150,7 +151,8 @@ public class TravelFragment extends Fragment implements View.OnClickListener ,TM
                 if ( pathFindStartPoint != null ) {
                     tMapView.removeTMapPolyLine("path1");
                     //조정된 길찾기 알고리즘으로 대체될것임
-                    TMapPolyLine line = findPNUPath.getPathPointList(pathFindStartPoint, pathFindEndPoint);
+                    findPNUPath.findPath(pathFindStartPoint, pathFindEndPoint, false);
+                    TMapPolyLine line = findPNUPath.getPolyLine();
                     if (line == null)
                         System.out.println("null");
                     else
@@ -165,7 +167,11 @@ public class TravelFragment extends Fragment implements View.OnClickListener ,TM
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), AddScheduleActivity.class);
-                //intent.putExtra("aaa", 123);
+                TMapPoint point = markerInfo.getTMapPoint();
+
+                intent.putExtra("destName" , markerInfo.getName());
+                intent.putExtra("destLat"  , markerInfo.getLatitude());
+                intent.putExtra("destLon"  , markerInfo.getLongitude());
                 startActivity(intent);
             }
         });
@@ -176,12 +182,16 @@ public class TravelFragment extends Fragment implements View.OnClickListener ,TM
             @Override
             public void onLongPressEvent(ArrayList markerlist,ArrayList poilist, TMapPoint point) {
 
-                if (poilist != null) {
+                TMapMarkerItem marker = new TMapMarkerItem();
 
-                } else {
+                marker.setTMapPoint(point);
 
-                }
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inSampleSize = 2;
+                marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi_dot, options));
+                marker.setPosition(0, (float) 0.8);
 
+                tMapView.addMarkerItem("user_custom", marker);
                 markerInfo.setBuildingNumber("");
                 markerInfo.setName("사용자 선택");
                 markerInfo.setVisibility(View.VISIBLE);
@@ -193,12 +203,14 @@ public class TravelFragment extends Fragment implements View.OnClickListener ,TM
         tMapView.setOnClickListenerCallBack(new TMapView.OnClickListenerCallback() {
             @Override
             public boolean onPressUpEvent(ArrayList<TMapMarkerItem> markerlist, ArrayList<TMapPOIItem> poilist, TMapPoint point, PointF pointf) {
+
                 return false;
             }
 
             @Override
             public boolean onPressEvent(ArrayList<TMapMarkerItem> markerlist, ArrayList<TMapPOIItem> poilist, TMapPoint point, PointF pointf) {
                 markerInfo.setVisibility(View.INVISIBLE);
+                tMapView.removeMarkerItem("user_custom");
                 return false;
             }
         });
@@ -225,9 +237,7 @@ public class TravelFragment extends Fragment implements View.OnClickListener ,TM
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if ( hasFocus ) { //선택됨
-
-                } else { //선택 해제됨 (또는 작업이 완료됨)
-
+                    //검색 Activity를 띄운다
                 }
             }
         });

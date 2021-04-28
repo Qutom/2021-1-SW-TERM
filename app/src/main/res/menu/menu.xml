@@ -18,6 +18,6 @@
         android:id="@+id/page_travel"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_map_24"
-        android:title="탐색">
+        android:title="탐색및 일정추가">
     </item>
 </menu>
