@@ -248,8 +248,6 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
         System.out.println("aaa");
     }
 
-
-
     private void makeMaker(int cnt){
 
         Activity activity = getActivity();

@@ -10,21 +10,17 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
-import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -34,23 +30,17 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.pnuwalker.AddScheduleActivity;
-import com.example.pnuwalker.FindPNUPath;
-import com.example.pnuwalker.MainActivity;
 import com.example.pnuwalker.R;
+import com.example.pnuwalker.pathfind.FindPath;
 import com.skt.Tmap.TMapCircle;
 import com.skt.Tmap.TMapData;
 import com.skt.Tmap.TMapGpsManager;
 import com.skt.Tmap.TMapMarkerItem;
-import com.skt.Tmap.TMapMarkerItem2;
 import com.skt.Tmap.TMapPOIItem;
 import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapPolyLine;
 import com.skt.Tmap.TMapView;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.GenericArrayType;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class TravelFragment extends Fragment implements View.OnClickListener ,TMapGpsManager.onLocationChangedCallback {
@@ -58,7 +48,7 @@ public class TravelFragment extends Fragment implements View.OnClickListener ,TM
     TMapData tMapData;
     RelativeLayout mapLayout;
     MarkerInfoLayout markerInfo;
-    FindPNUPath findPNUPath;
+    FindPath findPNUPath;
     TMapPoint currentLocation;
     EditText inputText;
     TMapGpsManager gps;
@@ -81,7 +71,7 @@ public class TravelFragment extends Fragment implements View.OnClickListener ,TM
 
     //TMap,TMapData, Button등 각종 객체를 생성하고 설정
     private void init(View view) {
-        findPNUPath = new FindPNUPath();
+        findPNUPath = new FindPath(getActivity());
         mapLayout = view.findViewById(R.id.map_layout);
         tMapView = new TMapView(getActivity());
         mapLayout.addView(tMapView);
@@ -121,7 +111,7 @@ public class TravelFragment extends Fragment implements View.OnClickListener ,TM
                 marker.setTMapPoint(point);
                 tMapView.addMarkerItem("start" ,marker);
 
-                if ( pathFindEndPoint != null ) {
+                if ( pathFindEndPoint != null && !isSamePoint(pathFindStartPoint, pathFindEndPoint) ) {
                     tMapView.removeTMapPolyLine("path1");
                     //조정된 길찾기 알고리즘으로 대체될것임
                     findPNUPath.findPath(pathFindStartPoint, pathFindEndPoint, false);
@@ -148,7 +138,7 @@ public class TravelFragment extends Fragment implements View.OnClickListener ,TM
                 marker.setTMapPoint(point);
                 tMapView.addMarkerItem("end" ,marker);
 
-                if ( pathFindStartPoint != null ) {
+                if ( pathFindStartPoint != null && !isSamePoint(pathFindStartPoint, pathFindEndPoint) ) {
                     tMapView.removeTMapPolyLine("path1");
                     //조정된 길찾기 알고리즘으로 대체될것임
                     findPNUPath.findPath(pathFindStartPoint, pathFindEndPoint, false);
@@ -266,7 +256,6 @@ public class TravelFragment extends Fragment implements View.OnClickListener ,TM
         double lon = location.getLongitude();
         tMapView.setCenterPoint(lon, lat);
         tMapView.setLocationPoint(lon , lat);
-        System.out.println("aaa");
     }
 
     private void addEssentialMarker() {
@@ -296,7 +285,6 @@ public class TravelFragment extends Fragment implements View.OnClickListener ,TM
 
         for (int i = 0; i < pnuStrings.length; i++ ) {
             temp = pnuStrings[i].split(":");
-            System.out.println(temp[0]);
 
             number = Integer.valueOf(temp[0]);
             name = temp[1];
@@ -421,4 +409,7 @@ public class TravelFragment extends Fragment implements View.OnClickListener ,TM
         return bm;
     }
 
+    private boolean isSamePoint(TMapPoint p1, TMapPoint p2) {
+        return (p1.getLongitude() == p2.getLongitude()) && (p1.getLatitude() == p2.getLatitude());
+    }
 }

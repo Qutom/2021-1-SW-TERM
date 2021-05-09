@@ -8,14 +8,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.widget.Toast;
 
 import com.example.pnuwalker.DataBaseHelper;
-import com.example.pnuwalker.FindPNUPath;
+import com.example.pnuwalker.pathfind.FindPath;
 import com.skt.Tmap.TMapPoint;
 
-import java.net.Inet4Address;
 import java.util.ArrayList;
 
 public class ControlSchedule {
-    FindPNUPath pnuPath;
+    FindPath pnuPath;
     Context context;
 
     SQLiteDatabase db;
@@ -43,7 +42,7 @@ public class ControlSchedule {
 
     //정규 일정인 경우 values 값에 startHour, startMin, endHour, endMin, destName, destLat, destLon 만 필요
     public ControlSchedule(DataBaseHelper helper, Activity context, PeriodScheduleData data) {
-        pnuPath = new FindPNUPath();
+        pnuPath = new FindPath(context);
         dataBaseHelper = helper;
         db = dataBaseHelper.getWritableDatabase();
         dataBaseHelper.onCreate(db);
@@ -59,7 +58,7 @@ public class ControlSchedule {
 
     //임시 일정인 경우
     public ControlSchedule(DataBaseHelper helper, Activity context, TemporalScheduleData data) {
-        pnuPath = new FindPNUPath();
+        pnuPath = new FindPath(context);
         dataBaseHelper = helper;
         db = dataBaseHelper.getWritableDatabase();
         dataBaseHelper.onCreate(db);
@@ -295,7 +294,7 @@ public class ControlSchedule {
     private void updateWithFindPath(int startIndex, int endIndex, Long targetId,  ArrayList<String> coords) {
         TMapPoint startPoint = getTMapPointWithStr(coords.get(startIndex));
         TMapPoint endPoint = getTMapPointWithStr(coords.get(endIndex));
-        pnuPath.findPath(startPoint, endPoint, true);
+        pnuPath.findPath(startPoint, endPoint , true);
 
         String[] str = pnuPath.getPolyLineinStr();
         System.out.println(str[0]);
