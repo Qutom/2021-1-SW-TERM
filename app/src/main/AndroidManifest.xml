@@ -21,8 +21,8 @@
         </activity>
 
         <activity android:name=".travel.PNUbuildingDetailActivity"></activity>
+        <activity android:name=".travel.TravelSearchActivity"></activity>
         <activity android:name=".AddScheduleActivity"></activity>
-
 
 
     </application>

@@ -50,7 +50,6 @@ public class TravelFragment extends Fragment implements View.OnClickListener ,TM
     MarkerInfoLayout markerInfo;
     FindPath findPNUPath;
     TMapPoint currentLocation;
-    EditText inputText;
     TMapGpsManager gps;
 
     TMapPoint pathFindStartPoint;
@@ -140,7 +139,6 @@ public class TravelFragment extends Fragment implements View.OnClickListener ,TM
 
                 if ( pathFindStartPoint != null && !isSamePoint(pathFindStartPoint, pathFindEndPoint) ) {
                     tMapView.removeTMapPolyLine("path1");
-                    //조정된 길찾기 알고리즘으로 대체될것임
                     findPNUPath.findPath(pathFindStartPoint, pathFindEndPoint, false);
                     TMapPolyLine line = findPNUPath.getPolyLine();
                     if (line == null)
@@ -202,33 +200,6 @@ public class TravelFragment extends Fragment implements View.OnClickListener ,TM
                 markerInfo.setVisibility(View.INVISIBLE);
                 tMapView.removeMarkerItem("user_custom");
                 return false;
-            }
-        });
-
-        //edittext 설정
-        inputText = (EditText)view.findViewById(R.id.search_textinput);
-        inputText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if ( actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    String text = String.valueOf(inputText.getText());
-                    System.out.println(text);
-
-                    if ( !text.equals("") )
-                        searchKeywordPOI(currentLocation, text, 3);
-
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        inputText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if ( hasFocus ) { //선택됨
-                    //검색 Activity를 띄운다
-                }
             }
         });
 

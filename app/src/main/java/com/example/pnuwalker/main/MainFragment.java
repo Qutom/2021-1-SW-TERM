@@ -76,10 +76,11 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
 
     // 나중에 시간표에 저장된 DB를 가져 올 것이므로, 함수 구상용도이고, 임의로 시간순 작성.
     String[] today_schedule = new String[]{"컴알","고토","도서관자습"};
-    String[] today_schedule_time = new String[]{"202104281200","202104281400","202104282200"};      //테스트용. 날짜시간 맞게 변경후 시연할것.
+    String[] today_schedule_time = new String[]{"202104300000","202104300200","202104301000"};      //테스트용. 날짜시간 맞게 변경후 시연할것.
     String[] today_schedule_site = new String[]{"제도관","인문관","새벽벌"};
     double[] today_schedule_site_xpoint = new double[]{129.082112,129.08134602,129.081379771};
     double[] today_schedule_site_ypoint = new double[]{35.231154,35.232287960304575,35.23577906709686};
+
 
 
     @Override
@@ -181,6 +182,7 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
             tMapPolyLine.addLinePoint(alTMapPoint.get(l));
             frag_tMapView.addTMapPolyLine("Line"+ l, tMapPolyLine);
         }
+
 
         //fragment_xml를 MainFragment.java와 묶어주는 역할을 하는 메서드
         //inflate 시키면 Object 타입으로 넘어오기 때문에 캐스팅 필요

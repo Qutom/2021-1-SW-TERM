@@ -58,7 +58,7 @@ public class MainFragwhole extends Fragment {
     double[] today_schedule_site_xpoint = new double[]{129.082112,129.08134602,129.081379771};
     double[] today_schedule_site_ypoint = new double[]{35.231154,35.232287960304575,35.23577906709686};
 
-    String today_whole_schedule = "";
+
 
     @Nullable
     @Override
@@ -66,6 +66,8 @@ public class MainFragwhole extends Fragment {
         View rootView = inflater.inflate(R.layout.main_fragment_wholeschedule, container, false);
 
         activity = (MainActivity) getActivity();
+
+        String today_whole_schedule = "";
 
         //티맵 표시.
         frag_mapLayout = rootView.findViewById(R.id.frag_map_layout);

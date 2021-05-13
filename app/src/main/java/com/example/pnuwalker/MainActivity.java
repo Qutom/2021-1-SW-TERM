@@ -9,12 +9,16 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import com.example.pnuwalker.controlschedule.DaySchedule;
+import com.example.pnuwalker.controlschedule.ScheduleReader;
 import com.example.pnuwalker.main.MainFragment;
 import com.example.pnuwalker.main.MainFragwhole;
 import com.example.pnuwalker.schedule.SchduleFragment;
 import com.example.pnuwalker.schedule.ScheduleSearchFragment;
 import com.example.pnuwalker.travel.TravelFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     DataBaseHelper helper;
@@ -33,9 +37,20 @@ public class MainActivity extends AppCompatActivity {
         helper = new DataBaseHelper(MainActivity.this, "schedule1.db", null, 1);
         db = helper.getWritableDatabase();
         helper.onCreate(db);
+        //db.delete("schedule1" , "_id > 0", null);
+        //MainActivity.db.delete("schedule1", null, null);
 
-        MainActivity.db.delete("schedule1", null, null);
-
+        ArrayList<DaySchedule> schedules = new ScheduleReader(helper, 2021, 5 , 14 , 4, 0 , 0).schedules;
+        ArrayList<DaySchedule> schedules2 = new ScheduleReader(helper, 2021, 5 , 15 , 5, 0 , 0).schedules;
+        ArrayList<DaySchedule> schedules3 = new ScheduleReader(helper, 2021, 5 , 12 , 2, 0 , 0).schedules;
+        for (DaySchedule s : schedules)
+            System.out.println(s);
+        System.out.println("============================");
+        for (DaySchedule s : schedules2)
+            System.out.println(s);
+        System.out.println("============================");
+        for (DaySchedule s : schedules3)
+            System.out.println(s);
         System.out.println("Create Success============================");
         System.out.println("Create Success============================");
         System.out.println("Create Success============================");
