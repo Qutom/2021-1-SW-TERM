@@ -1,5 +1,8 @@
 package com.example.pnuwalker.controlschedule;
 
+import android.content.ContentValues;
+
+import com.example.pnuwalker.Pair;
 import com.example.pnuwalker.pathfind.Coordinate;
 import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapPolyLine;
@@ -22,21 +25,26 @@ public class DaySchedule {
     private int endHour; //일정 종료 시
     private int endMin; //일정 종료 분
 
-    private int cyclic; //cyclic 정보
+    private long cyclic; //cyclic 정보
+    private ArrayList<Long> additionalOverrideId;
 
     private String destName;
     private double destLat;
     private double destLon;
+    private String room;
 
     private TMapPolyLine polyLine;
 
     public DaySchedule(long id, String dateStr, int dayOfWeek, String startTimeStr, String endTimeStr
                         , String startCoord, String destPosStr, String destName, String name, String desc,
-                       int cyclic, String polylineLon, String polylineLat) {
+                       int cyclic, String addOverId, String polylineLon, String polylineLat, String room) {
         int[] startTime = strTimeToIntArray(startTimeStr);
         int[] endTime = strTimeToIntArray(endTimeStr);
         int[] date = strDateToIntArray(dateStr);
         double[] destPos = strPosToDoubleArray(destPosStr);
+
+        additionalOverrideId = new ArrayList<>();
+        setAdditionOverrideId(addOverId);
 
         startHour = startTime[0];
         startMin = startTime[1];
@@ -57,6 +65,33 @@ public class DaySchedule {
         this.desc = desc;
         polyLine = strToPolyline(polylineLon, polylineLat);
         this.cyclic = cyclic;
+        this.room = room;
+    }
+
+    public DaySchedule(DaySchedule s) {
+        additionalOverrideId = new ArrayList<>();
+        for (long v : s.getAdditionalOverrideId())
+            additionalOverrideId.add(v);
+        startHour = s.getStartHour();
+        startMin = s.getStartMin();
+        endHour = s.getEndHour();
+        endMin = s.getEndMin();
+
+        destLat = s.getDestLat();
+        destLon = s.getDestLon();
+
+        year = s.getYear();
+        month = s.getMonth();
+        day = s.getDay();
+
+        this.dayOfWeek = s.getDayOfWeek();
+        this.destName = s.getDestName();
+        this.id = s.getId();
+        this.name = s.getName();
+        this.desc = s.getDesc();
+        polyLine = s.getPolyLine();
+        this.cyclic = s.getCyclic();
+        this.room = s.getRoom();
     }
 
     private int[] strDateToIntArray(String dateStr) {
@@ -95,8 +130,8 @@ public class DaySchedule {
         return result;
     }
 
-    public TMapPolyLine strToPolyline(String lonStr, String latStr) {
-        if (lonStr.equals("start"))
+    private TMapPolyLine strToPolyline(String lonStr, String latStr) {
+        if (lonStr.equals("start") || lonStr.equals(""))
             return null;
 
         TMapPolyLine line = new TMapPolyLine();
@@ -108,9 +143,62 @@ public class DaySchedule {
         return line;
     }
 
+    private void setAdditionOverrideId(String overrideStr) {
+        if (overrideStr == null || overrideStr.equals("")) { return; }
+
+        String[] temp = overrideStr.split(",");
+        if ( temp.length >= 1 )
+            for (int i = 0; i < temp.length; i++)
+                additionalOverrideId.add(Long.parseLong(temp[i]));
+    }
+
+    public ContentValues getContentValues() {
+        ContentValues values = new ContentValues();
+        values.put("date", String.format("%d_%02d_%02d", year, month, day));
+        values.put("day_week", dayOfWeek);
+        values.put("start_time", String.format("%02d_%02d", startHour, startMin));
+        values.put("end_time", String.format("%02d_%02d", endHour, endMin));
+        values.put("start_location", "0,0");
+        values.put("end_location_name", destName);
+        values.put("end_location", String.format("%f,%f", destLat, destLon));
+        values.put("name", name);
+        values.put("script", desc);
+        values.put("cyclic", cyclic);
+        String str = "";
+        for (int i = 1; i < additionalOverrideId.size(); i++) {
+            str += Long.toString(additionalOverrideId.get(i));
+            if ( i != additionalOverrideId.size() - 1 )
+                str += ",";
+        }
+
+        values.put("additional_override_id" , str);
+
+        String result[] = {"",""}; //lon , lat
+        if (polyLine != null) {
+            ArrayList<TMapPoint> points = polyLine.getLinePoint();
+            for ( int i = 0; i < points.size(); i++ ) {
+                TMapPoint p = points.get(i);
+                result[0] += String.format("%f",p.getLongitude());
+                result[1] += String.format("%f",p.getLatitude());
+
+                if (i != points.size() - 1) {
+                    result[0] += ",";
+                    result[1] += ",";
+                }
+
+            }
+        }
+        values.put("tpolyline_x" , result[0]); //lat
+        values.put("tpolyline_y" , result[1]); //lon
+
+        values.put("room", room);
+        return values;
+    }
+
     public double getDestLat() { return destLat; }
     public double getDestLon() { return destLon; }
-    public int getCyclic() { return cyclic; }
+    public long getCyclic() { return cyclic; }
+    public ArrayList<Long> getAdditionalOverrideId() { return additionalOverrideId; }
     public int getDay() { return day; }
     public int getMonth() { return month; }
     public int getYear() { return year; }
@@ -123,11 +211,42 @@ public class DaySchedule {
     public String getDesc() { return desc; }
     public String getDestName() { return destName; }
     public String getName() { return name; }
+    public String getRoom() { return room; }
     public TMapPolyLine getPolyLine() { return polyLine; }
 
+    public void setPolyLine(TMapPolyLine polyLine) { this.polyLine = polyLine; }
+    public Pair<String> getPolyLineInStr() {
+        String result[] = {"",""}; //lon , lat
+        if (polyLine != null) {
+            ArrayList<TMapPoint> points = polyLine.getLinePoint();
+            for ( int i = 0; i < points.size(); i++ ) {
+                TMapPoint p = points.get(i);
+                result[0] += String.format("%f",p.getLongitude());
+                result[1] += String.format("%f",p.getLatitude());
+
+                if (i != points.size() - 1) {
+                    result[0] += ",";
+                    result[1] += ",";
+                }
+
+            }
+        }
+
+        return new Pair<String>(result[0], result[1]);
+    }
+
+    public void setCyclic(long cyclic) { this.cyclic = cyclic; }
+    public void setDate(int year, int month, int day, int dayOfWeek) {
+        this.year = year;
+        this.month = month;
+        this.day = day;
+        this.dayOfWeek = dayOfWeek;
+    }
+    public void setAdditionalOverrideId(ArrayList<Long> l) { this.additionalOverrideId = l; }
+
     public String toString() {
-        return String.format("%d | [%s] %d/%d/%d %d:%d ~ %d:%d  Cyclic : %d", id, name, year, month, day,
-                startHour, startMin, endHour, endMin , cyclic);
+        return String.format("%d | [%s] %d/%d/%d(%d) %d:%d ~ %d:%d  Cyclic : %d / Additional ID : %s", id, name, year, month, day, dayOfWeek,
+                startHour, startMin, endHour, endMin , cyclic, additionalOverrideId.toString());
     }
 
 }

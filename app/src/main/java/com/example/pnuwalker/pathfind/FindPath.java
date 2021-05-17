@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.sax.EndElementListener;
 
+import com.example.pnuwalker.Pair;
 import com.skt.Tmap.TMapData;
 import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapPolyLine;
@@ -27,7 +28,7 @@ public class FindPath {
         nodes = pnuMapInfo.getGraph();
     }
 
-    public String[] getPolyLineinStr() {
+    public Pair<String> getPolyLineinStr() {
         String result[] = {"",""}; //lon , lat
         if (polyline != null) {
             ArrayList<TMapPoint> points = polyline.getLinePoint();
@@ -43,7 +44,8 @@ public class FindPath {
 
             }
         }
-        return result;
+
+        return new Pair<String>(result[0], result[1]);
     }
 
     public TMapPolyLine getPolyLine() { return polyline; }

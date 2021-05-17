@@ -79,12 +79,24 @@
             </TableRow>
         </TableLayout>
 
+        <EditText
+            android:id="@+id/schedule_room_edittext"
+            android:background="@drawable/edittext_transparent_rectangle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/point_layout"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="20dp"
+            android:textSize="20sp"
+            android:hint="도착지 세부 정보"></EditText>
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
-            android:layout_below="@+id/point_layout"
+            android:layout_below="@+id/schedule_room_edittext"
             android:id="@+id/schedule_type_select_layout"
             android:orientation="horizontal">
 

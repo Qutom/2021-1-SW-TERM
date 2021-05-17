@@ -49,6 +49,7 @@ public class AddScheduleActivity extends AppCompatActivity {
 
     EditText scheduleNameEditText;
     EditText scheduleDescEditText;
+    EditText scheduleRoomEditText;
 
     TextView destNameText;
 
@@ -91,6 +92,7 @@ public class AddScheduleActivity extends AppCompatActivity {
 
         scheduleNameEditText = (EditText)findViewById(R.id.schedule_name_edittext);
         scheduleDescEditText = (EditText)findViewById(R.id.schedule_description_edittext);
+        scheduleRoomEditText = (EditText)findViewById(R.id.schedule_room_edittext);
 
         cancelBtn = (Button)findViewById(R.id.cancel_btn);
         doneBtn = (Button)findViewById(R.id.done_btn);
@@ -306,11 +308,11 @@ public class AddScheduleActivity extends AppCompatActivity {
         if (isTemporalSchedule)
             add = new ControlSchedule(dataBaseHelper, this ,
                     new TemporalScheduleData(scheduleNameEditText.getText().toString(), scheduleDescEditText.getText().toString(), year, month, day,
-                    temporalDayofWeek, startHour, startMin, endHour, endMin, destName, destLat, destLon));
+                    temporalDayofWeek, startHour, startMin, endHour, endMin, destName, destLat, destLon, scheduleRoomEditText.getText().toString()));
         else
             add = new ControlSchedule(dataBaseHelper, this ,
                     new PeriodScheduleData(scheduleNameEditText.getText().toString(), scheduleDescEditText.getText().toString(), periodDayofWeek,
-                            startHour, startMin, endHour, endMin, destName, destLat, destLon));
+                            startHour, startMin, endHour, endMin, destName, destLat, destLon, scheduleRoomEditText.getText().toString()));
 
         if (add.checkSchedule()) {
             add.addSchedule();

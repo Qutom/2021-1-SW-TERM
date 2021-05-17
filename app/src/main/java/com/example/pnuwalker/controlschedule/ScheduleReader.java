@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.example.pnuwalker.DataBaseHelper;
+import com.example.pnuwalker.Pair;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class ScheduleReader {
         dataBaseHelper.onCreate(db);
 
         ArrayList<DaySchedule> periodSchedule = new ArrayList<>();
+        ArrayList<Long> periodIdList = new ArrayList<>();
         Log.d("1", "정규일정 읽기");
         //정규일정 읽기
         String[] args = {Integer.toString(dayOfWeek), String.format("%02d_%02d", hour, minute)};
@@ -33,20 +35,24 @@ public class ScheduleReader {
 
         if ( c.moveToFirst() ) {
             while( !c.isAfterLast() ) {
-                periodSchedule.add(new DaySchedule( c.getLong(0),
-                        c.getString(1),
-                        c.getInt(2),
-                        c.getString(3),
-                        c.getString(4),
-                        c.getString(5),
-                        c.getString(6),
-                        c.getString(7),
-                        c.getString(8),
-                        c.getString(9),
-                        c.getInt(10),
-                        c.getString(11),
-                        c.getString(12)
+                periodSchedule.add(new DaySchedule( c.getLong(0),   //id
+                                                    c.getString(1), //date
+                                                    c.getInt(2),    //day_week
+                                                    c.getString(3), //start_time
+                                                    c.getString(4), //end_time
+                                                    c.getString(5), //start_pos
+                                                    c.getString(6), //end_pos
+                                                    c.getString(7), //end_name
+                                                    c.getString(8), //name
+                                                    c.getString(9), //desc
+                                                    c.getInt(10),   //cyclic
+                                                    c.getString(11),//addtional_override_id
+                                                    c.getString(12),//polyline_x
+                                                    c.getString(13),//polyline_y
+                                                    c.getString(14) //room
                 ));
+
+                periodIdList.add(c.getLong(0));
                 c.moveToNext();
             }
 
@@ -72,54 +78,89 @@ public class ScheduleReader {
 
                 if ( cyclic == 0) { //Override 하지 않은 임시일정
                     temporalSchedule.add(new DaySchedule( c.getLong(0),
-                            c.getString(1),
-                            c.getInt(2),
-                            c.getString(3),
-                            c.getString(4),
-                            c.getString(5),
-                            c.getString(6),
-                            c.getString(7),
-                            c.getString(8),
-                            c.getString(9),
-                            c.getInt(10),
-                            c.getString(11),
-                            c.getString(12)
+                                                            c.getString(1),
+                                                            c.getInt(2),
+                                                            c.getString(3),
+                                                            c.getString(4),
+                                                            c.getString(5),
+                                                            c.getString(6),
+                                                            c.getString(7),
+                                                            c.getString(8),
+                                                            c.getString(9),
+                                                            c.getInt(10),
+                                                            c.getString(11),
+                                                            c.getString(12),
+                                                            c.getString(13),
+                                                            c.getString(14)
                     ));
                 } else if ( cyclic > 1 || cyclic < 0 ) { //Override 한 임시일정
                     overrideSchedule.add(new DaySchedule( c.getLong(0),
-                            c.getString(1),
-                            c.getInt(2),
-                            c.getString(3),
-                            c.getString(4),
-                            c.getString(5),
-                            c.getString(6),
-                            c.getString(7),
-                            c.getString(8),
-                            c.getString(9),
-                            c.getInt(10),
-                            c.getString(11),
-                            c.getString(12)
+                                                            c.getString(1),
+                                                            c.getInt(2),
+                                                            c.getString(3),
+                                                            c.getString(4),
+                                                            c.getString(5),
+                                                            c.getString(6),
+                                                            c.getString(7),
+                                                            c.getString(8),
+                                                            c.getString(9),
+                                                            c.getInt(10),
+                                                            c.getString(11),
+                                                            c.getString(12),
+                                                            c.getString(13),
+                                                            c.getString(14)
                     ));
 
-                    if (!overrideId.contains(Math.abs(cyclic))) {
-                        overrideId.add(Math.abs(cyclic));
-                    }
+                    if (!overrideId.contains(Math.abs(cyclic)))
+                        overrideId.add(cyclic);
+
+                    for (long v : overrideSchedule.get(overrideSchedule.size() - 1).getAdditionalOverrideId())
+                        if (!overrideId.contains(v))
+                            overrideId.add(v);
                 }
                 c.moveToNext();
             }
+
+            System.out.println(overrideId);
         }
 
         Log.d("1", "override 설정");
+        int limit = periodSchedule.size();
         //periodSchedule에 Override된 일정 넣기
-        for (int i = 0; i < periodSchedule.size(); i++) {
+        for (int i = 0; i < limit; i++) {
             long periodId = periodSchedule.get(i).getId();
+            boolean isOverride = false;
+            System.out.println(i);
 
             if ( overrideId.contains(periodId) ) {
                 periodSchedule.remove(i);
+                isOverride = true;
+
+                for (int j = 0; j < overrideSchedule.size(); j++) {
+                    if ( overrideSchedule.get(j).getCyclic() == periodId ) {
+                        ArrayList<Long> o = overrideSchedule.get(j).getAdditionalOverrideId();
+                        for ( long v : o )
+                            if ( periodIdList.indexOf(v) != -1 ) {
+                                periodSchedule.remove(periodIdList.indexOf(v));
+                                periodIdList.remove(v);
+                            }
+                    }
+
+                }
+            } else if ( overrideId.contains(-periodId) ) {
+                isOverride = true;
+
+            }
+
+            if ( isOverride ) {
                 int offset = 0;
 
                 for (int j = 0; j < overrideSchedule.size(); j++) {
                     if ( overrideSchedule.get(j).getCyclic() == periodId ) {
+                        periodSchedule.add( i + offset, overrideSchedule.get(j) );
+                        offset++;
+                    } else if ( -overrideSchedule.get(j).getCyclic() == periodId ) {
+                        System.out.println("asdasds");
                         periodSchedule.add( i + offset, overrideSchedule.get(j) );
                         offset++;
                     }
@@ -153,6 +194,14 @@ public class ScheduleReader {
                 schedules.add(periodSchedule.get(i));
                 i++;
             }
+    }
+
+    public String toString() {
+        String s = "";
+        for (DaySchedule sch : schedules) {
+            s+= sch + "\n";
+        }
+        return s;
     }
     
 }

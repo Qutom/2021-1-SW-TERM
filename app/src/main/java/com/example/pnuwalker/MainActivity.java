@@ -40,17 +40,10 @@ public class MainActivity extends AppCompatActivity {
         //db.delete("schedule1" , "_id > 0", null);
         //MainActivity.db.delete("schedule1", null, null);
 
-        ArrayList<DaySchedule> schedules = new ScheduleReader(helper, 2021, 5 , 14 , 4, 0 , 0).schedules;
-        ArrayList<DaySchedule> schedules2 = new ScheduleReader(helper, 2021, 5 , 15 , 5, 0 , 0).schedules;
-        ArrayList<DaySchedule> schedules3 = new ScheduleReader(helper, 2021, 5 , 12 , 2, 0 , 0).schedules;
+        ArrayList<DaySchedule> schedules = new ScheduleReader(helper, 2021, 5 , 24 , 0, 0 , 0).schedules;
         for (DaySchedule s : schedules)
             System.out.println(s);
-        System.out.println("============================");
-        for (DaySchedule s : schedules2)
-            System.out.println(s);
-        System.out.println("============================");
-        for (DaySchedule s : schedules3)
-            System.out.println(s);
+
         System.out.println("Create Success============================");
         System.out.println("Create Success============================");
         System.out.println("Create Success============================");

@@ -23,15 +23,18 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 + "name text, "
                 + "script text, "
                 + "cyclic int, "
+                + "additional_override_id text,"
                 + "tpolyline_x text, "
-                + "tpolyline_y text); ";
+                + "tpolyline_y text,"
+                + "room text); ";
+
 
         db.execSQL(sql);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String sql = "drop table if exists student1";
+        String sql = "drop table if exists schedule1";
         db.execSQL(sql);
 
         onCreate(db);

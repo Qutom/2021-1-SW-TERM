@@ -14,9 +14,10 @@ public class ScheduleData {
     public String destName;
     public double destLat;
     public double destLon;
+    public String room;
 
     public ScheduleData(String name, String desc, int startHour , int startMin, int endHour, int endMin, String destName,
-                        double destLat, double destLon) {
+                        double destLat, double destLon, String room) {
         this.name = name;
         this.desc = desc;
 
@@ -28,6 +29,7 @@ public class ScheduleData {
         this.destName = destName;
         this.destLat = destLat;
         this.destLon = destLon;
+        this.room = room;
     }
 
     public int[] getTimeInfo() { return new int[]{startHour, startMin, endHour , endMin}; }
