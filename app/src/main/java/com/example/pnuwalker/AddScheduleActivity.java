@@ -157,6 +157,8 @@ public class AddScheduleActivity extends AppCompatActivity {
                 cal.set(Calendar.MONTH, month);
                 cal.set(Calendar.DATE, day);
                 temporalDayofWeek = cal.get(Calendar.DAY_OF_WEEK) - 1;
+                if (temporalDayofWeek == 0)
+                    temporalDayofWeek = 6;
 
                 setDateDialogBtnText(getDateString());
             }
@@ -177,7 +179,8 @@ public class AddScheduleActivity extends AppCompatActivity {
 
                 Calendar cal = Calendar.getInstance();
                 int currDay = cal.get(cal.DAY_OF_MONTH);
-
+                int currMonth = cal.get(cal.MONTH);
+                int currYear = cal.get(cal.YEAR);
                 if ( currDay == day && isTemporalSchedule ) { //같은 날짜에는 현재보다 과거의 시간을 선택할 수 없음.
                     if ( cal.get(cal.HOUR_OF_DAY) * 60 + cal.get(cal.MINUTE) <= hourOfDay *60 + minute ) {
                         change = true;
@@ -186,7 +189,7 @@ public class AddScheduleActivity extends AppCompatActivity {
                         hourOfDay = cal.get(cal.HOUR_OF_DAY);
                         minute = cal.get(cal.MINUTE);
                     }
-                } else if ( currDay < day ) {
+                } else if ( currDay < day || currMonth < month || currYear < year ) {
                     change = true;
                 }
 
@@ -238,7 +241,7 @@ public class AddScheduleActivity extends AppCompatActivity {
         year = cal.get(cal.YEAR);
         month = cal.get(cal.MONTH);
         day = cal.get(cal.DATE);
-        temporalDayofWeek = cal.get(cal.DAY_OF_WEEK);
+        temporalDayofWeek = cal.get(cal.DAY_OF_WEEK) - 1;
 
         startHour = cal.get (cal.HOUR_OF_DAY) ;
         startMin = cal.get (cal.MINUTE);
@@ -305,6 +308,7 @@ public class AddScheduleActivity extends AppCompatActivity {
         System.out.println(periodDayofWeek[0]);
         ControlSchedule add;
         DataBaseHelper dataBaseHelper = new DataBaseHelper(this, "schedule1.db", null, 1);
+        System.out.println("TemporalDayOfWeek : " + temporalDayofWeek);
         if (isTemporalSchedule)
             add = new ControlSchedule(dataBaseHelper, this ,
                     new TemporalScheduleData(scheduleNameEditText.getText().toString(), scheduleDescEditText.getText().toString(), year, month, day,

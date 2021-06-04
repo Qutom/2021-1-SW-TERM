@@ -3,6 +3,7 @@ package com.example.pnuwalker.pathfind;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.sax.EndElementListener;
+import android.util.Log;
 
 import com.example.pnuwalker.Pair;
 import com.skt.Tmap.TMapData;
@@ -10,6 +11,7 @@ import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapPolyLine;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.PriorityQueue;
@@ -70,16 +72,30 @@ public class FindPath {
             //가장 가까운 출구를 찾음
             TMapPoint middle = findPNUExit(inPNU, outPNU);
 
+            Log.d("FindPath" , "middle " + middle.getLatitude() + ", " + middle.getLongitude());
             //두개의 PolyLine을 계산
             TMapPolyLine PNULine = findPNUPath(inPNU, middle);
             TMapPolyLine TMapLine = findTMapPath(outPNU, middle, needDelay);
 
-            //Polyline을 합침
-            ArrayList<TMapPoint> points = isStartPNU ? PNULine.getLinePoint() : TMapLine.getLinePoint();
+            ArrayList<TMapPoint> PNUPoints = PNULine.getLinePoint();
+
+            if ( !isStartPNU )
+                Collections.reverse(PNUPoints);
+
+            ArrayList<TMapPoint> points = isStartPNU ? PNUPoints : TMapLine.getLinePoint();
             TMapPolyLine line = isStartPNU ? TMapLine : PNULine;
 
-            for (TMapPoint p : points) {
-                line.addLinePoint(p);
+            //Polyline을 합침
+            if ( isStartPNU ) {
+                for (TMapPoint p : points)
+                    line.addLinePoint(p);
+            } else {
+                for (int i = points.size() - 1; i >= 1 ; i--)
+                    line.addLinePoint(points.get(i));
+            }
+
+            for (TMapPoint p : line.getLinePoint()) {
+                Log.d("FindPath" , "result " + p.getLatitude() + ", " +p.getLongitude());
             }
 
             System.out.println(line.getDistance());
@@ -195,19 +211,19 @@ public class FindPath {
         short startIndex = getPNUIndex(start);
         short endIndex = getPNUIndex(end);
 
+        Log.d("FindPNUPath" , "start " + start.getLatitude() + ", " + start.getLongitude());
+        Log.d("FindPNUPath" , "end " + end.getLatitude() + ", " + end.getLongitude());
+
         HashMap<Short, Double> f = new HashMap<>(370);
         HashMap<Short, Double> g = new HashMap<>(370);
         ArrayList<Short> closeList = new ArrayList<>(370);
-        PriorityQueue<Short> openList = new PriorityQueue<>(370, new Comparator<Short>() {
-            @Override
-            public int compare(Short o1, Short o2) {
-                if ( f.get(o1) < f.get(o2) ) {
-                    return -1;
-                } else if ( f.get(o1) == f.get(o2) ) {
-                    return 0 ;
-                } else {
-                    return 1;
-                }
+        PriorityQueue<Short> openList = new PriorityQueue<>(370, (o1, o2) -> {
+            if ( f.get(o1) < f.get(o2) ) {
+                return -1;
+            } else if ( f.get(o1) == f.get(o2) ) {
+                return 0 ;
+            } else {
+                return 1;
             }
         });
         Node endNode = nodes.get(endIndex);
@@ -228,6 +244,7 @@ public class FindPath {
                 while (true) {
                     Node temp = nodes.get(lineIndex);
                     TMapPoint point = new TMapPoint(temp.getLat(), temp.getLon());
+                    Log.d("FindPNUPath" , "result " + point.getLatitude() + ", " + point.getLongitude());
                     line.addLinePoint(point);
                     lineIndex = nodes.get(lineIndex).getParentIndex();
                     if ( lineIndex == startIndex )

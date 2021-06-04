@@ -26,7 +26,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 + "additional_override_id text,"
                 + "tpolyline_x text, "
                 + "tpolyline_y text,"
-                + "room text); ";
+                + "room text,"
+                + "period_head int);";
 
 
         db.execSQL(sql);

@@ -15,36 +15,24 @@
         android:weightSum="10">
 
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#FFFFFF"
-            android:orientation="vertical"
             android:layout_weight="3">
-
             <RelativeLayout
                 android:id="@+id/frag_map_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#000000"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="map-zone"
-                    android:textColor="#FFFFFF"
-                    android:textSize="10pt" />
-
+                android:background="#000000">
             </RelativeLayout>
 
-
-        </LinearLayout>
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#FF018786"
+            android:background="#FF6200EE"
             android:orientation="vertical"
             android:layout_weight="7">
 
@@ -57,16 +45,19 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="#000000"
                     android:layout_weight="1"
-                    android:text="schedule zone"
-                    android:textColor="#000000"
+                    android:text=""
+                    android:textColor="#FFFFFF"
                     android:textSize="15dp" />
 
                 <TextView
                     android:id="@+id/frag_cur_time"
+                    android:background="#000000"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="3"
+                    android:textColor="#FFFFFF"
                     android:text="현재 시간"
                     android:textSize="15dp"
                     android:textAlignment="center" />
@@ -77,11 +68,10 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="#FFFFFFFF">
+                    android:background="#5C5C5C">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -115,6 +105,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
+                        android:background="#5C5C5C"
                         android:gravity="center"
                         android:text="이전 일정"
                         android:textColor="#000000" />
@@ -125,6 +116,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="2"
+
                         android:gravity="center"
                         android:text=" "
                         android:textColor="#000000" />
@@ -147,6 +139,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
+                        android:background="#5C5C5C"
                         android:gravity="center"
                         android:text="현재 일정"
                         android:textColor="#000000" />
@@ -181,6 +174,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center"
+                        android:background="#5C5C5C"
                         android:text="다음 일정"
                         android:textColor="#000000" />
                     />
@@ -209,6 +203,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:background="#000000"
                 android:weightSum="5">
 
                 <TextView
@@ -216,7 +211,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="다음일정까지"
-                    android:textColor="#000000"
+                    android:textColor="#FFFFFF"
                     android:textSize="15dp" />
 
                 <TextView
@@ -224,6 +219,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="3"
+                    android:textColor="#FFFFFF"
                     android:text="현재 시간"
                     android:textSize="15dp"
                     android:textAlignment="center" />
@@ -232,7 +228,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="남음"
-                    android:textColor="#000000"
+                    android:textColor="#FFFFFF"
                     android:textSize="15dp" />
 
             </LinearLayout>
@@ -253,9 +249,8 @@
                     android:textSize="15dp" />
 
 
+
             </LinearLayout>
-
-
 
 
         </LinearLayout>

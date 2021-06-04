@@ -13,5 +13,8 @@
     <color name="transparent">#00F44336</color>
     <color name="common_gray">#5C5C5C</color>
     <color name="bright_gray">#93A680</color>
+    <color name="dark_gray">#323232</color>
+    <color name="light_green">#01CC01</color>
     <color name="search_radius_circle">#0FBCFBBD</color>
+
 </resources>

@@ -17,7 +17,7 @@ public class AutoResizeTextView extends AppCompatTextView {
     private boolean mNeedsResize = false;
     private float mTextSize;
     private float mMaxTextSize = 0;
-    private float mMinTextSize = MIN_TEXT_SIZE;
+    private float mMinTextSize = 0;
     private float mSpacingMult = 1.0f;
     private float mSpacingAdd = 0.0f;
     private boolean mAddEllipsis = true;
@@ -129,7 +129,7 @@ public class AutoResizeTextView extends AppCompatTextView {
         int textHeight = getTextHeight(text, textPaint, width, targetTextSize);
 
         while (textHeight > height && targetTextSize > mMinTextSize) {
-            targetTextSize = Math.max(targetTextSize - 2, mMinTextSize);
+            targetTextSize = Math.max(targetTextSize - 1, mMinTextSize);
             textHeight = getTextHeight(text, textPaint, width, targetTextSize);
         }
 

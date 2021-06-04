@@ -1,35 +1,32 @@
 package com.example.pnuwalker.controlschedule;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.pnuwalker.DataBaseHelper;
-import com.example.pnuwalker.MainActivity;
 import com.example.pnuwalker.Pair;
-import com.example.pnuwalker.pathfind.Coordinate;
+import com.example.pnuwalker.alarm.AlarmReceiver;
 import com.example.pnuwalker.pathfind.FindPath;
-import com.skt.Tmap.TMapData;
 import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapPolyLine;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
-import java.sql.Array;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Stream;
 
 public class ControlSchedule {
     FindPath pnuPath;
@@ -42,9 +39,9 @@ public class ControlSchedule {
     String desc;
 
     boolean[] periodDayofWeek = new boolean[7]; // 주기 일정에서 해당 요일이 사용되는가?
-    int year; //임시일정 년도
-    int month; //임시일정 월
-    int day; //임시일정 일
+    int year = 9999; //임시일정 년도
+    int month = 99; //임시일정 월
+    int day = 99; //임시일정 일
     int temporalDayofWeek; //임시 일정 요일 (0 ~ 6이고 0을 월요일로 표현)
 
     int startHour; //일정 시작 시
@@ -92,6 +89,16 @@ public class ControlSchedule {
         month = data.month;
         day = data.day;
         temporalDayofWeek = data.dayofWeek;
+    }
+    
+    //일정삭제를 위한 클래스생성
+    public ControlSchedule(DataBaseHelper helper, Activity context) {
+        pnuPath = new FindPath(context);
+        dataBaseHelper = helper;
+        db = dataBaseHelper.getWritableDatabase();
+        dataBaseHelper.onCreate(db);
+        overrideId = new ArrayList<>();
+        this.context = context;
     }
 
     //두 타입이 공통적으로 가지는 데이터 설정
@@ -144,7 +151,6 @@ public class ControlSchedule {
             //정규일정일 때, 정규 일정끼리만 비교하여 time이 겹치는 경우 탈락
             return checkPeriodSchedule(targetStartTime, targetEndTime);
         }
-
     }
 
     private boolean checkTempToPeriodSchedule(int targetStartTime, int targetEndTime) {
@@ -183,26 +189,24 @@ public class ControlSchedule {
                                 c.getString(11),
                                 c.getString(12),
                                 c.getString(13),
-                                c.getString(14)
+                                c.getString(14),
+                                c.getLong(15)
                         )));
                         overrideId.add(id);
                     }
                 }
-
                 c.moveToNext();
             } while (!c.isAfterLast());
             System.out.println(overrideId);
 
             c.close();
         }
-        
         //겹치는 일정이 있다면, override 여부를 물음
         if ( overrideSchedule.size() >= 1 && checkTempOverridePeriod(overrideSchedule) ) {
             return isTempOverridePeriod;
         } else {
             return true;
         }
-
     }
 
     //AlertDialog 의 확인, 취소를 사용해서 임시일정이 (1개 이상의)정규일정을 덮어씌울지 결정
@@ -312,7 +316,15 @@ public class ControlSchedule {
     }
 
     private void addTemporalSchedule() {
-        long targetId = db.insert("schedule1" , null , makeDBvalues(makeDateString(), temporalDayofWeek - 1));
+        long targetId = db.insert("schedule1" , null , makeDBvalues(makeDateString(), temporalDayofWeek - 1, -1));
+        if ( targetId == 1 ) {
+            db.delete("schedule1" , "_id = 1", null);
+            targetId = db.insert("schedule1" , null , makeDBvalues(makeDateString(), temporalDayofWeek - 1, -1));
+        }
+
+        //알람 설정
+        addTemporalAlarm(targetId);
+
         int targetIndex = 0;
         ArrayList<DaySchedule> schedules = new ScheduleReader(dataBaseHelper, year, month+1, day,
                 temporalDayofWeek - 1, 0, 0).schedules;
@@ -320,7 +332,7 @@ public class ControlSchedule {
         System.out.println(schedules);
 
         for (int i = 0; i < schedules.size(); i++) {
-            if ( targetId == schedules.get(i).getId() )
+            if ( schedules.size() != 1 && targetId == schedules.get(i).getId() )
                 targetIndex = i;
         }
 
@@ -331,21 +343,19 @@ public class ControlSchedule {
             } else {
                 //다음 polyline 값을 자신의 일정 -> 다음 일정으로 수정
                 long nextId = schedules.get(targetIndex+1).getId();
-                Pair<String> pair = getPolyLineStr(schedules.get(targetIndex).getDestLon() , schedules.get(targetIndex).getDestLat(),
-                        schedules.get(targetIndex + 1).getDestLon() , schedules.get(targetIndex + 1).getDestLat());
+                Pair<String> pair = getPolyLineStr(schedules.get(targetIndex).getDestPoint() , schedules.get(targetIndex + 1).getDestPoint());
                 db.execSQL("UPDATE schedule1 SET tpolyline_x = '" + pair.getFirst() +
-                        "', tpolyline_y ='" + pair.getSecond() + "' WHERE _id =" + Long.toString(nextId));
+                        "', tpolyline_y ='" + pair.getSecond() + "' WHERE _id =" + nextId);
             }
         
         //index - 1에 있는 일정을 확인
         if ( targetIndex == 0 ) { //처음 일정인 경우
-            db.execSQL("UPDATE schedule1 SET tpolyline_x = 'start', tpolyline_y ='start' WHERE _id =" + Long.toString(targetId));
+            db.execSQL("UPDATE schedule1 SET tpolyline_x = 'start', tpolyline_y ='start' WHERE _id =" + targetId);
         } else {
             //자신의 polyline 값을 이전 일정 -> 자신의 일정으로 수정
-            Pair<String> pair = getPolyLineStr(schedules.get(targetIndex - 1).getDestLon() , schedules.get(targetIndex - 1).getDestLat(),
-                    schedules.get(targetIndex).getDestLon() , schedules.get(targetIndex).getDestLat());
+            Pair<String> pair = getPolyLineStr(schedules.get(targetIndex - 1).getDestPoint() ,schedules.get(targetIndex).getDestPoint());
             db.execSQL("UPDATE schedule1 SET tpolyline_x = '" + pair.getFirst() +
-                    "', tpolyline_y ='" + pair.getSecond() + "' WHERE _id =" + Long.toString(targetId));
+                    "', tpolyline_y ='" + pair.getSecond() + "' WHERE _id =" + targetId);
         }
     }
 
@@ -353,24 +363,31 @@ public class ControlSchedule {
         long targetId;
         Cursor c;
         Pair<String> pair;
-        String startTimeStr = String.format("%02d_%02d", startHour, startMin);
-        String endTimeStr = String.format("%02d_%02d", endHour, endMin);
+        int startTime = startHour * 60 + startMin;
+        int endTime = endHour * 60 + endMin;
 
         HashMap<String, Pair<String>> tempPolylinePair = new HashMap<>(); //key : "startCoord:endCoord" value : "tpolylineX:tpolylineY"을 가지는 Pair
-
+        long periodHead = -1;
         for (int i = 0; i < 7; i++) {
             if (periodDayofWeek[i]) {
                 int j = 0;
-                targetId = db.insert("schedule1" , null , makeDBvalues("cyclic" , i));
+                targetId = db.insert("schedule1" , null , makeDBvalues("cyclic", i , periodHead));
+                if ( targetId == 1 ) {
+                    System.out.println("Id is 1");
+                    db.delete("schedule1" , "_id = 1", null);
+                    targetId = db.insert("schedule1" , null , makeDBvalues("cyclic", i, periodHead));
+                }
+                addPeriodAlarm(targetId, i);
 
-                c = db.rawQuery("SELECT _id,end_location FROM schedule1 " +
-                        "WHERE cyclic=1 AND day_week =" + Integer.toString(i) +
+                if (periodHead == -1) {
+                    periodHead = targetId;
+                    db.execSQL("UPDATE schedule1 SET period_head = " + periodHead + " WHERE _id = " + targetId);
+                }
+
+                c = db.rawQuery("SELECT _id,end_location FROM schedule1 " + "WHERE cyclic=1 AND day_week =" + i +
                         " ORDER BY start_time ASC" , null);
 
-                System.out.println(c.getCount());
-
-                System.out.println("SELECT _id,end_location FROM schedule1 " +
-                        "WHERE cyclic=1 AND day_week =" + Integer.toString(i) +
+                System.out.println("SELECT _id,end_location FROM schedule1 " + "WHERE cyclic=1 AND day_week =" + i +
                         " ORDER BY start_time ASC");
 
                 if(c.moveToFirst()) {
@@ -381,7 +398,7 @@ public class ControlSchedule {
                             String currEndPos = c.getString(1);
 
                             if ( j == 0 ) { //처음 일정인 경우 "start" 로 추가한 일정의 polyline 설정
-                                db.execSQL("UPDATE schedule1 SET tpolyline_x = 'start', tpolyline_y ='start' WHERE _id =" + Long.toString(targetId));
+                                db.execSQL("UPDATE schedule1 SET tpolyline_x = 'start', tpolyline_y ='start' WHERE _id =" + targetId);
                             } else if ( j > 0 ) { //아닌 경우, 이전 일정 -> 현재 일정으로 추가한 일정의 polyline 설정
                                 c.moveToPrevious();
 
@@ -393,10 +410,10 @@ public class ControlSchedule {
                                 tempPolylinePair.put(key, pair);
 
                                 System.out.println("UPDATE schedule1 SET tpolyline_x = '" + pair.getFirst() +
-                                        "', tpolyline_y ='" + pair.getSecond() + "' WHERE _id =" + Long.toString(targetId));
+                                        "', tpolyline_y ='" + pair.getSecond() + "' WHERE _id =" + targetId);
 
                                 db.execSQL("UPDATE schedule1 SET tpolyline_x = '" + pair.getFirst() +
-                                        "', tpolyline_y ='" + pair.getSecond() + "' WHERE _id =" + Long.toString(targetId));
+                                        "', tpolyline_y ='" + pair.getSecond() + "' WHERE _id =" + targetId);
 
                                 c.moveToNext();
                             }
@@ -410,7 +427,7 @@ public class ControlSchedule {
                                 tempPolylinePair.put(key, pair);
 
                                 db.execSQL("UPDATE schedule1 SET tpolyline_x = '" + pair.getFirst() +
-                                        "', tpolyline_y ='" + pair.getSecond() + "' WHERE _id =" + Long.toString(c.getLong(0)));
+                                        "', tpolyline_y ='" + pair.getSecond() + "' WHERE _id =" + c.getLong(0));
                             }
                             break;
                         }
@@ -420,59 +437,75 @@ public class ControlSchedule {
                 }
 
                 //Override 수정
-                c = db.rawQuery("SELECT _id, cyclic, additional_override_id, date, day_week FROM schedule1 " +
-                                    "WHERE (cyclic >= 0 AND cyclic != 1) AND day_week = " + Integer.toString(i) +
-                                    " AND ('" + endTimeStr + "' >= start_time" +
-                                    " AND '" + startTimeStr + "' <= end_time)", null);
+                c = db.rawQuery("SELECT _id, cyclic, additional_override_id, date, day_week, start_time, end_time FROM schedule1 " +
+                                    "WHERE (cyclic >= 0 AND cyclic != 1) AND day_week = " + i, null);
+                System.out.println("SELECT _id, cyclic, additional_override_id, date, day_week FROM schedule1 " +
+                        "WHERE (cyclic >= 0 AND cyclic != 1) AND day_week = " + i);
 
                 ArrayList<String> dateStr = new ArrayList<>();
                 ArrayList<Integer> dayWeek = new ArrayList<>();
                 if(c.moveToFirst()) {
-                    while( c.isAfterLast() ) {
-                        if ( c.getLong(1) == 0 ) {
-                            db.rawQuery("UPDATE schedule1 SET cyclic = " + Long.toString(targetId) +
-                                            " WHERE _id = " + Long.toString(c.getLong(0)), null);
-                        } else {
-                            db.rawQuery("UPDATE schedule1 SET additional_override_id = '" + c.getString(2) + "," + Long.toString(targetId) + "' " +
-                                    "WHERE _id = " + Long.toString(c.getLong(0)), null);
+                    while( !c.isAfterLast() ) {
+                        System.out.println(startTime+ "/" + endTime+ "/" + strTimetoMinute(c.getString(5)) + "/" +  strTimetoMinute(c.getString(6)));
+                        if ( checkTimeIsCrossed(startTime, endTime, strTimetoMinute(c.getString(5)), strTimetoMinute(c.getString(6))) ) {
+                            if ( c.getLong(1) == 0 ) {
+                                System.out.println("UPDATE schedule1 SET cyclic = " + targetId + " WHERE _id = " + c.getLong(0));
+                                db.execSQL("UPDATE schedule1 SET cyclic = " + targetId + " WHERE _id = " + c.getLong(0));
+                            } else {
+                                String addOverrideStr = c.getString(2);
+                                if ( addOverrideStr.equals("") )
+                                    addOverrideStr += targetId;
+                                else
+                                    addOverrideStr += "," + targetId;
+
+                                db.execSQL("UPDATE schedule1 SET additional_override_id = '" + addOverrideStr + "' " + "WHERE _id = " + c.getLong(0));
+                            }
                         }
 
-                        dateStr.add(c.getString(3));
-                        dayWeek.add(c.getInt(4));
+                        if ( !dateStr.contains(c.getString(3)) ) {
+                            dateStr.add(c.getString(3));
+                            dayWeek.add(c.getInt(4));
+                        }
                         c.moveToNext();
                     }
+
+                    c.close();
                 }
+                System.out.println("DateStr :" + dateStr);
 
                 if (dateStr.size() > 0 ) {
-                    //Schedule을 받음
-                    String[] temp = dateStr.get(i).split("_");
-                    int year = Integer.parseInt(temp[0]);
-                    int month = Integer.parseInt(temp[1]);
-                    int day = Integer.parseInt(temp[2]);
-                    ArrayList<DaySchedule> schedules = new ScheduleReader(dataBaseHelper, year, month, day, dayWeek.get(i), 0 ,0).schedules;
+                    for (int dateStrIndex = 0; dateStrIndex < dateStr.size(); dateStrIndex++) {
+                        //Schedule을 받음
+                        String[] temp = dateStr.get(dateStrIndex).split("_");
+                        int year = Integer.parseInt(temp[0]);
+                        int month = Integer.parseInt(temp[1]);
+                        int day = Integer.parseInt(temp[2]);
+                        ArrayList<DaySchedule> schedules = new ScheduleReader(dataBaseHelper, year, month, day, dayWeek.get(dateStrIndex), 0 ,0).schedules;
 
-                    int targetIndex = 0;
-                    for (int k = 0; k < schedules.size(); k++) {
-                        if ( schedules.get(k).getId() == targetId )
-                            targetIndex = k;
-                    }
-
-                    //index + 1에 있는 일정을 확인
-                    if ( targetIndex != schedules.size() -1 ) //마지막 일정이 아닌경우
-                        if ( schedules.get(targetIndex + 1).getCyclic() != 1 ) {
-                            //다음 polyline 값을 자신의 일정 -> 다음 일정으로 수정
-                            long nextId = schedules.get(targetIndex+1).getId();
-                            pair = getPolyLineStr(schedules.get(targetIndex).getDestLon() , schedules.get(targetIndex).getDestLat(),
-                                    schedules.get(targetIndex + 1).getDestLon() , schedules.get(targetIndex + 1).getDestLat());
-                            db.execSQL("UPDATE schedule1 SET tpolyline_x = '" + pair.getFirst() +
-                                    "', tpolyline_y ='" + pair.getSecond() + "' WHERE _id =" + Long.toString(nextId));
+                        int targetIndex = 0;
+                        for (int k = 0; k < schedules.size(); k++) {
+                            if ( schedules.get(k).getId() == targetId )
+                                targetIndex = k;
                         }
+                        System.out.println(targetIndex);
 
-                    //index - 1에 있는 일정을 확인
-                    if ( targetIndex > 0 ) { //처음 일정이 아닌경우
-                        long prevCyclic = schedules.get(targetIndex - 1).getCyclic();
-                        if ( prevCyclic >= 0 && prevCyclic != 1 )
-                            addVirtualTemporalSchedule(schedules.get(targetIndex) , schedules.get(targetIndex-1) , false);
+                        //index + 1에 있는 일정을 확인
+                        if ( targetIndex != schedules.size() -1 ) //마지막 일정이 아닌경우
+                            if ( schedules.get(targetIndex + 1).getCyclic() != 1 ) {
+                                //다음 polyline 값을 자신의 일정 -> 다음 일정으로 수정
+                                long nextId = schedules.get(targetIndex+1).getId();
+                                pair = getPolyLineStr(schedules.get(targetIndex).getDestPoint(), schedules.get(targetIndex + 1).getDestPoint());
+                                db.execSQL("UPDATE schedule1 SET tpolyline_x = '" + pair.getFirst() +
+                                        "', tpolyline_y ='" + pair.getSecond() + "' WHERE _id =" + nextId);
+                            }
+
+                        //index - 1에 있는 일정을 확인
+                        if ( targetIndex > 0 ) { //처음 일정이 아닌경우
+                            long prevCyclic = schedules.get(targetIndex - 1).getCyclic();
+                            System.out.println(prevCyclic);
+                            if ( prevCyclic >= 0 && prevCyclic != 1 )
+                                addVirtualTemporalSchedule(schedules.get(targetIndex) , schedules.get(targetIndex-1) , false);
+                        }
                     }
                 }
             }
@@ -488,16 +521,308 @@ public class ControlSchedule {
 
         TMapPolyLine line;
         if ( isPeriodStart )
-            line = getPolyLine(period.getDestLon(), period.getDestLat(), temporal.getDestLon(), temporal.getDestLat());
+            line = getPolyLine(period.getDestPoint(), temporal.getDestPoint());
         else
-            line = getPolyLine(temporal.getDestLon(), temporal.getDestLat(), period.getDestLon(), period.getDestLat());
+            line = getPolyLine(temporal.getDestPoint(), period.getDestPoint());
         virtual.setPolyLine(line);
         System.out.println(virtual.getPolyLine());
 
-        return db.insert("schedule1", null, virtual.getContentValues());
+        long id = db.insert("schedule1", null, virtual.getContentValues());
+
+        if ( id == 1 ) {
+            db.delete("schedule1" , "_id = 1", null);
+            id = db.insert("schedule1" , null , makeDBvalues(makeDateString(), temporalDayofWeek - 1, -1));
+        }
+        return id;
     }
 
-    public void deleteSchedule() {
+    public void removeTemporalSchedule(String date, int dayWeek, String startTime) {
+        long targetId;
+        int targetIndex = -1;
+        Cursor c = db.rawQuery("SELECT _id FROM schedule1 WHERE date = '" + date + "' AND start_time = '" + startTime
+                 + "' AND cyclic != 1 AND cyclic >= 0", null);
+
+        if (c.moveToFirst()) {
+            targetId = c.getLong(0);
+            System.out.println("삭제 대상 ID : " + targetId);
+        } else {
+            Toast.makeText(context, "삭제하고자 하는 일정이 없습니다." , Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        removeAlarm(targetId);
+        removeAlarm(-targetId);
+
+        int[] d = dateStringToInt(date);
+        ArrayList<DaySchedule> schedules = new ScheduleReader(dataBaseHelper, d[0],  d[1], d[2], dayWeek, 0, 0).schedules;
+        for (int i = 0; i < schedules.size(); i++) {
+            if ( targetId == schedules.get(i).getId() ) {
+                targetIndex = i;
+                break;
+            }
+        }
+
+        if ( targetIndex < schedules.size() - 1 )  { //마지막 일정이 아니어야함
+            long nextCyclic = schedules.get(targetIndex + 1).getCyclic();
+            long nextId = schedules.get(targetIndex + 1).getId();
+            System.out.println(targetIndex);
+            if ( targetIndex == 0 ) { //처음 일정일때
+                if ( nextCyclic < 0 )
+                    db.delete("schedule1", "_id = " + nextId, null); //가상 임시일정 제거
+                else
+                    db.execSQL("UPDATE schedule1 SET tpolyline_x = 'start', tpolyline_y = 'start' WHERE _id = " + nextId);
+
+            } else { //앞뒤로 다있을때
+                long prevCyclic = schedules.get(targetIndex-1).getCyclic();
+
+                if ( nextCyclic < 0 ) {
+                    if (prevCyclic == 0 || prevCyclic >= 2) {
+                        Pair<String> p = getPolyLineStr(schedules.get(targetIndex-1).getDestPoint(), schedules.get(targetIndex+1).getDestPoint());
+                        db.execSQL("UPDATE schedule1 SET tpolyline_x = '"+ p.getFirst() + "', tpolyline_y = '" + p.getSecond() + "' WHERE _id = " + nextId);
+                    } else {
+                        db.delete("schedule1", "_id = " + nextId, null); //가상 임시일정 제거
+                    }
+
+                } else if ( nextCyclic == 0 || nextCyclic >= 2) {
+                    Pair<String> p = getPolyLineStr(schedules.get(targetIndex-1).getDestPoint(), schedules.get(targetIndex+1).getDestPoint());
+                    db.execSQL("UPDATE schedule1 SET tpolyline_x = '"+ p.getFirst() + "', tpolyline_y = '" + p.getSecond() + "' WHERE _id = " + nextId);
+                }
+            }
+        }
+        db.delete("schedule1", "_id = " + targetId, null);
+    }
+
+    public void removePeriodSchedule(int dayWeek, String startTime) {
+        ArrayList<Long> targetId = new ArrayList<>();
+        ArrayList<Integer> targetDayWeek = new ArrayList<>();
+        ArrayList<Pair<Integer>> targetTime = new ArrayList<>();
+
+        Cursor c = db.rawQuery("SELECT period_head FROM schedule1 WHERE day_week = " + dayWeek +
+                " AND start_time = '" + startTime + "' AND cyclic = 1" , null);
+        System.out.println("SELECT period_head FROM schedule1 WHERE day_week = " + dayWeek +
+                " AND start_time = '" + startTime + "' AND cyclic = 1");
+        if (c.moveToFirst()) {
+            System.out.println("Period_head : " + c.getLong(0));
+            c =  db.rawQuery("SELECT _id, day_week ,start_time, end_time FROM schedule1 WHERE period_head = " + c.getLong(0), null);
+            if (c.moveToFirst()) {
+                while(!c.isAfterLast()) {
+                    targetId.add(c.getLong(0));
+                    targetDayWeek.add(c.getInt(1));
+                    targetTime.add( new Pair<Integer>(strTimetoMinute(c.getString(2)), strTimetoMinute(c.getString(3))) );
+                    c.moveToNext();
+                }
+                System.out.println("삭제 대상 Id : " + targetId);
+            }
+        } else {
+            Toast.makeText(context, "삭제하고자 하는 일정이 없습니다." , Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        System.out.println(targetId);
+        HashMap<String, Pair<String>> tempPolyLineStr = new HashMap<>();
+
+        for (int i = 0; i < targetId.size(); i++) {
+            //정규 일정들 끼리 먼저 설정
+            ArrayList<Long> periodId = new ArrayList<>();
+            ArrayList<String> periodDest = new ArrayList<>();
+            int targetIndex = 0;
+
+            c = db.rawQuery("SELECT _id, end_location FROM schedule1 WHERE day_week = " + targetDayWeek.get(i) + " AND cyclic = 1 ORDER BY start_time ASC",null);
+            int j = 0;
+            if ( c.moveToFirst() )
+                while( !c.isAfterLast() ) {
+                    if ( c.getLong(0) == targetId.get(i) )
+                        targetIndex = j;
+                    periodId.add(c.getLong(0));
+                    periodDest.add(c.getString(1));
+                    c.moveToNext();
+                    j++;
+                }
+
+            System.out.println("PeriodId : " + periodId + "| targetIndex : " + targetIndex );
+            if ( periodId.size() > 1 )  //해당 요일에 자신을 포함한 정규일정이 있는경우
+                if ( targetIndex == 0 ) { //자신이 처음일정 일때
+                    db.execSQL("UPDATE schedule1 SET tpolyline_x = 'start', tpolyline_y = 'start' WHERE _id = " + periodId.get(targetIndex+1));
+                    System.out.println("UPDATE schedule1 SET tpolyline_x = 'start', tpolyline_y = 'start' WHERE _id = " + periodId.get(targetIndex+1));
+                } else if ( targetIndex > 0 && targetIndex < periodId.size() - 1 ) { //어떤 두일정 사이에 끼어있는 경우
+                    Pair<String> p;
+                    String key = periodDest.get(targetIndex-1) + periodDest.get(targetIndex+1);
+                    if ( !tempPolyLineStr.containsKey( key ) ) {
+                        p = getPolyLineStr(periodDest.get(targetIndex-1), periodDest.get(targetIndex+1));
+                        tempPolyLineStr.put(key, p);
+                    } else {
+                        p = tempPolyLineStr.get(key);
+                    }
+                    db.execSQL("UPDATE schedule1 SET tpolyline_x = '"+ p.getFirst() + "', tpolyline_y = '" + p.getSecond() + "' WHERE _id = " + periodId.get(targetIndex+1));
+                }
+
+            //임시일정과의 관계 설정
+            //1. 해당 정규일정의 day_week에 해당하는 임시일정들의 Date를 중복되지 않게 모두 얻음
+            c = db.rawQuery("SELECT date FROM schedule1 WHERE (cyclic >= 0 AND cyclic != 1) AND day_week = " + targetDayWeek.get(i), null);
+            System.out.println("SELECT date FROM schedule1 WHERE (cyclic >= 0 AND cyclic != 1) AND day_week = " + targetDayWeek.get(i));
+
+            ArrayList<String> tempDateStr = new ArrayList<>();
+            if(c.moveToFirst()) {
+                while( !c.isAfterLast() ) {
+                    if ( !tempDateStr.contains(c.getString(0)) )
+                        tempDateStr.add(c.getString(0));
+                    c.moveToNext();
+                }
+            }
+            System.out.println("TempDateStr : " + tempDateStr);
+            //2. 1에서 얻은 값을 사용해서 schedules 를 얻음
+            for (int k = 0; k < tempDateStr.size(); k++) {
+                int[] tempDate = dateStringToInt(tempDateStr.get(k));
+                ArrayList<DaySchedule> schedules = new ScheduleReader(dataBaseHelper, tempDate[0], tempDate[1], tempDate[2], targetDayWeek.get(i), 0, 0).schedules;
+                boolean isPeriodOverride = true;
+                System.out.println("====================" + schedules.size());
+                int periodIndex = 0;
+                //3. schedules에 cyclic == -targetId || id == targetId 가 있는지 조사
+                for (int n = 0; n < schedules.size(); n++) {
+                    if ( schedules.get(n).getCyclic() == -targetId.get(i) || schedules.get(n).getId() == targetId.get(i) ) {
+                        isPeriodOverride = false;
+                        periodIndex = n;
+                        break;
+                    }
+                }
+                System.out.println(isPeriodOverride + " PeriodIndex : " + periodIndex);
+                System.out.println(schedules.get(periodIndex+1));
+                if ( isPeriodOverride ) { //3-1. 존재하지 않는다면 이는 임시일정에 Override 되었음을 의미함, 각 임시일정들의 cyclic 값, additionalOverrideId를 조사 하여 targetIndex를 구하고 Override를 설정
+                    for ( int n = 0; n < schedules.size(); n++ ) {
+                        if ( schedules.get(n).isOverride(targetId.get(i)) ) {
+                            //cyclic 과 additionalOverrideId를 합친다음 targetId 값을 제거하여 다시 임시일정으로 update
+                            ArrayList<Long> additionalOverrideId = schedules.get(n).getAdditionalOverrideId();
+                            additionalOverrideId.add(schedules.get(n).getCyclic());
+                            additionalOverrideId.remove(targetId.get(i));
+
+                            long cyclic = 0;
+                            String str;
+                            if ( additionalOverrideId.size() > 0 ) {
+                                cyclic = additionalOverrideId.get(0);
+                                additionalOverrideId.remove(0);
+                            }
+                            str = makeAdditionalOverrideStr(additionalOverrideId);
+                            System.out.println("UPDATE schedule1 SET cyclic = " + cyclic + ", additional_override_id = '" + str +
+                                    "' WHERE _id = " + schedules.get(n).getId());
+                            db.execSQL("UPDATE schedule1 SET cyclic = " + cyclic + ", additional_override_id = '" + str +
+                                    "' WHERE _id = " + schedules.get(n).getId());
+                        }
+                    }
+
+                } else {  //3-2. 만약 존재한다면, targetIndex 를 설정하고, targetIndex + 1 의 값을 변경후 가상 임시일정 존재시 제거
+                    if ( periodIndex > 0 && periodIndex < schedules.size() -1 ) {
+                        if ( !schedules.get(periodIndex+1).isPeriod() ) { //다음이 임시일정이면 반드시 target+1의 polyline을 수정
+                            Pair<String> p = getPolyLineStr(periodDest.get(targetIndex-1), periodDest.get(periodIndex+1));
+                            db.execSQL("UPDATE schedule1 SET tpolyline_x = '"+ p.getFirst() + "', tpolyline_y = '" + p.getSecond() + "' WHERE _id = " + periodId.get(periodIndex+1));
+
+                        } else if ( !schedules.get(periodIndex-1).isPeriod() ) { //다음이 정규일정이고, 이전이 임시일정이면 새로 가상임시일정을 생성하고 자신의 가상 임시일정을 제거
+                            addVirtualTemporalSchedule(schedules.get(periodIndex+1), schedules.get(periodIndex-1), false);
+                            db.delete("schedule1", "_id = " + schedules.get(periodIndex).getId(), null); //가상 임시일정 제거
+                        }
+
+                    } else if (periodIndex == 0 && schedules.size() > 1) {
+                        db.execSQL("UPDATE schedule1 SET tpolyline_x = 'start', tpolyline_y = 'start' WHERE _id = " + schedules.get(periodIndex+1).getId());
+                        System.out.println("UPDATE schedule1 SET tpolyline_x = 'start', tpolyline_y = 'start' WHERE _id = " + periodId.get(periodIndex+1));
+                    }
+                }
+
+            }
+
+            db.delete("schedule1", "_id = " + targetId.get(i), null);
+            removeAlarm(targetId.get(i));
+            removeAlarm(-targetId.get(i));
+        }
+    }
+    private void addTemporalAlarm(long id) {
+        Intent intent = new Intent(context, AlarmReceiver.class);
+
+        int requestCode = (int) id % Integer.MAX_VALUE;
+
+        Calendar cal = Calendar.getInstance();
+        long currTime = cal.getTimeInMillis();
+        cal.clear();
+        cal.set(year, month, day, startHour, startMin, 0);
+        System.out.println(String.format("%d/%d/%d %d:%d", year,month, day, startHour, startMin));
+        cal.add(cal.MINUTE, -25);
+
+        intent.putExtra("start_time", String.format("%02d:%02d", startHour, startMin));
+        intent.putExtra("end_time", String.format("%02d:%02d", endHour, endMin));
+        intent.putExtra("name", name);
+        intent.putExtra("dest_name", destName);
+
+        if ( currTime > cal.getTimeInMillis() ) { //이미 일정시작 25분전 시간이 지난 경우
+            cal.add(cal.MINUTE, 25);
+            intent.putExtra("id", -id);
+            requestCode *= -1;
+            Log.d("Alarm" , "이미 시간이 지나버림");
+        } else {
+            intent.putExtra("id", id);
+            Log.d("Alarm" , "25분전 알람이 등록되었음");
+        }
+
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, requestCode, intent, 0);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), alarmIntent);
+    }
+
+    private void addPeriodAlarm(long id, int dayOfWeek) {
+        switch (dayOfWeek) {
+            case 5 : { dayOfWeek = 7; break; } //토요일
+            case 6 : { dayOfWeek = 1; break; } //일요일
+            default : { dayOfWeek = dayOfWeek + 2; }
+        }
+
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        intent.putExtra("start_time", String.format("%02d:%02d", startHour, startMin));
+        intent.putExtra("end_time", String.format("%02d:%02d", endHour, endMin));
+        intent.putExtra("name", name);
+        intent.putExtra("dest_name", destName);
+        intent.putExtra("is_period", true);
+        intent.putExtra("id", id);
+
+        Calendar cal = Calendar.getInstance();
+        Calendar currCal = Calendar.getInstance();
+        currCal.set(cal.SECOND, 0);
+
+        cal.set(cal.DAY_OF_WEEK, dayOfWeek);
+        cal.set(cal.HOUR_OF_DAY, startHour);
+        cal.set(cal.MINUTE, startMin);
+        cal.set(cal.SECOND, 0);
+        cal.add(cal.MINUTE, -25);
+
+        int compareCal = currCal.compareTo(cal);
+
+        if ( compareCal > 0 ) { //25분 전이후 인 경우
+            cal.add(cal.MINUTE, 25);
+            compareCal = currCal.compareTo(cal); //일정 시작시간과 비교
+
+            if ( compareCal > 0 ) { //이미 시간이 지났으므로, 다음주로 일정을 추가
+                cal.add(cal.MINUTE, -25);
+                cal.add(cal.DAY_OF_YEAR, 7);
+            }
+        }
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy:MM:dd-HH:mm:ss");
+        String strDate = dateFormat.format(cal.getTime());
+        Log.d("alarm", strDate + " :: RequestCode : " + (int) id % Integer.MAX_VALUE);
+
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, (int) id % Integer.MAX_VALUE, intent, 0);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), alarmIntent); //일주일 간격으로 발생하는 알람
+    }
+
+    public void removeAlarm(long id) { //알람 삭제
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, (int)(id % Integer.MAX_VALUE), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        if (pendingIntent != null) {
+            alarmManager.cancel(pendingIntent);
+            pendingIntent.cancel();
+            Log.d("REMOVE ALARM", "ID : " + id + " 로 설정된 알람제거완료");
+        } else {
+            Log.d("REMOVE ALARM", "알람이 없음");
+        }
     }
 
     //두개의 end_position String을 받아, tpolyline_x:tpolyline_y 의 String으로 리턴 두 위치가 같은 경우에는 빈문자열 리턴
@@ -517,9 +842,7 @@ public class ControlSchedule {
         return p;
     }
 
-    private Pair<String> getPolyLineStr(double startLon, double startLat, double endLon, double endLat) {
-        TMapPoint startPoint = new TMapPoint(startLat, startLon);
-        TMapPoint endPoint = new TMapPoint(endLat, endLon);
+    private Pair<String> getPolyLineStr(TMapPoint startPoint, TMapPoint endPoint) {
         if ( startPoint.getLongitude() == endPoint.getLongitude() &&
                 startPoint.getLatitude() == endPoint.getLatitude() ) {
             return new Pair<String>("", "");
@@ -531,9 +854,7 @@ public class ControlSchedule {
         return p;
     }
 
-    private TMapPolyLine getPolyLine(double startLon, double startLat, double endLon, double endLat) {
-        TMapPoint startPoint = new TMapPoint(startLat, startLon);
-        TMapPoint endPoint = new TMapPoint(endLat, endLon);
+    private TMapPolyLine getPolyLine(TMapPoint startPoint, TMapPoint endPoint) {
         if ( startPoint.getLongitude() == endPoint.getLongitude() &&
                 startPoint.getLatitude() == endPoint.getLatitude() ) {
             return null;
@@ -550,7 +871,7 @@ public class ControlSchedule {
         return new TMapPoint(Double.parseDouble(temp[0]), Double.parseDouble(temp[1]));
     }
 
-    private ContentValues makeDBvalues(String dateStr, int dayOfWeek) {
+    private ContentValues makeDBvalues(String dateStr, int dayOfWeek, long periodHead) {
         ContentValues values = new ContentValues();
         values.put("date", dateStr);
         values.put("day_week", dayOfWeek);
@@ -563,15 +884,9 @@ public class ControlSchedule {
         values.put("script", desc);
         if ( isTempOverridePeriod ) { //일정이 override 된다면, cyclic과 추가 override 정보를 설정
             values.put("cyclic" , overrideId.get(0));
-            if ( overrideId.size() >= 2 ) {
-                String str = "";
-                for (int i = 1; i < overrideId.size(); i++) {
-                    str += Long.toString(overrideId.get(i));
-                    if ( i != overrideId.size() - 1 )
-                        str += ",";
-                }
-                values.put("additional_override_id" , str);
-            }
+            overrideId.remove(0);
+            String str = makeAdditionalOverrideStr(overrideId);
+            values.put("additional_override_id" , str);
         } else { //override 하지 않는경우, cyclic이 0또는 1 이고 addtional_cyclic_id가 빈문자열임
             values.put("cyclic" , isTemporalSchedule ? 0 : 1);
             values.put("additional_override_id", "");
@@ -579,6 +894,7 @@ public class ControlSchedule {
         values.put("tpolyline_x" , ""); //lat
         values.put("tpolyline_y" , ""); //lon
         values.put("room", room);
+        values.put("period_head", periodHead);
         return values;
     }
 
@@ -586,22 +902,32 @@ public class ControlSchedule {
         return String.format("%d_%02d_%02d",year,month+1,day);
     }
 
-    private int[] timeStringToInt(String str) {
+    private int[] dateStringToInt(String str) {
         String temp[] = str.split("_");
 
-        int[] result = new int[2];
-        for (int i = 0; i < 2; i++)
+        int[] result = new int[3];
+        for (int i = 0; i < 3; i++)
             result[i] = Integer.parseInt(temp[i]);
 
         return result;
     }
 
+    private String makeAdditionalOverrideStr(ArrayList<Long> list) {
+        String str = "";
+        for (int i = 0; i < overrideId.size(); i++) {
+            str += Long.toString(overrideId.get(i));
+            if ( i != overrideId.size() - 1 )
+                str += ",";
+        }
+        return str;
+    }
     private String intDayOfWeekToString(int dayOfWeek) {
         String[] arr = {"월","화","수","목","금","토","일"};
-
-        if (dayOfWeek >= 7) { return arr[6]; }
-        else if ( dayOfWeek < 0 ) { return arr[0]; }
-
+        if (dayOfWeek >= 7) {
+            return arr[6];
+        } else if ( dayOfWeek < 0 ) {
+            return arr[0];
+        }
         return arr[dayOfWeek];
     }
 

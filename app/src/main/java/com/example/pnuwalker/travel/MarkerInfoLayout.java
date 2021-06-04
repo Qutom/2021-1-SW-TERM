@@ -1,23 +1,21 @@
 package com.example.pnuwalker.travel;
 
-import android.content.Context;
-import android.util.DisplayMetrics;
-import android.view.Display;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Dimension;
-import androidx.fragment.app.FragmentActivity;
 
 import com.example.pnuwalker.R;
 import com.skt.Tmap.TMapPOIItem;
 import com.skt.Tmap.TMapPoint;
 
-public class MarkerInfoLayout {
+public class MarkerInfoLayout implements Animation.AnimationListener {
     public static final int DETAIL = 1;
     public static final int START = 2;
     public static final int END = 3;
@@ -26,16 +24,21 @@ public class MarkerInfoLayout {
     private TMapPoint point;
     private TMapPOIItem poi;
     private RelativeLayout layout;
+    private LinearLayout gpsButtonLayout;
     private TextView buildingNumber;
     private TextView name;
-
+    private Animation showAnimation;
+    private Animation hideAnimation;
 
     private Button btnDetail; // 자세히보기 지정 버튼
     private Button btnStart; // 길찾기 시작 지정 버튼
     private Button btnEnd; // 길찾기 도착 지정 버튼
     private Button btnSetSchedule; // 일정등록 버튼
 
+    private boolean isVisible;
+
     public MarkerInfoLayout(View view) {
+        gpsButtonLayout = view.findViewById(R.id.travel_gps_button_layout);
         layout = view.findViewById(R.id.marker_info);
         buildingNumber = view.findViewById(R.id.marker_info_buildingnumber);
         name = view.findViewById(R.id.marker_info_name);
@@ -43,6 +46,10 @@ public class MarkerInfoLayout {
         btnStart = (Button) view.findViewById(R.id.marker_info_btnstart);
         btnEnd = (Button) view.findViewById(R.id.marker_info_btnend);
         btnSetSchedule = (Button) view.findViewById(R.id.marker_info_btnschedule);
+        showAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.show_marker_info_anim);
+        hideAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.hide_marker_info_anim);
+
+        isVisible = false;
 
         //레이아웃 클릭시 지도가 같이 클릭되는 것을 방지
         layout.setOnTouchListener(new View.OnTouchListener() {
@@ -93,6 +100,7 @@ public class MarkerInfoLayout {
         }
     }
 
+    public void setPOI(TMapPOIItem poi) { this.poi = poi; }
     public void setName(final String nameStr) { name.setText(nameStr); }
     public void setVisibility(int value) { layout.setVisibility(value); }
     public void setTMapPoint(TMapPoint point) { this.point = point; }
@@ -104,4 +112,41 @@ public class MarkerInfoLayout {
     public int getVisibility() { return layout.getVisibility(); }
     public TMapPoint getTMapPoint() { return point; }
 
+    public void show() {
+        layout.setVisibility(View.VISIBLE);
+        layout.startAnimation(showAnimation);
+        gpsButtonLayout.startAnimation(showAnimation);
+
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(gpsButtonLayout.getLayoutParams());
+        params.addRule(RelativeLayout.ABOVE, R.id.marker_info);
+        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        params.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        gpsButtonLayout.setLayoutParams(params);
+    }
+    public void hide() {
+        layout.startAnimation(hideAnimation);
+        gpsButtonLayout.startAnimation(hideAnimation);
+
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(gpsButtonLayout.getLayoutParams());
+        params.removeRule(RelativeLayout.ABOVE);
+        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        gpsButtonLayout.setLayoutParams(params);
+    }
+
+    @Override
+    public void onAnimationStart(Animation animation) {}
+
+    @Override
+    public void onAnimationEnd(Animation animation) {
+        if ( isVisible ) {
+            layout.setVisibility(View.GONE);
+            isVisible = false;
+        } else {
+            isVisible = true;
+        }
+    }
+
+    @Override
+    public void onAnimationRepeat(Animation animation) {}
 }

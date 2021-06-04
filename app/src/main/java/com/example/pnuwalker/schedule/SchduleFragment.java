@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment;
 import com.example.pnuwalker.MainActivity;
 import com.example.pnuwalker.R;
 
+import java.util.Calendar;
+
 public class SchduleFragment extends Fragment {
     private Schedule schedule = new Schedule();
     private AutoResizeTextView monday[] = new AutoResizeTextView[25];
@@ -19,8 +21,40 @@ public class SchduleFragment extends Fragment {
     private AutoResizeTextView wednesday[] = new AutoResizeTextView[25];
     private AutoResizeTextView thursday[] = new AutoResizeTextView[25];
     private AutoResizeTextView friday[] = new AutoResizeTextView[25];
+    private int year[] = new int[7];
+    private int month[] = new int[7];
+    private int day[] = new int[7];
+    private String daystring[] = new String[7];
+    private int count = 0;
+
+    Calendar cal = Calendar.getInstance();
 
     Cursor cursor;
+
+    public void initializeDayArray(int count) {
+        for (int i = 0; i < count; i++) {
+            year[i] = cal.get(cal.YEAR);
+            month[i] = cal.get(cal.MONTH);
+            day[i] = cal.get(cal.DAY_OF_MONTH);
+            cal.add(cal.DAY_OF_MONTH, 1);
+        }
+    }
+
+    public void initializeDayStringArray(int count) {
+        for (int i = 0; i < count; i++) {
+            daystring[i] = String.format("%d_%02d_%02d",year[i],month[i]+1,day[i]);
+        }
+    }
+
+    public boolean Stringcmp(String target, int count) {
+        for (int i = 0; i < count; i++) {
+            if (target.equals(daystring[i])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     @Override
     public void onActivityCreated(Bundle b) {
@@ -161,6 +195,55 @@ public class SchduleFragment extends Fragment {
         friday[23] = (AutoResizeTextView) getView().findViewById(R.id.Friday23);
         friday[24] = (AutoResizeTextView) getView().findViewById(R.id.Friday24);
 
+        for (int a = 0; a < cursor.getCount(); a++) {
+            if (a == 0) {
+                cursor.moveToFirst();
+            }
+            else {
+                cursor.moveToNext();
+            }
+            System.out.println(" 0. ID "
+                    + cursor.getInt(0)
+                    + " 1.date "
+                    + cursor.getString(1)
+                    + " 2.day_week "
+                    + cursor.getInt(2)
+                    + " 3.start_time "
+                    + cursor.getString(3)
+                    + " 4.end_time "
+                    + cursor.getString(4)
+                    + " 5.start_location "
+                    + cursor.getString(5)
+                    + " 6.end_location "
+                    + cursor.getString(6)
+                    + " 7.end_location_name "
+                    + cursor.getString(7)
+                    + " 8.name "
+                    + cursor.getString(8)
+                    + " 9.script "
+                    + cursor.getString(9)
+                    + " 10.cyclic "
+                    + cursor.getInt(10)
+                    + " 11.tpolyline_x "
+                    + cursor.getString(11)
+                    + " 12.tpolyline_y "
+                    + cursor.getString(12)
+                    + " 13.room "
+                    + cursor.getString(13));
+        }
+
+        if (count == 0) {
+            initializeDayArray(7);
+            initializeDayStringArray(7);
+
+            for (int i = 0; i < 7; i++) {
+                System.out.println("=====================================");
+                System.out.println(daystring[i]);
+                System.out.println("=====================================");
+            }
+
+            count++;
+        }
 
         for (int a = 0; a < cursor.getCount(); a++) {
             if (a == 0) {
@@ -169,7 +252,21 @@ public class SchduleFragment extends Fragment {
                 cursor.moveToNext();
             }
 
-            schedule.addSchedule(cursor.getInt(2), cursor.getString(4), cursor.getString(6), cursor.getString(8));
+            if (cursor.getInt(10) == 1) {
+                schedule.addSchedule(cursor.getInt(2), cursor.getString(3), cursor.getString(4), cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(13), cursor.getInt(10));
+            }
+        }
+
+        for (int a = 0; a < cursor.getCount(); a++) {
+            if (a == 0) {
+                cursor.moveToFirst();
+            } else {
+                cursor.moveToNext();
+            }
+
+            if ((cursor.getInt(10) != 1) && (Stringcmp(cursor.getString(1), 7))) {
+                schedule.addSchedule(cursor.getInt(2), cursor.getString(3), cursor.getString(4), cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(13), cursor.getInt(10));
+            }
         }
         schedule.setting(monday, tuesday, wednesday, thursday, friday, getContext());
     }

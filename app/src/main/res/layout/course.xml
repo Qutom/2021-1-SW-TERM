@@ -13,7 +13,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#0066B5"
+            android:background="#5C5C5C"
             android:orientation="horizontal">
 
             <TextView
@@ -96,7 +96,7 @@
                 android:layout_gravity="center"
                 android:padding="3dp"
                 android:text="강의 시간대"
-                android:textColor="#0066B5"
+                android:textColor="#5C5C5C"
                 android:textStyle="bold" />
 
         </LinearLayout>
@@ -110,7 +110,7 @@
         android:layout_gravity="center"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:background="#0066B5"
+        android:background="#5C5C5C"
         android:gravity="center"
         android:text="추가"
         android:textColor="#ffffff"

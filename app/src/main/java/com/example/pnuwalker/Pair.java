@@ -9,6 +9,15 @@ public class Pair<T> {
         this.second = second;
     }
 
+    public Pair(T[] arr) {
+        if ( arr.length >= 2 ) {
+            first = arr[0];
+            second = arr[1];
+        } else {
+            first = null;
+            second = null;
+        }
+    }
     public void setFirst(T first) { this.first = first; }
     public void setSecond(T second) { this.second = second; }
 

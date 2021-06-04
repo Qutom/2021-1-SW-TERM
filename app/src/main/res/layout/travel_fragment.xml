@@ -43,6 +43,36 @@
             </TableRow>
         </TableLayout>
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/travel_gps_button_layout"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="5dp"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_location_on_24"
+                android:id="@+id/travel_location_btn"
+                android:background="@drawable/gps_deactivatd"
+                android:padding="10dp">
+            </ImageButton>
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
+                android:src="@drawable/ic_baseline_gps_fixed_24"
+                android:id="@+id/travel_gps_btn"
+                android:background="@drawable/gps_deactivatd"
+                android:padding="10dp">
+            </ImageButton>
+        </LinearLayout>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="120dp"
@@ -50,7 +80,7 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:background="@drawable/slider_bg"
-            android:visibility="invisible">
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/marker_info_buildingnumber"

@@ -1,5 +1,7 @@
 package com.example.pnuwalker.controlschedule;
 
+import com.example.pnuwalker.MainActivity;
+
 public class PeriodScheduleData extends ScheduleData {
 
     public boolean[] periodDayofWeek = new boolean[7];
@@ -12,6 +14,7 @@ public class PeriodScheduleData extends ScheduleData {
 
         isTemporalSchedule = false;
     }
+    
 
     public boolean[] getPeriodDayofWeek() { return periodDayofWeek; }
 }

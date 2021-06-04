@@ -27,6 +27,7 @@ public class DaySchedule {
 
     private long cyclic; //cyclic 정보
     private ArrayList<Long> additionalOverrideId;
+    private long periodHead;
 
     private String destName;
     private double destLat;
@@ -35,9 +36,10 @@ public class DaySchedule {
 
     private TMapPolyLine polyLine;
 
+
     public DaySchedule(long id, String dateStr, int dayOfWeek, String startTimeStr, String endTimeStr
                         , String startCoord, String destPosStr, String destName, String name, String desc,
-                       int cyclic, String addOverId, String polylineLon, String polylineLat, String room) {
+                       int cyclic, String addOverId, String polylineLon, String polylineLat, String room, Long periodHead) {
         int[] startTime = strTimeToIntArray(startTimeStr);
         int[] endTime = strTimeToIntArray(endTimeStr);
         int[] date = strDateToIntArray(dateStr);
@@ -66,6 +68,7 @@ public class DaySchedule {
         polyLine = strToPolyline(polylineLon, polylineLat);
         this.cyclic = cyclic;
         this.room = room;
+        this.periodHead = periodHead;
     }
 
     public DaySchedule(DaySchedule s) {
@@ -144,8 +147,8 @@ public class DaySchedule {
     }
 
     private void setAdditionOverrideId(String overrideStr) {
+        System.out.println("OverrideStr :" + overrideStr);
         if (overrideStr == null || overrideStr.equals("")) { return; }
-
         String[] temp = overrideStr.split(",");
         if ( temp.length >= 1 )
             for (int i = 0; i < temp.length; i++)
@@ -192,6 +195,7 @@ public class DaySchedule {
         values.put("tpolyline_y" , result[1]); //lon
 
         values.put("room", room);
+        values.put("period_head", periodHead);
         return values;
     }
 
@@ -213,6 +217,10 @@ public class DaySchedule {
     public String getName() { return name; }
     public String getRoom() { return room; }
     public TMapPolyLine getPolyLine() { return polyLine; }
+    public TMapPoint getDestPoint() { return new TMapPoint(destLat, destLon); }
+    public long getPeriodHead() { return periodHead; }
+    public boolean isPeriod() { return cyclic == 1 || cyclic < 0; } //정규 일정이면 true리턴
+    public boolean isOverride(long id) { return Math.abs(cyclic) == id || additionalOverrideId.contains(id); } //이 일정이 해당 id를 override하는가?
 
     public void setPolyLine(TMapPolyLine polyLine) { this.polyLine = polyLine; }
     public Pair<String> getPolyLineInStr() {

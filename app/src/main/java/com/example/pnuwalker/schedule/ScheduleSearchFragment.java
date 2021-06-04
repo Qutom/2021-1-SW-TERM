@@ -57,7 +57,7 @@ public class ScheduleSearchFragment extends Fragment {
 
         courseListView = (ListView)view.findViewById(R.id.courseListView);
         courseList = new ArrayList<Course>();
-        adapter = new CourseListAdapter(getContext().getApplicationContext(), courseList, this);
+        adapter = new CourseListAdapter(getContext().getApplicationContext(), courseList, this, getActivity());
         courseListView.setAdapter(adapter);
 
         // Spinner
