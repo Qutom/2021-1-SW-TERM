@@ -34,13 +34,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.pnuwalker.AddScheduleActivity;
-import com.example.pnuwalker.MainActivity;
 import com.example.pnuwalker.R;
 import com.example.pnuwalker.pathfind.FindPath;
 import com.skt.Tmap.TMapCircle;
 import com.skt.Tmap.TMapData;
-import com.skt.Tmap.TMapGpsManager;
-import com.skt.Tmap.TMapLabelInfo;
 import com.skt.Tmap.TMapMarkerItem;
 import com.skt.Tmap.TMapPOIItem;
 import com.skt.Tmap.TMapPoint;
@@ -48,8 +45,6 @@ import com.skt.Tmap.TMapPolyLine;
 import com.skt.Tmap.TMapView;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -364,8 +359,6 @@ public class TravelFragment extends Fragment {
                         R.drawable.pnu_marker_cafeteria};
 
         int number;
-        String name;
-        String description;
         double latitude;
         double longtitude;
 
@@ -379,11 +372,9 @@ public class TravelFragment extends Fragment {
         for (int i = 0; i < pnuStrings.length; i++ ) {
             temp = pnuStrings[i].split(":");
 
-            number = Integer.valueOf(temp[0]);
-            name = temp[1];
-            latitude = Double.valueOf(temp[2]);
-            longtitude = Double.valueOf(temp[3]);
-            description = temp[4];
+            number = Integer.parseInt(temp[0]);
+            latitude = Double.parseDouble(temp[2]);
+            longtitude = Double.parseDouble(temp[3]);
 
             String id = "pnu_" + i;
             MarkerOverlay marker = new MarkerOverlay(getContext(), temp[0] , temp[1], temp[4], id, markerInfo);
@@ -397,94 +388,11 @@ public class TravelFragment extends Fragment {
             }
 
             tMapView.addMarkerItem2(marker.getID(), marker);
-
-
         }
-
 
         //CLOPY 마커 생성
 
         //버스 정류장?
-    }
-
-    private void drawCircle(TMapPoint point, int km) {
-        tMapView.removeTMapCircle("search_area_circle");
-
-        TMapCircle circle = new TMapCircle();
-        circle.setCenterPoint(point);
-        circle.setRadius(km * 1000);
-        circle.setAreaColor(Color.GREEN);
-        circle.setAreaAlpha(14);
-        tMapView.addTMapCircle("search_area_circle", circle);
-    }
-
-    private void searchKeywordPOI(TMapPoint searchPoint, String keyword, int radius) {
-        //Keyword POI 검색
-        tMapData.findAroundKeywordPOI(searchPoint, keyword, radius, 200, new TMapData.FindAroundKeywordPOIListenerCallback() {
-            @Override
-            public void onFindAroundKeywordPOI(ArrayList<TMapPOIItem> arrayList) {
-                if (arrayList == null) {
-                    Handler mHandler = new Handler(Looper.getMainLooper());
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getActivity(), "검색 결과가 없습니다.", Toast.LENGTH_LONG).show();
-                        }
-                    }, 0);
-                    return;
-                }
-
-                ArrayList<TMapPoint> points = new ArrayList<>();
-                ArrayList<String> names = new ArrayList<>();
-                ArrayList<String> descriptions = new ArrayList<>();
-
-                for (TMapPOIItem poi : arrayList) {
-                    points.add(poi.getPOIPoint());
-                    names.add(poi.getPOIName());
-
-                    String desc = poi.getPOIContent();
-                    if (desc == null)
-                        descriptions.add(" ");
-                    else
-                        descriptions.add(desc);
-                }
-
-                //마커 그리기
-                addMarkerFromList(points, names, descriptions);
-                //circle 그리기(검색 반경)
-                drawCircle(searchPoint, radius);
-            }
-        });
-    }
-
-    
-    //검색 결과로 생성된 마커(최대 200개)를 모두 삭제
-    private void removeSearchResultMarker() {
-        for (int i = 0; i < 200; i++ )
-            tMapView.removeMarkerItem2("s_result" + i);
-    }
-    
-    //매개변수로 주어진 리스트들을 지도에 다중마커로 표시
-    private void addMarkerFromList(ArrayList<TMapPoint> points , ArrayList<String> names, ArrayList<String> descriptions) {
-
-        removeSearchResultMarker();
-        Activity activity = getActivity();
-
-        BitmapFactory.Options options = new BitmapFactory.Options();
-
-        options.inSampleSize = 2;
-        Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.poi_dot, options);
-
-
-        for (int i = 0; i < points.size(); i++) {
-            String id = "s_result" + i;
-            MarkerOverlay marker = new MarkerOverlay(getContext(), "", names.get(i), descriptions.get(i) ,"s_result" + i , markerInfo);
-            marker.setID("s_result" + i);
-            marker.setTMapPoint(points.get(i));
-            marker.setIcon(icon);
-            tMapView.addMarkerItem2(marker.getID(), marker);
-        }
-
     }
 
     public Bitmap makeTextedIcon(int drawableId, String text, int TextSize, int textColor, BitmapFactory.Options options) {
@@ -514,6 +422,8 @@ public class TravelFragment extends Fragment {
             closeGps();
         } else {
             gpsBtn.setBackground(getResources().getDrawable(R.drawable.gps_activated));
+            tMapView.setSightVisible(true);
+            tMapView.setIconVisibility(true);
             openGps();
         }
     }
@@ -525,12 +435,10 @@ public class TravelFragment extends Fragment {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1); //위치권한 탐색 허용 관련 내용
             }
         } else {
-            if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, locationListener);
-            else
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 3, locationListener);
             showUser = true;
             isFirstGpsMove = true;
+
         }
     }
 

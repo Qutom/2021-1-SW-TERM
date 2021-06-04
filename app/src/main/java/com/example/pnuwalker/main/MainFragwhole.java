@@ -47,7 +47,6 @@ public class MainFragwhole extends Fragment {
     RelativeLayout frag_mapLayout;
 
 
-    private TMapPolyLine polyLine;
 
     Button showDateDialogBtn;
 
@@ -55,6 +54,7 @@ public class MainFragwhole extends Fragment {
     TextView next_time;
     Calendar cal = Calendar.getInstance();
 
+    static int tmpfragchange = 0;
 
     int year = cal.get ( cal.YEAR );
     int month = cal.get ( cal.MONTH )   ;
@@ -68,13 +68,13 @@ public class MainFragwhole extends Fragment {
 
 
     // 나중에 시간표에 저장된 DB를 가져 올 것이므로, 함수 구상용도이고, 임의로 시간순 작성.
-    String[] today_schedule = new String[20];
-    String[] today_schedule_time = new String[20];      //테스트용. 날짜시간 맞게 변경후 시연할것.
-    String[] today_schedule_site = new String[20];
-    double[] today_schedule_site_xpoint = new double[20];
-    double[] today_schedule_site_ypoint = new double[20];
-    String[] today_schedule_polyliney = new String[20];
-    String[] today_schedule_polylinex = new String[20];
+    String[] today_schedule = new String[30];
+    String[] today_schedule_time = new String[30];      //테스트용. 날짜시간 맞게 변경후 시연할것.
+    String[] today_schedule_site = new String[30];
+    double[] today_schedule_site_xpoint = new double[30];
+    double[] today_schedule_site_ypoint = new double[30];
+    String[] today_schedule_polyliney = new String[30];
+    String[] today_schedule_polylinex = new String[30];
 
 //    // 나중에 시간표에 저장된 DB를 가져 올 것이므로, 함수 구상용도이고, 임의로 시간순 작성.
 //    String[] today_schedule = new String[]{"컴알","고토","도서관자습"};
@@ -160,13 +160,13 @@ public class MainFragwhole extends Fragment {
 
 
 
-       ArrayList<DaySchedule> schedules = new ScheduleReader(activity.helper, year, month+1 , day , temporalDayofWeek, 0, 0).schedules;
+        ArrayList<DaySchedule> schedules = new ScheduleReader(activity.helper, year, month+1 , day , temporalDayofWeek, 0, 0).schedules;
 
 
 
         double yy = 0;
         schesize = schedules.size();
-        String h = "",k = "",j = "", l = "",m = "" ;
+        String h = "",k = "",j = "", l = "",m = "" , n= "";
         TMapPolyLine polyLine;
         String whole = "";
         for(int i = 0 ; i < schesize; i++){
@@ -175,10 +175,20 @@ public class MainFragwhole extends Fragment {
             k = String.valueOf(a.getDestLat());
             j = String.valueOf(a.getDestLon());
             l = a.getDestName();
-            m = String.valueOf(a.getStartHour()) + String.valueOf(a.getStartMin());
-            if(m.length() < 3) m = "0" + m;
-            whole = whole + h + "( " + l +": "+ m + " )";
+            n = String.valueOf(a.getStartMin());
+            if(n.length() <2 ) n = "0" + n;
+            m = String.valueOf(a.getStartHour()) + n;
+            if(m.length() <= 3) m = "0" + m;
+            whole = whole + h + "( " + l +":"+ m + " ~";
+
+            if(String.valueOf(a.getEndMin()).length() < 2) m = "0" + String.valueOf(a.getEndMin());
+            else m = String.valueOf(a.getEndMin());
+            h = String.valueOf(a.getEndHour()) + m;
+            if(h.length() < 4) h = "0" + h;
+            whole = whole + h +  ")";
+
             if(i+1 < schesize)  whole = whole +"-> ";
+
             makeMaker(frag_tMapView,i,schesize, Double.parseDouble(k), Double.parseDouble(j));
 
             polyLine = a.getPolyLine();
@@ -187,21 +197,6 @@ public class MainFragwhole extends Fragment {
             else
                 frag_tMapView.addTMapPolyLine("path"+ i, polyLine);
 
-        }
-
-
-
-
-        //이전-현재-다음 일정 표기.
-        int i = 0;
-        while(i < index){
-            today_whole_schedule = today_whole_schedule + today_schedule[i] +"(" + today_schedule_site[i] + ")";
-
-            //makeMaker(i);
-
-            i++;
-            if(i < index)
-                today_whole_schedule = today_whole_schedule + "- ";
         }
 
         TextView bef_schedule = rootView.findViewById(R.id.whole_schedule);
@@ -306,17 +301,36 @@ public class MainFragwhole extends Fragment {
 
             options.inSampleSize = 2;
             // 마커 아이콘
-            Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.map_pin_red, options);
-            markerItem1.setIcon(icon); // 마커 아이콘 지정
-            markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
-            markerItem1.setTMapPoint(tMapPoint1); // 마커의 좌표 지정
-            markerItem1.setName("mark"+cnt); // 마커의 타이틀 지정
+            if(cnt == 0) {
+                Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.map_pin_red, options);
+                markerItem1.setIcon(icon); // 마커 아이콘 지정
+                markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
+                markerItem1.setTMapPoint(tMapPoint1); // 마커의 좌표 지정
+                markerItem1.setName("mark" + cnt); // 마커의 타이틀 지정
 
-            frag_tMapView.addMarkerItem("markerItem"+cnt, markerItem1); // 지도에 마커 추가
+                frag_tMapView.addMarkerItem("markerItem" + cnt, markerItem1); // 지도에 마커 추가
+            }
+            else if(cnt + 1 < size){
+                Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.pnu_marker_orange, options);
+                markerItem1.setIcon(icon); // 마커 아이콘 지정
+                markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
+                markerItem1.setTMapPoint(tMapPoint1); // 마커의 좌표 지정
+                markerItem1.setName("mark" + cnt); // 마커의 타이틀 지정
+
+                frag_tMapView.addMarkerItem("markerItem" + cnt, markerItem1); // 지도에 마커 추가
+            }
+            else{
+                Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.pnu_marker_green, options);
+                markerItem1.setIcon(icon); // 마커 아이콘 지정
+                markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
+                markerItem1.setTMapPoint(tMapPoint1); // 마커의 좌표 지정
+                markerItem1.setName("mark" + cnt); // 마커의 타이틀 지정
+
+                frag_tMapView.addMarkerItem("markerItem" + cnt, markerItem1); // 지도에 마커 추가
+            }
         }
 
     }
-
     private void showDateDialog() {
         Calendar cal = Calendar.getInstance();
         Calendar minDate = Calendar.getInstance();
@@ -336,9 +350,10 @@ public class MainFragwhole extends Fragment {
                 cal.set(Calendar.DATE, day);
                 temporalDayofWeek = cal.get(Calendar.DAY_OF_WEEK) -2;
 
-
-
                 setDateDialogBtnText(getDateString());
+                tmpfragchange = 1;
+                activity.onFragmentChange(2);
+
             }
         }, year ,month, day);
 
@@ -349,18 +364,7 @@ public class MainFragwhole extends Fragment {
         dialog.show();
     }
 
-    private TMapPolyLine strToPolyline(String lonStr, String latStr) {
-        if (lonStr.equals("start") || lonStr.equals(""))
-            return null;
 
-        TMapPolyLine line = new TMapPolyLine();
-        String[] lon = lonStr.split(",");
-        String[] lat = latStr.split(",");
-        for (int i = 0; i < lon.length; i++)
-            line.addLinePoint(new TMapPoint(Double.parseDouble(lat[i]), Double.parseDouble(lon[i])));
-
-        return line;
-    }
 
     private String getDateString() {
         return String.format("%d  /  %d  / %d",year, month + 1, day); //ex) 2020  /  12  /  5

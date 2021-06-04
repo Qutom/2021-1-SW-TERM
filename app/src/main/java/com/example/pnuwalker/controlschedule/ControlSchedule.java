@@ -92,7 +92,7 @@ public class ControlSchedule {
     }
     
     //일정삭제를 위한 클래스생성
-    public ControlSchedule(DataBaseHelper helper, Activity context) {
+    public ControlSchedule(DataBaseHelper helper, Context context) {
         pnuPath = new FindPath(context);
         dataBaseHelper = helper;
         db = dataBaseHelper.getWritableDatabase();

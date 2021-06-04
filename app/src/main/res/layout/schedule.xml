@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <Button
+        android:id="@+id/deleteButton"
+        android:layout_width="70dp"
+        android:layout_height="35dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:background="#5C5C5C"
+        android:text="삭제"
+        android:textColor="#FFFFFF"
+        android:textSize="18dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="#5C5C5C">
+
+            <TextView
+                android:id="@+id/courseKind"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="정기"
+                android:layout_gravity="center"
+                android:padding="3dp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#FFFFFF"/>
+
+            <TextView
+                android:id="@+id/courseID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1."
+                android:layout_gravity="center"
+                android:padding="3dp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#FFFFFF"/>
+
+            <TextView
+                android:id="@+id/courseName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="일정 이름"
+                android:layout_gravity="center"
+                android:padding="3dp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#FFFFFF"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="#FFFFFF">
+
+            <TextView
+                android:id="@+id/courseDayofTheWeek"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="월요일"
+                android:layout_gravity="center"
+                android:padding="3dp"
+                android:textColor="#5C5C5C"
+                android:textColorHint="#5C5C5C"/>
+
+            <TextView
+                android:id="@+id/courseDayofTheWeek2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" / "
+                android:layout_gravity="center"
+                android:padding="3dp"
+                android:textColor="#5C5C5C"
+                android:textColorHint="#5C5C5C"/>
+
+            <TextView
+                android:id="@+id/courseStartTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="시간 : "
+                android:layout_gravity="center"
+                android:padding="3dp"
+                android:textColor="#5C5C5C"
+                android:textColorHint="#5C5C5C"/>
+
+            <TextView
+                android:id="@+id/courseTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="09:00"
+                android:layout_gravity="center"
+                android:padding="3dp"
+                android:textColor="#5C5C5C"
+                android:textColorHint="#5C5C5C"/>
+
+            <TextView
+                android:id="@+id/courseTime2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" ㅡ "
+                android:layout_gravity="center"
+                android:padding="3dp"
+                android:textColor="#5C5C5C"
+                android:textColorHint="#5C5C5C"/>
+
+            <TextView
+                android:id="@+id/courseTime3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="10:00"
+                android:layout_gravity="center"
+                android:padding="3dp"
+                android:textColor="#5C5C5C"
+                android:textColorHint="#5C5C5C"/>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

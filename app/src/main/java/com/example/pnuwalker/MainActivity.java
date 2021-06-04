@@ -30,6 +30,7 @@ import com.example.pnuwalker.controlschedule.ScheduleReader;
 import com.example.pnuwalker.main.MainFragment;
 import com.example.pnuwalker.main.MainFragwhole;
 import com.example.pnuwalker.schedule.SchduleFragment;
+import com.example.pnuwalker.schedule.ScheduleDeleteFragment;
 import com.example.pnuwalker.schedule.ScheduleSearchFragment;
 import com.example.pnuwalker.travel.TravelFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigation;
     private FragmentManager fragmentManager = getSupportFragmentManager();
     private MainFragwhole mainFragwhole;
+    private ScheduleDeleteFragment scheduleDeleteFragment;
 
 
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
@@ -89,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
         schduleFragment = new SchduleFragment();
         travelFragment = new TravelFragment();
         scheduleSearchFragment = new ScheduleSearchFragment();
+        scheduleDeleteFragment = new ScheduleDeleteFragment();
         bottomNavigation = findViewById(R.id.navigationView);
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragmentLayout, mainFragment).commitAllowingStateLoss();
@@ -120,6 +123,9 @@ public class MainActivity extends AppCompatActivity {
         }
         else if (index == 0) {
             fragmentManager.beginTransaction().replace(R.id.fragmentLayout, scheduleSearchFragment).commit();
+        }
+        else if (index == 2) {
+            fragmentManager.beginTransaction().replace(R.id.fragmentLayout, scheduleDeleteFragment).commit();
         }
     }
 

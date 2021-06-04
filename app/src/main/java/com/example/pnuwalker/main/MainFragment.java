@@ -46,20 +46,16 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
 
     //메인 액티비티 객체 선언
     MainActivity activity;
-
+    MainFragwhole mainFragwhole;
 
     static TMapView frag_tMapView;
-    static TMapData frag_tMapdata;
     private static TMapGpsManager mygps;
     RelativeLayout frag_mapLayout;
     FindPath fragfindPNUPath;
 
     SimpleDateFormat onlyDate = new SimpleDateFormat("yyyyMMdd");
-    SimpleDateFormat onlytime = new SimpleDateFormat("HHmm");
-
 
     SimpleDateFormat nowDate = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
 
     SimpleDateFormat simpleDate = new SimpleDateFormat("yyyyMMddHHmm");
     TextView next_time;
@@ -67,6 +63,7 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
     // 나중에 시간표에 저장된 DB를 가져 올 것이므로, 함수 구상용도이고, 임의로 시간순 작성.
     static String[] today_schedule = new String[30];
     static String[] today_schedule_time = new String[30];      //테스트용. 날짜시간 맞게 변경후 시연할것.
+    static String[] today_schedule_end = new String[30];
     static String[] today_schedule_site = new String[30];
     static double[] today_schedule_site_xpoint = new double[30];
     static double[] today_schedule_site_ypoint = new double[30];
@@ -89,6 +86,11 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
+
+        if(mainFragwhole.tmpfragchange == 1){
+            mainFragwhole.tmpfragchange = 0;
+            activity.onFragmentChange(1);
         }
 
         //현재시각 표시.
@@ -129,8 +131,6 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
 
         int schesize = 0;       //ScheduleReader.
 
-
-
         ArrayList<DaySchedule> schedules = new ScheduleReader(activity.helper, year, month+1 , day , temporalDayofWeek, 0, 0).schedules;
 
         double yy = 0;
@@ -144,6 +144,8 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
             today_schedule_site_ypoint[i] = a.getDestLat();
             today_schedule_site_xpoint[i] = a.getDestLon();
             today_schedule_site[i] = a.getDestName();
+
+
             if(String.valueOf(a.getStartMin()).length() < 2) m = "0" + String.valueOf(a.getStartMin());
             else m = String.valueOf(a.getStartMin());
             h = String.valueOf(a.getStartHour()) + m;
@@ -153,6 +155,16 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
             l = String.valueOf(month);
             if(l.length() < 2)    l = "0" + l;
             today_schedule_time[i] = String.valueOf(year) + l + j + h;
+
+            if(String.valueOf(a.getEndMin()).length() < 2) m = "0" + String.valueOf(a.getEndMin());
+            else m = String.valueOf(a.getEndMin());
+            h = String.valueOf(a.getEndHour()) + m;
+            if(h.length() < 4) h = "0" + h;
+            j = String.valueOf(day);
+            if(j.length() < 2)    j = "0" + j;
+            l = String.valueOf(month);
+            if(l.length() < 2)    l = "0" + l;
+            today_schedule_end[i] = String.valueOf(year) + l + j + h;
 
 
         }
@@ -199,10 +211,19 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
                 String bef15min = updater(today_schedule_time[i]);
             }
             else{
-                TextView bef_schedule = view.findViewById(R.id.did_time);
-                bef_schedule.setText(today_schedule[0]);
-                TextView bef_site = view.findViewById(R.id.did_site);
-                bef_site.setText(today_schedule_site[0]);
+                tmp = today_schedule_end[0].substring(8,12);
+                if(Integer.parseInt(tmp) > Integer.parseInt(strdate)) {
+                    TextView bef_schedule = view.findViewById(R.id.do_time);
+                    bef_schedule.setText(today_schedule[0]);
+                    TextView now_site = view.findViewById(R.id.do_site);
+                    now_site.setText(today_schedule_site[0]);
+                }
+                else {
+                    TextView bef_schedule = view.findViewById(R.id.did_time);
+                    bef_schedule.setText(today_schedule[0]);
+                    TextView bef_site = view.findViewById(R.id.did_site);
+                    bef_site.setText(today_schedule_site[0]);
+                }
             }
         }
         else if(schesize == 2){
@@ -227,11 +248,19 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
                             System.out.println("null");
                         else
                             frag_tMapView.addTMapPolyLine("path"+ i, polyLine);
-
-                        TextView now_schedule = view.findViewById(R.id.do_time);
-                        now_schedule.setText(today_schedule[i-1]);
-                        TextView now_site = view.findViewById(R.id.do_site);
-                        now_site.setText(today_schedule_site[i-1]);
+                        tmp = today_schedule_end[0].substring(8,12);
+                        if(Integer.parseInt(tmp) > Integer.parseInt(strdate)) {
+                            TextView now_schedule = view.findViewById(R.id.do_time);
+                            now_schedule.setText(today_schedule[0]);
+                            TextView now_site = view.findViewById(R.id.do_site);
+                            now_site.setText(today_schedule_site[0]);
+                        }
+                        else {
+                            bef_schedule = view.findViewById(R.id.did_time);
+                            bef_schedule.setText(today_schedule[i - 1]);
+                            bef_site = view.findViewById(R.id.did_site);
+                            bef_site.setText(today_schedule_site[i - 1]);
+                        }
                     }
                     break;
                 }
@@ -267,10 +296,20 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
                         else
                             frag_tMapView.addTMapPolyLine("path"+ i, polyLine);
 
-                        TextView now_schedule = view.findViewById(R.id.do_time);
-                        now_schedule.setText(today_schedule[i-1]);
-                        TextView now_site = view.findViewById(R.id.do_site);
-                        now_site.setText(today_schedule_site[i-1]);
+                        tmp = today_schedule_end[0].substring(8,12);
+                        if(Integer.parseInt(tmp) > Integer.parseInt(strdate)) {
+                            TextView now_schedule = view.findViewById(R.id.do_time);
+                            now_schedule.setText(today_schedule[0]);
+                            TextView now_site = view.findViewById(R.id.do_site);
+                            now_site.setText(today_schedule_site[0]);
+                        }
+                        else {
+                            bef_schedule = view.findViewById(R.id.did_time);
+                            bef_schedule.setText(today_schedule[i - 1]);
+                            bef_site = view.findViewById(R.id.did_site);
+                            bef_site.setText(today_schedule_site[i - 1]);
+                        }
+
                         if(i > 1){
                             TextView beff_schedule = view.findViewById(R.id.did_time);
                             beff_schedule.setText(today_schedule[i-2]);
@@ -290,29 +329,38 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
             }
         }
 
+        //남은시간 표기
+        int jj = 0;
+        while(jj < schesize)
+        {
 
+            String tmp = today_schedule_time[jj].substring(8, 12);
+            int schedule_int = Integer.parseInt(tmp);
+            int strdate_int = Integer.parseInt(strdate);
+            String tmpint;
+            if(schedule_int > strdate_int){
 
+                int diff = schedule_int - strdate_int ;
 
-//        //다음일과까지 남은 시간 표기.
-//        Date d1 = null;
-//        try {
-//            if(i < schesize)
-//                d1 = simpleDate.parse(today_schedule_time[i]);
-//            else
-//                d1 = simpleDate.parse(simpleDate.format(curDate));
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//        try {
-//            curDate = simpleDate.parse(simpleDate.format(curDate));
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//        SimpleDateFormat f = new SimpleDateFormat("HH:mm");
-//        long diff =  (d1.getTime() - curDate.getTime()) -32400000;
-//        String get_next_time = f.format(diff);
-//        next_time = view.findViewById(R.id.time_to_next);
-//        next_time.setText(get_next_time);
+                if(Integer.parseInt(strmin) > Integer.parseInt( tmp.substring(2,4))) {
+                    diff = diff - 40;
+                }
+                tmpint = String.valueOf(diff);
+
+                if(diff <10) tmpint = "0" + tmpint;
+                if(diff <100) tmpint = "0" + tmpint;
+                if(diff <1000)  tmpint = "0" + tmpint;
+
+                tmpint = tmpint.substring(0,2) + ":" + tmpint.substring(2,4);
+
+                next_time = view.findViewById(R.id.time_to_next);
+                next_time.setText(tmpint);
+                break;
+            }
+
+            jj++;
+        }
+
 
 
 
@@ -478,9 +526,10 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
         frag_tMapView.setZoomLevel(17); //지도 초기 확대수준 설정
         frag_tMapView.setSightVisible(true); //현재 보고있는 방향을 표시
         frag_tMapView.setIconVisibility(true); //현재 위치를 표시하는 파랑색 아이콘을 표기
-
-        frag_tMapView.setLocationPoint(gps_longitude, gps_latitude);
-        frag_tMapView.setCenterPoint(gps_longitude, gps_latitude);
+        frag_tMapView.setLocationPoint(129.082112, 35.231154);
+        frag_tMapView.setCenterPoint(129.082112, 35.231154);
+//        frag_tMapView.setLocationPoint(gps_longitude, gps_latitude);
+//        frag_tMapView.setCenterPoint(gps_longitude, gps_latitude);
 
 
         if(ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED
@@ -547,14 +596,33 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
             BitmapFactory.Options options = new BitmapFactory.Options();
 
             options.inSampleSize = 2;
-            // 마커 아이콘
-            Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.map_pin_red, options);
-            markerItem1.setIcon(icon); // 마커 아이콘 지정
-            markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
-            markerItem1.setTMapPoint(tMapPoint1); // 마커의 좌표 지정
-            markerItem1.setName(today_schedule[cnt]); // 마커의 타이틀 지정
+            if(cnt == 0) {
+                Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.map_pin_red, options);
+                markerItem1.setIcon(icon); // 마커 아이콘 지정
+                markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
+                markerItem1.setTMapPoint(tMapPoint1); // 마커의 좌표 지정
+                markerItem1.setName("mark" + cnt); // 마커의 타이틀 지정
 
-            frag_tMapView.addMarkerItem("markerItem"+cnt, markerItem1); // 지도에 마커 추가
+                frag_tMapView.addMarkerItem("markerItem" + cnt, markerItem1); // 지도에 마커 추가
+            }
+            else if(cnt + 1 < today_schedule_time.length){
+                Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.pnu_marker_orange, options);
+                markerItem1.setIcon(icon); // 마커 아이콘 지정
+                markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
+                markerItem1.setTMapPoint(tMapPoint1); // 마커의 좌표 지정
+                markerItem1.setName("mark" + cnt); // 마커의 타이틀 지정
+
+                frag_tMapView.addMarkerItem("markerItem" + cnt, markerItem1); // 지도에 마커 추가
+            }
+            else{
+                Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.pnu_marker_green, options);
+                markerItem1.setIcon(icon); // 마커 아이콘 지정
+                markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
+                markerItem1.setTMapPoint(tMapPoint1); // 마커의 좌표 지정
+                markerItem1.setName("mark" + cnt); // 마커의 타이틀 지정
+
+                frag_tMapView.addMarkerItem("markerItem" + cnt, markerItem1); // 지도에 마커 추가
+            }
             cnt++;
         }
 

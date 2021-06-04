@@ -275,11 +275,21 @@ public class SchduleFragment extends Fragment {
         View view = inflater.inflate(R.layout.schdule_fragment, container, false);
 
         Button search_btn = (Button) view.findViewById(R.id.button3);
+        Button delete_btn = (Button) view.findViewById(R.id.button4);
+
         search_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MainActivity mainActivity = (MainActivity) getActivity();
                 mainActivity.onFragmentChanged(0);
+            }
+        });
+
+        delete_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                mainActivity.onFragmentChanged(2);
             }
         });
 
