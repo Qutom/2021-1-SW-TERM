@@ -15,6 +15,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.example.pnuwalker.MainActivity;
 import com.example.pnuwalker.R;
+import com.example.pnuwalker.controlschedule.ControlSchedule;
 import com.example.pnuwalker.main.MainFragment;
 
 import java.util.Calendar;
@@ -49,6 +50,8 @@ public class AlarmReceiver extends BroadcastReceiver {
         String name = intent.getStringExtra("name");
         String destName = intent.getStringExtra("dest_name");
         boolean isPeriod = intent.getBooleanExtra("is_period", false);
+        boolean isDelete = intent.getBooleanExtra("is_delete", false);
+        boolean showNotification = true;
 
         if ( isPeriod ) {
             builder2.setContentTitle("25분뒤에 다음 일정이 있습니다");
@@ -86,14 +89,32 @@ public class AlarmReceiver extends BroadcastReceiver {
 
                 Calendar cal = Calendar.getInstance();
                 cal.setTimeInMillis(System.currentTimeMillis());
-                cal.add(cal.MINUTE, 1);
+                cal.add(cal.MINUTE, 25);
 
                 PendingIntent alarmIntent = PendingIntent.getBroadcast(context, -requestCode, intent, 0);
                 AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
                 alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), alarmIntent);
             } else if ( id < 0 ) {
-                builder2.setContentTitle("다음 일정이 시작되었습니다");
-                builder2.setContentText(startTime + " ~ " + endTime + "| " + name + "(" + destName + ")");
+                if ( isDelete ) {
+                    ControlSchedule controlSchedule = new ControlSchedule(MainActivity.helper, context);
+                    controlSchedule.removeTemporalSchedule(-id);
+                    showNotification = false;
+                } else {
+                    builder2.setContentTitle("다음 일정이 시작되었습니다");
+                    builder2.setContentText(startTime + " ~ " + endTime + "| " + name + "(" + destName + ")");
+
+                    intent.putExtra("id", id);
+                    intent.putExtra("is_delete", true);
+                    int requestCode = (int) (-id % Integer.MAX_VALUE);
+
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTimeInMillis(System.currentTimeMillis());
+                    cal.add(cal.DAY_OF_YEAR, 1);
+
+                    PendingIntent alarmIntent = PendingIntent.getBroadcast(context, requestCode, intent, 0);
+                    AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                    alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), alarmIntent);
+                }
             }
         }
 
@@ -114,7 +135,8 @@ public class AlarmReceiver extends BroadcastReceiver {
         builder2.setContentIntent(pendingIntent);
 
         Notification notification = builder2.build();
-        manager2.notify(1,notification);
+        if ( showNotification )
+            manager2.notify(1,notification);
 
     }
 }

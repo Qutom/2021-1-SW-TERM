@@ -101,10 +101,19 @@ public class FindPath {
             System.out.println(line.getDistance());
             polyline = line;
         } else {
-            if ( isStartPNU )  //두점 모두 내부 = PNU 경로
+            if (isStartPNU) { //두점 모두 내부 = PNU 경로
                 polyline = findPNUPath(start, end);
-            else //두점 모두 외부 = Tmap 경로
+                TMapPolyLine reversePolyline = findPNUPath(end, start);
+
+                if ( polyline == null )
+                    polyline = reversePolyline;
+                else if ( reversePolyline != null )
+                    if (reversePolyline.getDistance() < polyline.getDistance())
+                        polyline = reversePolyline;
+
+            } else { //두점 모두 외부 = Tmap 경로
                 polyline = findTMapPath(start, end, needDelay);
+            }
         }
 
     }
@@ -242,6 +251,7 @@ public class FindPath {
 
                 short lineIndex = nodes.get(endIndex).getParentIndex();
                 while (true) {
+                    System.out.println(lineIndex);
                     Node temp = nodes.get(lineIndex);
                     TMapPoint point = new TMapPoint(temp.getLat(), temp.getLon());
                     Log.d("FindPNUPath" , "result " + point.getLatitude() + ", " + point.getLongitude());

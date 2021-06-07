@@ -187,6 +187,9 @@ public class TravelFragment extends Fragment {
                 tMapView.removeTMapPolyLine("path1");
                 findPNUPath.findPath(pathFindStartPoint, pathFindEndPoint, false);
                 TMapPolyLine line = findPNUPath.getPolyLine();
+                line.setLineColor(Color.MAGENTA);
+                line.setLineWidth(5f);
+                line.setOutLineWidth(0);
                 if (line == null)
                     System.out.println("null");
                 else
@@ -210,6 +213,9 @@ public class TravelFragment extends Fragment {
                 tMapView.removeTMapPolyLine("path1");
                 findPNUPath.findPath(pathFindStartPoint, pathFindEndPoint, false);
                 TMapPolyLine line = findPNUPath.getPolyLine();
+                line.setLineColor(Color.MAGENTA);
+                line.setLineWidth(5f);
+                line.setOutLineWidth(0);
                 if (line == null)
                     System.out.println("null");
                 else

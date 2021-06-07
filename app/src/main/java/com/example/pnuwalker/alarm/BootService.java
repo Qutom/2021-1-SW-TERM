@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import com.example.pnuwalker.DataBaseHelper;
 import com.example.pnuwalker.MainActivity;
 import com.example.pnuwalker.Pair;
+import com.example.pnuwalker.controlschedule.ControlSchedule;
 
 import java.net.Inet4Address;
 import java.text.DateFormat;
@@ -22,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import static com.example.pnuwalker.MainActivity.db;
+import static com.example.pnuwalker.MainActivity.helper;
 
 public class BootService extends Service {
     @Nullable
@@ -199,6 +201,8 @@ public class BootService extends Service {
                 c.moveToNext();
             }
         }
+
+        removeExpiredTemporalSchedule();
     }
 
     //Pair = (hour, minute)
@@ -207,4 +211,22 @@ public class BootService extends Service {
         return new Pair<Integer>(Integer.parseInt(temp[0]), Integer.parseInt(temp[1]));
     }
 
+    //종료된 임시일정 제거
+    private void removeExpiredTemporalSchedule() {
+        Calendar cal = Calendar.getInstance();
+        cal.add(cal.DAY_OF_YEAR, -1);
+        int year = cal.get(cal.YEAR);
+        int month = cal.get(cal.MONTH) + 1;
+        int day = cal.get(cal.DAY_OF_MONTH);
+
+        String date = year + "_" + month + "_" + day;
+        ControlSchedule controlSchedule = new ControlSchedule(helper, this);
+        Cursor c = db.rawQuery("SELECT _id FROM schedule1 WHERE date <= " + date, null);
+
+        if ( c.moveToFirst() )
+            while( !c.isAfterLast() ) {
+                controlSchedule.removeTemporalSchedule(c.getLong(0));
+                c.moveToNext();
+            }
+    }
 }

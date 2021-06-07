@@ -536,6 +536,15 @@ public class ControlSchedule {
         return id;
     }
 
+    public void removeTemporalSchedule(long id) {
+        Cursor c = db.rawQuery("SELECT date, day_week, start_time FROM schedule1 WHERE _id = " + id, null);
+        if (c.moveToFirst()) {
+            removeTemporalSchedule(c.getString(0), c.getInt(1), c.getString(2));
+        } else {
+            Toast.makeText(context, "삭제하고자 하는 일정이 없습니다." , Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public void removeTemporalSchedule(String date, int dayWeek, String startTime) {
         long targetId;
         int targetIndex = -1;
@@ -733,6 +742,7 @@ public class ControlSchedule {
             removeAlarm(-targetId.get(i));
         }
     }
+
     private void addTemporalAlarm(long id) {
         Intent intent = new Intent(context, AlarmReceiver.class);
 
