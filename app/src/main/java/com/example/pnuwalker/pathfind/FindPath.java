@@ -158,10 +158,10 @@ public class FindPath {
         double bestDistance = Double.MAX_VALUE;
         short bestIndex = 99;
 
-        short[] entranceIndex = {99,100,101,102,103,104,105,106,107,368};
+        ArrayList<Coordinate> entrance = pnuMapInfo.getEntrance();
 
-        for (short i = 0; i < entranceIndex.length; i++) {
-            Coordinate exitC = nodes.get(i).getCoord();
+        for (short i = 0; i < entrance.size(); i++) {
+            Coordinate exitC = entrance.get(i);
             TMapPolyLine polyLine = new TMapPolyLine();
             polyLine.addLinePoint(new TMapPoint(exitC.getLat(), exitC.getLon()));
             polyLine.addLinePoint(outPNUPoint);
@@ -174,7 +174,7 @@ public class FindPath {
                 bestIndex = i;
             }
         }
-        Coordinate best = nodes.get(bestIndex).getCoord();
+        Coordinate best = entrance.get(bestIndex);
         System.out.println(bestIndex);
         return new TMapPoint( best.getLat(), best.getLon() );
     }

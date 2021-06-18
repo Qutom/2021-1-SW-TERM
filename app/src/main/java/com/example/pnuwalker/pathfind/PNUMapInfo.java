@@ -12,6 +12,7 @@ public class PNUMapInfo {
 
     private HashMap<Short, Node> graph;
     private ArrayList<Coordinate> border;
+    private ArrayList<Coordinate> entrance;
     private Context c;
 
     public PNUMapInfo(Context c) {
@@ -30,6 +31,12 @@ public class PNUMapInfo {
 
         for (String s : pnuBorderStrings)
             addCoordinateToBorder(s);
+
+        entrance = new ArrayList<>(16);
+        String[] pnuEntranceStrings = c.getResources().getStringArray(R.array.pnu_entrance);
+
+        for (String s : pnuEntranceStrings)
+            addCoordinateToEntrance(s);
 
     }
 
@@ -62,6 +69,13 @@ public class PNUMapInfo {
         graph.put(Short.parseShort(temp[2]) ,new Node(x,y,hash));
     }
 
+    private void addCoordinateToEntrance(String data) {
+        String[] temp = data.split(",");
+        Coordinate coords = new Coordinate(Double.parseDouble(temp[0]),Double.parseDouble(temp[1]));
+        entrance.add(coords);
+    }
+
     ArrayList<Coordinate> getBorder() { return border; }
     HashMap<Short, Node> getGraph() { return graph; }
+    ArrayList<Coordinate> getEntrance() { return entrance; }
 }
