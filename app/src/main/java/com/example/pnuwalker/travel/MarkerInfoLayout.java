@@ -1,5 +1,6 @@
 package com.example.pnuwalker.travel;
 
+import android.graphics.Color;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -11,9 +12,12 @@ import android.widget.TextView;
 
 import androidx.annotation.Dimension;
 
+import com.example.pnuwalker.Pair;
 import com.example.pnuwalker.R;
 import com.skt.Tmap.TMapPOIItem;
 import com.skt.Tmap.TMapPoint;
+
+import java.util.ArrayList;
 
 public class MarkerInfoLayout implements Animation.AnimationListener {
     public static final int DETAIL = 1;
@@ -23,6 +27,7 @@ public class MarkerInfoLayout implements Animation.AnimationListener {
 
     private TMapPoint point;
     private TMapPOIItem poi;
+    private PNUBuildingInfo pnuInfo;
     private RelativeLayout layout;
     private LinearLayout gpsButtonLayout;
     private TextView buildingNumber;
@@ -36,6 +41,7 @@ public class MarkerInfoLayout implements Animation.AnimationListener {
     private Button btnSetSchedule; // 일정등록 버튼
 
     private boolean isVisible;
+    private boolean inPNU = false;
 
     public MarkerInfoLayout(View view) {
         gpsButtonLayout = view.findViewById(R.id.travel_gps_button_layout);
@@ -52,12 +58,7 @@ public class MarkerInfoLayout implements Animation.AnimationListener {
         isVisible = false;
 
         //레이아웃 클릭시 지도가 같이 클릭되는 것을 방지
-        layout.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent e) {
-                return true;
-            }
-        });
+        layout.setOnTouchListener((v, e) -> true);
     }
 
     //Building Number가 빈문자열일 때, TextView를 안보이게함(Gone)
@@ -101,11 +102,30 @@ public class MarkerInfoLayout implements Animation.AnimationListener {
     }
 
     public void setPOI(TMapPOIItem poi) { this.poi = poi; }
-    public void setName(final String nameStr) { name.setText(nameStr); }
+    public void setName(final String nameStr) {
+        if ( nameStr.length() > 20 ) {
+            name.setText(nameStr.substring(0,19) + "...");
+        } else {
+            name.setText(nameStr);
+        }
+    }
+
+    public void setIsPNU(boolean b) { inPNU = b; }
+    public void setPNUInfo(PNUBuildingInfo info) { pnuInfo = info; }
     public void setVisibility(int value) { layout.setVisibility(value); }
     public void setTMapPoint(TMapPoint point) { this.point = point; }
-    public void setBtnDetailActive(boolean bool) { btnDetail.setActivated(bool); }
+    public void setBtnDetailActive(boolean bool) {
+        btnDetail.setClickable(bool);
+        if (bool)
+            btnDetail.setTextColor(Color.WHITE);
+        else
+            btnDetail.setTextColor(Color.GRAY);
+    }
 
+    public boolean isPNU() { return inPNU; }
+    public SimplePOI getSimplePOI() { return new SimplePOI(poi); }
+    public PNUBuildingInfo getPNUInfo() { return pnuInfo; }
+    public TMapPOIItem getPOI() { return poi; }
     public String getName() { return (String) name.getText(); }
     public double getLatitude() { return point.getLatitude(); }
     public double getLongitude() { return point.getLongitude(); }

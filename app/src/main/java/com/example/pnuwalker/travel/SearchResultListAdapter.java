@@ -48,6 +48,8 @@ public class SearchResultListAdapter extends BaseAdapter {
     }
 
     public void clear() { item.clear(); }
+    public void setNameTextColor(int color) { nameTextView.setTextColor(color); }
+
     @Override public int getCount() { return item.size(); }
     @Override public Object getItem(int position) { return item.get(position); }
     @Override public long getItemId(int position) { return position; }

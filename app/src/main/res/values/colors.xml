@@ -16,5 +16,6 @@
     <color name="dark_gray">#323232</color>
     <color name="light_green">#01CC01</color>
     <color name="search_radius_circle">#0FBCFBBD</color>
-
+    <color name="pnu_shortcut_polyline">#FFF38B</color>
+    <color name="clopy_btn">#1F7DC8</color>
 </resources>

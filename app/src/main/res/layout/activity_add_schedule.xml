@@ -36,6 +36,8 @@
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:textSize="50sp"
+            android:maxLength="12"
+            android:maxLines="1"
             android:hint="일정 이름"></EditText>
 
         <EditText
@@ -44,7 +46,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/schedule_name_edittext"
-
             android:layout_marginTop="15dp"
             android:layout_marginBottom="10dp"
             android:layout_marginLeft="10dp"

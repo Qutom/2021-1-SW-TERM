@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -12,13 +13,13 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +27,6 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TableLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,7 +36,6 @@ import androidx.fragment.app.Fragment;
 import com.example.pnuwalker.AddScheduleActivity;
 import com.example.pnuwalker.R;
 import com.example.pnuwalker.pathfind.FindPath;
-import com.skt.Tmap.TMapCircle;
 import com.skt.Tmap.TMapData;
 import com.skt.Tmap.TMapMarkerItem;
 import com.skt.Tmap.TMapPOIItem;
@@ -45,6 +44,7 @@ import com.skt.Tmap.TMapPolyLine;
 import com.skt.Tmap.TMapView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -68,6 +68,7 @@ public class TravelFragment extends Fragment {
     boolean showUser = false;
     boolean isLongClick = false;
     boolean isFirstGpsMove = false;
+    boolean isTracking = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -90,7 +91,7 @@ public class TravelFragment extends Fragment {
             tMapView.removeMarkerItem("user_custom");
 
             TMapMarkerItem marker = new TMapMarkerItem();
-            SearchResult result = (SearchResult) data.getSerializableExtra("result");
+            SimplePOI result = (SimplePOI) data.getSerializableExtra("result");
             TMapPoint p = new TMapPoint(result.lat, result.lon);
             marker.setTMapPoint(p);
 
@@ -119,7 +120,11 @@ public class TravelFragment extends Fragment {
             poi.lowerBizName = result.lowerBizName;
             poi.roadName = result.roadName;
             poi.buildingNo1 = result.buildingNo1;
+            poi.buildingNo2 = result.buildingNo2;
+            poi.noorLon = Double.toString(result.lon);
+            poi.noorLat = Double.toString(result.lat);
             markerInfo.setPOI(poi);
+            markerInfo.setIsPNU(false);
 
             tMapView.setCenterPoint(result.lon, result.lat);
         }
@@ -139,15 +144,14 @@ public class TravelFragment extends Fragment {
 
         tMapView.setLanguage(TMapView.LANGUAGE_KOREAN);
         tMapView.setZoomLevel(17); //지도 초기 확대수준 설정
-        tMapView.setSightVisible(true); //현재 보고있는 방향을 표시
-        tMapView.setIconVisibility(true); //현재 위치를 표시하는 파랑색 아이콘을 표기
         tMapView.setLocationPoint(129.08102, 35.23380 ); //현재 위치 설정
         tMapView.setCenterPoint(129.08102472195395, 35.23380020523731); // 지도 중심좌표 설정
         tMapView.setTMapLogoPosition(TMapView.TMapLogoPositon.POSITION_BOTTOMLEFT);
 
         currentLocation = new TMapPoint(35.23380020523731, 129.08102472195395 );
         tMapData = new TMapData();
-
+        
+        //searchLayout 설정
         searchLayout = view.findViewById(R.id.call_search_layout);
         searchLayout.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), TravelSearchActivity.class);
@@ -164,14 +168,21 @@ public class TravelFragment extends Fragment {
         //버튼 설정
         gpsBtn = view.findViewById(R.id.travel_gps_btn);
         gpsBtn.setOnClickListener((v) -> toggleGps());
-        markerInfo.setBtnClickListener(MarkerInfoLayout.DETAIL, v -> {
-            Intent intent = new Intent(getActivity(), PNUbuildingDetailActivity.class);
-            startActivity(intent);
-        });
 
         locationBtn = view.findViewById(R.id.travel_location_btn);
-        locationBtn.setOnClickListener((v) ->
-                    tMapView.setCenterPoint(tMapView.getLocationPoint().getLongitude(), tMapView.getLocationPoint().getLatitude(), true));
+        locationBtn.setOnClickListener((v) -> setTrackingMode());
+
+        markerInfo.setBtnClickListener(MarkerInfoLayout.DETAIL, v -> {
+            Intent intent = new Intent(getActivity(), TravelDetailActivity.class);
+
+            intent.putExtra("is_pnu", markerInfo.isPNU());
+            if( markerInfo.isPNU() ) //부산대 관련 건물인가?
+                intent.putExtra("pnu", markerInfo.getPNUInfo());
+            else
+                intent.putExtra("poi", markerInfo.getSimplePOI());
+
+            startActivity(intent);
+        });
 
         markerInfo.setBtnClickListener(MarkerInfoLayout.START, v -> {
             TMapPoint point = markerInfo.getTMapPoint();
@@ -180,6 +191,8 @@ public class TravelFragment extends Fragment {
             tMapView.removeMarkerItem("start");
 
             TMapMarkerItem marker = new TMapMarkerItem();
+            marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.path_start));
+            marker.setPosition(0, (float) 0.8);
             marker.setTMapPoint(point);
             tMapView.addMarkerItem("start" ,marker);
 
@@ -206,6 +219,8 @@ public class TravelFragment extends Fragment {
             tMapView.removeMarkerItem("end");
 
             TMapMarkerItem marker = new TMapMarkerItem();
+            marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.path_end));
+            marker.setPosition(0, (float) 0.8);
             marker.setTMapPoint(point);
             tMapView.addMarkerItem("end" ,marker);
 
@@ -237,7 +252,6 @@ public class TravelFragment extends Fragment {
 
         //맵 액션 설정
         //Long Click시 이름이 (ReverseGeoCoding) 인 이름의 마커를 생성하고 MarkerInfo 창을 띄움
-
         tMapView.setOnLongClickListenerCallback((markerlist, poilist, point) -> {
             isLongClick = true;
             TMapMarkerItem marker = new TMapMarkerItem();
@@ -255,6 +269,7 @@ public class TravelFragment extends Fragment {
             markerInfo.show();
             markerInfo.setTMapPoint(point);
             markerInfo.setBtnDetailActive(false);
+            markerInfo.setIsPNU(false);
         });
 
         tMapView.setOnClickListenerCallBack(new TMapView.OnClickListenerCallback() {
@@ -264,40 +279,6 @@ public class TravelFragment extends Fragment {
             public boolean onPressUpEvent(ArrayList<TMapMarkerItem> markerlist, ArrayList<TMapPOIItem> poilist, TMapPoint point, PointF pointf) {
                 TMapPoint currCenterPoint = tMapView.getCenterPoint();
                 int currZoom = tMapView.getZoomLevel();
-
-                Log.d("A", poilist.toString());
-                if ( poilist != null && poilist.size() >= 1 ) {
-                    TMapPOIItem poi = poilist.get(0);
-                    String[] PNUName = getResources().getStringArray(R.array.pnu_building_poi_name);
-                    boolean isPNU = false;
-
-                    for ( String name : PNUName) {
-                        if ( poi.name.equals(name) ) {
-                            isPNU = true;
-                            break;
-                        }
-                    }
-                    
-                    //POI 표시
-                    if ( !isPNU ) {
-                        TMapMarkerItem marker = new TMapMarkerItem();
-                        marker.setTMapPoint(point);
-
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inSampleSize = 2;
-                        marker.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi_dot, options));
-                        marker.setPosition(0, (float) 0.8);
-
-                        tMapView.addMarkerItem("user_custom", marker);
-                        markerInfo.setBuildingNumber("");
-                        markerInfo.setName(poi.name);
-                        markerInfo.setPOI(poi);
-                        markerInfo.show();
-                        markerInfo.setTMapPoint(point);
-                        markerInfo.setBtnDetailActive(true);
-                    }
-                }
-
                 if ( !isLongClick ) {
                     if ( isSamePoint(prevCenterPoint, currCenterPoint) && currZoom == prevZoom) {
                         if (markerInfo.getVisibility() == View.VISIBLE) {
@@ -325,7 +306,7 @@ public class TravelFragment extends Fragment {
         addEssentialMarker();
 
         //필수 PolyLine 생성
-        //addEssentialPolyLine();
+        addEssentialPolyLine();
 
         //GPS
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -351,9 +332,39 @@ public class TravelFragment extends Fragment {
 
     }
 
+    private void addEssentialPolyLine() {
+        String[] pnuStrings = getResources().getStringArray(R.array.pnu_shortcut);
+        for (int i = 0;  i < pnuStrings.length; i++) {
+            String[] temp = pnuStrings[i].split(":");
+            TMapPolyLine polyLine = new TMapPolyLine();
+
+            polyLine.setLineColor(Color.parseColor("#FFF38B"));
+            polyLine.setOutLineColor(Color.parseColor("#FFF38B"));
+            polyLine.setOutLineWidth(0);
+            polyLine.setLineWidth(10);
+
+            for (int j = 0; j < temp.length; j++) {
+                String[] strValue = temp[j].split(",");
+                polyLine.addLinePoint(new TMapPoint(Double.parseDouble(strValue[1]), Double.parseDouble(strValue[0])));
+            }
+
+            tMapView.addTMapPolyLine("pnu_polyline_" + i, polyLine);
+        }
+    }
+
     private void addEssentialMarker() {
         //부산대 건물에 대한 마커 생성
         String[] pnuStrings = getResources().getStringArray(R.array.pnu_buildings);
+        String[] pnuBuildingInfo = getResources().getStringArray(R.array.pnu_buildings_detail_info);
+        TypedArray images = getResources().obtainTypedArray(R.array.pnu_buildings_detail_image);
+
+        //pnuBuildingInfo에 대한 Map 생성
+        HashMap<Integer, String> pnuInfoMap = new HashMap<>(20);
+        for ( String s : pnuBuildingInfo ) {
+            String[] temp = s.split("#");
+            pnuInfoMap.put(Integer.parseInt(temp[0]), temp[1]);
+        }
+
         int[] iconId = {R.drawable.pnu_marker_red,
                         R.drawable.pnu_marker_orange,
                         R.drawable.pnu_marker_yellow,
@@ -369,18 +380,19 @@ public class TravelFragment extends Fragment {
         double longtitude;
 
         //temp = [number, name, latitude, longtitude, descrption , icon]
-        String[] temp = new String[6];
+        String[] temp;
 
-        Activity activity = getActivity();
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = 4;
 
         for (int i = 0; i < pnuStrings.length; i++ ) {
+            int icon;
             temp = pnuStrings[i].split(":");
 
             number = Integer.parseInt(temp[0]);
             latitude = Double.parseDouble(temp[2]);
             longtitude = Double.parseDouble(temp[3]);
+
 
             String id = "pnu_" + i;
             MarkerOverlay marker = new MarkerOverlay(getContext(), temp[0] , temp[1], temp[4], id, markerInfo);
@@ -388,9 +400,33 @@ public class TravelFragment extends Fragment {
             marker.setTMapPoint(new TMapPoint(latitude, longtitude));
 
             if ( temp[5].equals("none") ) {
-                marker.setIcon(makeTextedIcon(iconId[(int)(number/100) - 1], temp[0], 25, Color.BLACK , options));
+                icon = iconId[(number/100) - 1];
+                marker.setIcon(makeTextedIcon(iconId[(number/100) - 1], temp[0], 25, Color.BLACK , options));
             } else {
+                icon = iconId[Integer.valueOf(temp[5])];
                 marker.setIcon(BitmapFactory.decodeResource(getResources(), iconId[Integer.valueOf(temp[5])], options));
+            }
+            
+            //부산대 자세히 정보 추가
+            if ( pnuInfoMap.containsKey(number) ) {
+                String[] info = pnuInfoMap.get(number).split("%"); //number$time정보:imageIndex정보 (정보가 없을시 null로 표기됨)
+
+                ArrayList<Integer> imageList = new ArrayList<>();
+
+                if ( !info[1].equals("null") ) { //image 정보가 있을때,
+                    String[] indexInfo = info[1].split(",");
+
+                    for (String s : indexInfo) {
+                        int index = Integer.parseInt(s);
+                        imageList.add(images.getResourceId(index,-1));
+                    }
+                }
+
+                PNUBuildingInfo pnuInfo = new PNUBuildingInfo(temp[1], longtitude, latitude, info[0], imageList, number);
+                marker.setPnuInfo(pnuInfo);
+            } else {
+                PNUBuildingInfo pnuInfo = new PNUBuildingInfo(temp[1], longtitude, latitude, number);
+                marker.setPnuInfo(pnuInfo);
             }
 
             tMapView.addMarkerItem2(marker.getID(), marker);
@@ -444,7 +480,6 @@ public class TravelFragment extends Fragment {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 3, locationListener);
             showUser = true;
             isFirstGpsMove = true;
-
         }
     }
 
@@ -452,6 +487,17 @@ public class TravelFragment extends Fragment {
         Log.d("GPS", "end GPS");
         showUser = false;
         locationManager.removeUpdates(locationListener);
+    }
+
+    private void setTrackingMode() {
+        isTracking = !isTracking;
+        tMapView.setTrackingMode(isTracking);
+
+        if ( isTracking ) {
+            locationBtn.setBackgroundResource(R.drawable.gps_activated);
+        } else {
+            locationBtn.setBackgroundResource(R.drawable.gps_deactivatd);
+        }
     }
 
 

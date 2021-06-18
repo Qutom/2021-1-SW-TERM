@@ -167,7 +167,7 @@ public class CourseListAdapter extends BaseAdapter {
                             courseStartTime2 = courseStartTime2 + dummyStartTime;
                             courseTime2 = courseTime2 + dummyTime;
                         }
-                        if (courseString.length() < 10) {
+                        if (courseString.length() < 12) {
                             courseLocation = courseString.substring(0, courseString.length());
                         }
                         else {
@@ -248,7 +248,7 @@ public class CourseListAdapter extends BaseAdapter {
                             courseStartTime2 = courseStartTime2 + dummyStartTime;
                             courseTime2 = courseTime2 + dummyTime;
                         }
-                        if (courseString.length() < 10) {
+                        if (courseString.length() < 12) {
                             courseLocation = courseString.substring(0, courseString.length());
                         }
                         else {
@@ -329,7 +329,7 @@ public class CourseListAdapter extends BaseAdapter {
                             courseStartTime2 = courseStartTime2 + dummyStartTime;
                             courseTime2 = courseTime2 + dummyTime;
                         }
-                        if (courseString.length() < 10) {
+                        if (courseString.length() < 12) {
                             courseLocation = courseString.substring(0, courseString.length());
                         }
                         else {
@@ -410,7 +410,7 @@ public class CourseListAdapter extends BaseAdapter {
                             courseStartTime2 = courseStartTime2 + dummyStartTime;
                             courseTime2 = courseTime2 + dummyTime;
                         }
-                        if (courseString.length() < 10) {
+                        if (courseString.length() < 12) {
                             courseLocation = courseString.substring(0, courseString.length());
                         }
                         else {
@@ -491,7 +491,7 @@ public class CourseListAdapter extends BaseAdapter {
                             courseStartTime2 = courseStartTime2 + dummyStartTime;
                             courseTime2 = courseTime2 + dummyTime;
                         }
-                        if (courseString.length() < 10) {
+                        if (courseString.length() < 12) {
                             courseLocation = courseString.substring(0, courseString.length());
                         }
                         else {
@@ -572,7 +572,7 @@ public class CourseListAdapter extends BaseAdapter {
                             courseStartTime2 = courseStartTime2 + dummyStartTime;
                             courseTime2 = courseTime2 + dummyTime;
                         }
-                        if (courseString.length() < 10) {
+                        if (courseString.length() < 12) {
                             courseLocation = courseString.substring(0, courseString.length());
                         }
                         else {
@@ -653,7 +653,7 @@ public class CourseListAdapter extends BaseAdapter {
                             courseStartTime2 = courseStartTime2 + dummyStartTime;
                             courseTime2 = courseTime2 + dummyTime;
                         }
-                        if (courseString.length() < 10) {
+                        if (courseString.length() < 12) {
                             courseLocation = courseString.substring(0, courseString.length());
                         }
                         else {
@@ -734,7 +734,7 @@ public class CourseListAdapter extends BaseAdapter {
                             courseStartTime2 = courseStartTime2 + dummyStartTime;
                             courseTime2 = courseTime2 + dummyTime;
                         }
-                        if (courseString.length() < 10) {
+                        if (courseString.length() < 12) {
                             courseLocation = courseString.substring(0, courseString.length());
                         }
                         else {
@@ -815,7 +815,7 @@ public class CourseListAdapter extends BaseAdapter {
                             courseStartTime2 = courseStartTime2 + dummyStartTime;
                             courseTime2 = courseTime2 + dummyTime;
                         }
-                        if (courseString.length() < 10) {
+                        if (courseString.length() < 12) {
                             courseLocation = courseString.substring(0, courseString.length());
                         }
                         else {
@@ -896,7 +896,7 @@ public class CourseListAdapter extends BaseAdapter {
                             courseStartTime2 = courseStartTime2 + dummyStartTime;
                             courseTime2 = courseTime2 + dummyTime;
                         }
-                        if (courseString.length() < 10) {
+                        if (courseString.length() < 12) {
                             courseLocation = courseString.substring(0, courseString.length());
                         }
                         else {
@@ -942,7 +942,7 @@ public class CourseListAdapter extends BaseAdapter {
                             courseTime2 = courseTime2 + courseString.substring(0, courseString.indexOf(" "));
                             courseString.delete(0, courseString.indexOf(" ") + 1);
                         }
-                        if (courseString.length() < 10) {
+                        if (courseString.length() < 12) {
                             courseLocation = courseString.substring(0, courseString.length());
                         }
                         else {
@@ -987,7 +987,7 @@ public class CourseListAdapter extends BaseAdapter {
                             courseTime2 = courseTime2 + courseString.substring(0, courseString.indexOf(" "));
                             courseString.delete(0, courseString.indexOf(" ") + 1);
                         }
-                        if (courseString.length() < 10) {
+                        if (courseString.length() < 12) {
                             courseLocation = courseString.substring(0, courseString.length());
                         }
                         else {
@@ -1032,7 +1032,7 @@ public class CourseListAdapter extends BaseAdapter {
                             courseTime2 = courseTime2 + courseString.substring(0, courseString.indexOf(" "));
                             courseString.delete(0, courseString.indexOf(" ") + 1);
                         }
-                        if (courseString.length() < 10) {
+                        if (courseString.length() < 12) {
                             courseLocation = courseString.substring(0, courseString.length());
                         }
                         else {
@@ -1077,7 +1077,7 @@ public class CourseListAdapter extends BaseAdapter {
                             courseTime2 = courseTime2 + courseString.substring(0, courseString.indexOf(" "));
                             courseString.delete(0, courseString.indexOf(" ") + 1);
                         }
-                        if (courseString.length() < 10) {
+                        if (courseString.length() < 12) {
                             courseLocation = courseString.substring(0, courseString.length());
                         }
                         else {
@@ -1123,7 +1123,7 @@ public class CourseListAdapter extends BaseAdapter {
                             courseTime2 = courseTime2 + courseString.substring(0, courseString.indexOf(" "));
                             courseString.delete(0, courseString.indexOf(" ") + 1);
                         }
-                        if (courseString.length() < 10) {
+                        if (courseString.length() < 12) {
                             courseLocation = courseString.substring(0, courseString.length());
                         }
                         else {
@@ -1168,7 +1168,7 @@ public class CourseListAdapter extends BaseAdapter {
                             courseTime2 = courseTime2 + courseString.substring(0, courseString.indexOf(" "));
                             courseString.delete(0, courseString.indexOf(" ") + 1);
                         }
-                        if (courseString.length() < 10) {
+                        if (courseString.length() < 12) {
                             courseLocation = courseString.substring(0, courseString.length());
                         }
                         else {
@@ -1213,7 +1213,7 @@ public class CourseListAdapter extends BaseAdapter {
                             courseTime2 = courseTime2 + courseString.substring(0, courseString.indexOf(" "));
                             courseString.delete(0, courseString.indexOf(" ") + 1);
                         }
-                        if (courseString.length() < 10) {
+                        if (courseString.length() < 12) {
                             courseLocation = courseString.substring(0, courseString.length());
                         }
                         else {
@@ -1258,7 +1258,7 @@ public class CourseListAdapter extends BaseAdapter {
                             courseTime2 = courseTime2 + courseString.substring(0, courseString.indexOf(" "));
                             courseString.delete(0, courseString.indexOf(" ") + 1);
                         }
-                        if (courseString.length() < 10) {
+                        if (courseString.length() < 12) {
                             courseLocation = courseString.substring(0, courseString.length());
                         }
                         else {
@@ -1303,7 +1303,7 @@ public class CourseListAdapter extends BaseAdapter {
                             courseTime2 = courseTime2 + courseString.substring(0, courseString.indexOf(" "));
                             courseString.delete(0, courseString.indexOf(" ") + 1);
                         }
-                        if (courseString.length() < 10) {
+                        if (courseString.length() < 12) {
                             courseLocation = courseString.substring(0, courseString.length());
                         }
                         else {
@@ -1348,7 +1348,7 @@ public class CourseListAdapter extends BaseAdapter {
                             courseTime2 = courseTime2 + courseString.substring(0, courseString.indexOf(" "));
                             courseString.delete(0, courseString.indexOf(" ") + 1);
                         }
-                        if (courseString.length() < 10) {
+                        if (courseString.length() < 12) {
                             courseLocation = courseString.substring(0, courseString.length());
                         }
                         else {
@@ -1468,12 +1468,6 @@ public class CourseListAdapter extends BaseAdapter {
                                     Double.parseDouble(tp_y),
                                     courseLocationRoom));
 
-                    if (add.checkSchedule()) {
-                        add.addSchedule();
-                    } else {
-                        return;
-                    }
-
                     periodDayofWeek[0] = false;
                     periodDayofWeek[1] = false;
                     periodDayofWeek[2] = false;
@@ -1498,7 +1492,7 @@ public class CourseListAdapter extends BaseAdapter {
                         periodDayofWeek[4] = true;
                     }
 
-                    add = new ControlSchedule(MainActivity.helper, activity,
+                    ControlSchedule add2 = new ControlSchedule(MainActivity.helper, activity,
                             new PeriodScheduleData(courseList.get(i).getCourseTitle(),
                                     "등록된 강의 : " + courseList.get(i).getCourseTitle(),
                                     periodDayofWeek,
@@ -1511,8 +1505,9 @@ public class CourseListAdapter extends BaseAdapter {
                                     Double.parseDouble(tp_y),
                                     courseLocationRoom));
 
-                    if (add.checkSchedule()) {
+                    if (add.checkSchedule() && add2.checkSchedule()) {
                         add.addSchedule();
+                        add2.addSchedule();
                     } else {
                         return;
                     }

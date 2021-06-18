@@ -5,8 +5,21 @@
     android:orientation="horizontal"
     android:background="#ffffff">
 
+    <Button
+        android:id="@+id/addButton"
+        android:layout_width="80dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="#5C5C5C"
+        android:gravity="center"
+        android:text="추가"
+        android:textColor="#ffffff"
+        android:textSize="18dp" />
+
     <LinearLayout
-        android:layout_width="315dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
@@ -102,18 +115,5 @@
         </LinearLayout>
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/addButton"
-        android:layout_width="80dp"
-        android:layout_height="40dp"
-        android:layout_gravity="center"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:background="#5C5C5C"
-        android:gravity="center"
-        android:text="추가"
-        android:textColor="#ffffff"
-        android:textSize="18dp" />
 
 </LinearLayout>

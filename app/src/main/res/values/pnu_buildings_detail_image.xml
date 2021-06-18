@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="pnu_buildings_detail_image">
+        <item>@drawable/pnu_center_lib_1</item>
+        <item>@drawable/pnu_center_lib_2</item>
+        <item>@drawable/pnu_center_lib_3</item>
+        <item>@drawable/pnu_center_lib_4</item>
+        <item>@drawable/pnu_dawn_lib_1</item>
+        <item>@drawable/pnu_dawn_lib_2</item>
+        <item>@drawable/pnu_dawn_lib_3</item>
+        <item>@drawable/pnu_dawn_lib_4</item>
+        <item>@drawable/pnu_dawn_lib_5</item>
+    </array>
+</resources>

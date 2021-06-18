@@ -27,6 +27,7 @@ public class MarkerOverlay extends TMapMarkerItem2 {
     private Context 	mContext = null;
     private MarkerInfoLayout markerInfoLayout;
 
+    private PNUBuildingInfo pnuInfo;
     private String name;
     private String description;
     private String buildingNumber;
@@ -60,6 +61,8 @@ public class MarkerOverlay extends TMapMarkerItem2 {
     public void setCalloutRect(Rect rect) {
         super.setCalloutRect(rect);
     }
+
+    public void setPnuInfo(PNUBuildingInfo info) { pnuInfo = info; }
 
     public MarkerOverlay(Context context, String buildingNumber, String name , String description,  String id, MarkerInfoLayout layout) {
         this.mContext = context;
@@ -127,5 +130,7 @@ public class MarkerOverlay extends TMapMarkerItem2 {
             markerInfoLayout.show();
         markerInfoLayout.setTMapPoint(getTMapPoint());
         markerInfoLayout.setBtnDetailActive(true);
+        markerInfoLayout.setPNUInfo(pnuInfo);
+        markerInfoLayout.setIsPNU(true);
     }
 }

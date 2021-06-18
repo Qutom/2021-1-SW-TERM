@@ -3,6 +3,7 @@ package com.example.pnuwalker.main;
 import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -10,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +26,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.pnuwalker.MainActivity;
+import com.example.pnuwalker.Pair;
 import com.example.pnuwalker.R;
 import com.example.pnuwalker.controlschedule.DaySchedule;
 import com.example.pnuwalker.controlschedule.ScheduleReader;
@@ -33,6 +36,7 @@ import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapPolyLine;
 import com.skt.Tmap.TMapView;
 
+import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -65,32 +69,23 @@ public class MainFragwhole extends Fragment {
     int temporalDayofWeek  = cal.get( cal.DAY_OF_WEEK) - 2;
     int week ;
     int schesize = 0;       //ScheduleReader.
+    int scheline = 0;
+    static int viewschedule = 0;
+    static int mapline = 0;
 
-
+    ArrayList<Pair<Double>> coordinate;
     // 나중에 시간표에 저장된 DB를 가져 올 것이므로, 함수 구상용도이고, 임의로 시간순 작성.
     String[] today_schedule = new String[30];
     String[] today_schedule_time = new String[30];      //테스트용. 날짜시간 맞게 변경후 시연할것.
     String[] today_schedule_site = new String[30];
-    double[] today_schedule_site_xpoint = new double[30];
-    double[] today_schedule_site_ypoint = new double[30];
-    String[] today_schedule_polyliney = new String[30];
-    String[] today_schedule_polylinex = new String[30];
 
-//    // 나중에 시간표에 저장된 DB를 가져 올 것이므로, 함수 구상용도이고, 임의로 시간순 작성.
-//    String[] today_schedule = new String[]{"컴알","고토","도서관자습"};
-//    String[] today_schedule_time = new String[]{"202104281200","202104281400","202104242200"};      //테스트용. 날짜시간 맞게 변경후 시연할것.
-//    String[] today_schedule_site = new String[]{"제도관","인문관","새벽벌"};
-//    double[] today_schedule_site_xpoint = new double[]{129.082112,129.08134602,129.081379771};
-//    double[] today_schedule_site_ypoint = new double[]{35.231154,35.232287960304575,35.23577906709686};
-
-
+    TMapPolyLine[] today_schedule_tmapline;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.main_fragment_wholeschedule, container, false);
         SimpleDateFormat onlyDate = new SimpleDateFormat("yyyyMMdd");
-
 
         //현재시각 표시.
         TextView cur_time;
@@ -99,9 +94,11 @@ public class MainFragwhole extends Fragment {
         long  tmpnow =  curDate.getTime() ;
         String get_time = nowDate.format(tmpnow);
 
+        today_schedule_tmapline = new TMapPolyLine[30];
         activity = (MainActivity) getActivity();
         String today_whole_schedule = "";
 
+        coordinate = new ArrayList<>();
 
         //티맵 표시.
         TMapView frag_tMapView;
@@ -110,6 +107,8 @@ public class MainFragwhole extends Fragment {
         frag_mapLayout.addView(frag_tMapView);
 
         int index = 0 ;         //scheduletab.
+        viewschedule = 0;
+        scheline = 0;
 
         //버튼2 객체 초기화
         Button button2 = rootView.findViewById(R.id.today_schedule);
@@ -169,17 +168,21 @@ public class MainFragwhole extends Fragment {
         String h = "",k = "",j = "", l = "",m = "" , n= "";
         TMapPolyLine polyLine;
         String whole = "";
-        for(int i = 0 ; i < schesize; i++){
+        for(int i = 0 ; i < schesize; i++) {
+            whole = "";
             DaySchedule a = schedules.get(i);
             h = a.getName();
+            today_schedule[i] = h;
             k = String.valueOf(a.getDestLat());
             j = String.valueOf(a.getDestLon());
             l = a.getDestName();
+            today_schedule_site[i] = l;
             n = String.valueOf(a.getStartMin());
+
             if(n.length() <2 ) n = "0" + n;
             m = String.valueOf(a.getStartHour()) + n;
             if(m.length() <= 3) m = "0" + m;
-            whole = whole + h + "( " + l +":"+ m + " ~";
+            whole = whole +  "("+ m + " ~";
 
             if(String.valueOf(a.getEndMin()).length() < 2) m = "0" + String.valueOf(a.getEndMin());
             else m = String.valueOf(a.getEndMin());
@@ -187,22 +190,140 @@ public class MainFragwhole extends Fragment {
             if(h.length() < 4) h = "0" + h;
             whole = whole + h +  ")";
 
-            if(i+1 < schesize)  whole = whole +"-> ";
+            today_schedule_time[i] = whole;
 
-            makeMaker(frag_tMapView,i,schesize, Double.parseDouble(k), Double.parseDouble(j));
+            coordinate.add(new Pair<>(Double.parseDouble(k), Double.parseDouble(j)));
 
             polyLine = a.getPolyLine();
             if (polyLine == null)
                 System.out.println("null");
             else
-                frag_tMapView.addTMapPolyLine("path"+ i, polyLine);
+                today_schedule_tmapline[i] = polyLine;
+            //frag_tMapView.addTMapPolyLine("path"+ i, polyLine);
 
         }
 
-        TextView bef_schedule = rootView.findViewById(R.id.whole_schedule);
-        bef_schedule.setText(whole);
+        TextView bef_schedule = rootView.findViewById(R.id.schedule_num);
+        TextView name_schedule = rootView.findViewById(R.id.schedule_name);
+
+
+        TextView site_schedule = rootView.findViewById(R.id.schedule_site);
+
+        if(schesize == 0){
+
+            bef_schedule.setText(String.valueOf(viewschedule) );
+        }
+        else{
+            bef_schedule.setText(String.valueOf(viewschedule) + today_schedule_time[viewschedule]);
+
+            name_schedule.setText(today_schedule[viewschedule]);
+            site_schedule.setText(today_schedule_site[viewschedule]);
+
+        }
+
+
 
         cur_time.setText(strdate);
+        Button buttonnext = rootView.findViewById(R.id.next_day);
+
+        buttonnext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (viewschedule == schesize) {
+                    frag_tMapView.removeAllMarkerItem();
+                    frag_tMapView.removeTMapPolyLine("path"+1);
+                }
+
+                if(viewschedule < schesize-1) {
+                    viewschedule = viewschedule + 1;
+                    bef_schedule.setText(String.valueOf(viewschedule) + today_schedule_time[viewschedule]);
+                    name_schedule.setText(today_schedule[viewschedule]);
+                    site_schedule.setText(today_schedule_site[viewschedule]);
+                    frag_tMapView.removeAllMarkerItem();
+                    frag_tMapView.removeTMapPolyLine("path"+1);
+
+                    if (scheline < schesize && scheline + 1 < schesize) {
+                        TMapMarkerItem markerItem1 = new TMapMarkerItem();
+                        Pair<Double> p1 = coordinate.get(scheline);
+                        Log.d("C", p1.toString());
+                        TMapPoint tMapPoint1 = new TMapPoint(p1.getFirst(), p1.getSecond()); // 마커 좌표
+
+                        TMapMarkerItem markerItem2 = new TMapMarkerItem();
+                        Pair<Double> p2 = coordinate.get(scheline+1);
+                        Log.d("C", p2.toString());
+                        TMapPoint tMapPoint2 = new TMapPoint(p2.getFirst(), p2.getSecond()); // 마커 좌표.
+
+                        Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.path_start);
+                        markerItem1.setIcon(icon); // 마커 아이콘 지정
+                        markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
+                        markerItem1.setTMapPoint(tMapPoint1); // 마커의 좌표 지정
+
+                        frag_tMapView.addMarkerItem("markerItem_start" , markerItem1); // 지도에 마커 추가
+
+                        Bitmap icon2 = BitmapFactory.decodeResource(activity.getResources(), R.drawable.path_end);
+                        markerItem1.setIcon(icon2); // 마커 아이콘 지정
+                        markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
+                        markerItem1.setTMapPoint(tMapPoint2); // 마커의 좌표 지정
+                        frag_tMapView.addMarkerItem("markerItem_end", markerItem2); // 지도에 마커 추가
+                    }
+
+                    if (today_schedule_tmapline[scheline+1] != null )
+                        frag_tMapView.addTMapPolyLine("path" + 1, today_schedule_tmapline[scheline+1]);
+
+                    scheline++;
+                    System.out.println(scheline);
+                }
+
+            }
+        });
+
+        Button buttonbef = rootView.findViewById(R.id.bef_day);
+        buttonbef.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                frag_tMapView.removeTMapPolyLine("path"+1);
+                frag_tMapView.removeAllMarkerItem();
+
+                if(viewschedule > 0) {
+                    viewschedule = viewschedule - 1;
+                    bef_schedule.setText(String.valueOf(viewschedule) + today_schedule_time[viewschedule]);
+                    name_schedule.setText(today_schedule[viewschedule]);
+                    site_schedule.setText(today_schedule_site[viewschedule]);
+
+                    if (scheline >= 1) {
+                        TMapMarkerItem markerItem1 = new TMapMarkerItem();
+                        Pair<Double> p1 = coordinate.get(scheline-1);
+                        TMapPoint tMapPoint1 = new TMapPoint(p1.getFirst(), p1.getSecond()); // 마커 좌표
+
+                        TMapMarkerItem markerItem2 = new TMapMarkerItem();
+                        Pair<Double> p2 = coordinate.get(scheline);
+                        TMapPoint tMapPoint2 = new TMapPoint(p2.getFirst(), p2.getSecond()); // 마커 좌표.
+
+                        Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.path_start);
+                        markerItem1.setIcon(icon); // 마커 아이콘 지정
+                        markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
+                        markerItem1.setTMapPoint(tMapPoint1); // 마커의 좌표 지정
+
+                        frag_tMapView.addMarkerItem("markerItem_start" , markerItem1); // 지도에 마커 추가
+
+                        Bitmap icon2 = BitmapFactory.decodeResource(activity.getResources(), R.drawable.path_end);
+                        markerItem1.setIcon(icon2); // 마커 아이콘 지정
+                        markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
+                        markerItem1.setTMapPoint(tMapPoint2); // 마커의 좌표 지정
+                        frag_tMapView.addMarkerItem("markerItem_end", markerItem2); // 지도에 마커 추가
+                    }
+
+                    if(scheline-1 != 0 && today_schedule_tmapline[scheline-1] != null ){
+                        frag_tMapView.addTMapPolyLine("path"+ 1, today_schedule_tmapline[scheline-1]);
+                        System.out.println(scheline);
+                    }
+                }
+
+                if ( scheline > 0 )
+                    scheline--;
+            }
+        });
 
 
 
@@ -215,7 +336,6 @@ public class MainFragwhole extends Fragment {
 
         frag_tMapView.setLanguage(TMapView.LANGUAGE_KOREAN);
         frag_tMapView.setZoomLevel(16); //지도 초기 확대수준 설정
-        frag_tMapView.setSightVisible(true); //현재 보고있는 방향을 표시
         frag_tMapView.setIconVisibility(true); //현재 위치를 표시하는 파랑색 아이콘을 표기
         frag_tMapView.setLocationPoint(129.082112, 35.231154);
         frag_tMapView.setCenterPoint(129.082112, 35.231154);
@@ -299,7 +419,7 @@ public class MainFragwhole extends Fragment {
 
             BitmapFactory.Options options = new BitmapFactory.Options();
 
-            options.inSampleSize = 2;
+            options.inSampleSize = 1;
             // 마커 아이콘
             if(cnt == 0) {
                 Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.map_pin_red, options);
@@ -311,7 +431,7 @@ public class MainFragwhole extends Fragment {
                 frag_tMapView.addMarkerItem("markerItem" + cnt, markerItem1); // 지도에 마커 추가
             }
             else if(cnt + 1 < size){
-                Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.pnu_marker_orange, options);
+                Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.path_start, options);
                 markerItem1.setIcon(icon); // 마커 아이콘 지정
                 markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
                 markerItem1.setTMapPoint(tMapPoint1); // 마커의 좌표 지정
@@ -320,7 +440,7 @@ public class MainFragwhole extends Fragment {
                 frag_tMapView.addMarkerItem("markerItem" + cnt, markerItem1); // 지도에 마커 추가
             }
             else{
-                Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.pnu_marker_green, options);
+                Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.path_end, options);
                 markerItem1.setIcon(icon); // 마커 아이콘 지정
                 markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
                 markerItem1.setTMapPoint(tMapPoint1); // 마커의 좌표 지정
@@ -349,6 +469,8 @@ public class MainFragwhole extends Fragment {
                 cal.set(Calendar.MONTH, month);
                 cal.set(Calendar.DATE, day);
                 temporalDayofWeek = cal.get(Calendar.DAY_OF_WEEK) -2;
+
+                viewschedule = 0;
 
                 setDateDialogBtnText(getDateString());
                 tmpfragchange = 1;

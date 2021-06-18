@@ -10,9 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.pnuwalker.MainActivity;
 import com.example.pnuwalker.R;
@@ -27,12 +29,15 @@ public class ScheduleListAdapter extends BaseAdapter {
     private List<Data> dataList;
     private Fragment parent;
     private Activity activity;
+    private FragmentTransaction ft;
+    Button deleteButton;
 
-    public ScheduleListAdapter(Context context, List<Data> dataList, Fragment parent, Activity activity) {
+    public ScheduleListAdapter(Context context, List<Data> dataList, Fragment parent, Activity activity, FragmentTransaction ft) {
         this.context = context;
         this.dataList = dataList;
         this.parent = parent;
         this.activity = activity;
+        this.ft = ft;
     }
 
     @Override
@@ -54,12 +59,14 @@ public class ScheduleListAdapter extends BaseAdapter {
         TextView courseDayofTheWeek = (TextView) v.findViewById(R.id.courseDayofTheWeek);
         TextView courseTime = (TextView) v.findViewById(R.id.courseTime);
         TextView courseTime3 = (TextView) v.findViewById(R.id.courseTime3);
-
-        if (dataList.get(i).getcourseKind() == 1) {
+        LinearLayout courseUp = (LinearLayout) v.findViewById(R.id.courseUp);
+        if ((dataList.get(i).getcourseKind() < 0) || (dataList.get(i).getcourseKind() == 1)) {
             courseKind.setText("정기");
+            courseUp.setBackgroundColor(context.getResources().getColor(R.color.common_gray));
         }
-        else if (dataList.get(i).getcourseKind() == 0) {
-            courseKind.setText("임시");
+        else if ((dataList.get(i).getcourseKind() >= 0) && (dataList.get(i).getcourseKind() != 1)) {
+            courseKind.setText("임시 : " + dataList.get(i).getcourseDate() + " / ");
+            courseUp.setBackgroundColor(context.getResources().getColor(R.color.teal_700));
         }
 
         courseID.setText(dataList.get(i).getCourseID() + ".");
@@ -80,23 +87,36 @@ public class ScheduleListAdapter extends BaseAdapter {
 
         v.setTag(dataList.get(i).getCourseID());
 
-        Button deleteButton = (Button) v.findViewById(R.id.deleteButton);
+        deleteButton = (Button) v.findViewById(R.id.deleteButton);
         deleteButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
-                ControlSchedule controlSchedule = new ControlSchedule(MainActivity.helper, context);
+                ControlSchedule controlSchedule = new ControlSchedule(MainActivity.helper, activity);
+
+                System.out.println("SourceKind " + dataList.get(i).getcourseKind());
 
                 if (dataList.get(i).getcourseKind() == 1) {
                     controlSchedule.removePeriodSchedule(dataList.get(i).getcourseDayofTheWeek(), dataList.get(i).getcourseTime());
                 }
-                else if (dataList.get(i).getcourseKind() == 0) {
+                else if (dataList.get(i).getcourseKind() != 1) {
                     controlSchedule.removeTemporalSchedule(dataList.get(i).getcourseDate(), dataList.get(i).getcourseDayofTheWeek(), dataList.get(i).getcourseTime());
                 }
 
+                ft.detach(parent).attach(parent).commit();
 
+                AlertDialog dialog;
+                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                dialog = builder.setMessage("강의가 삭제되었습니다").setPositiveButton("확인", null).create();
+                dialog.show();
             }
         });
 
         return v;
+    }
+
+    public void setDeleteButtonClickListener(View.OnClickListener listener) {
+        if ( deleteButton != null)
+            deleteButton.setOnClickListener(listener);
     }
 }

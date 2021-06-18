@@ -40,7 +40,6 @@ public class PNUMapInfo {
     }
 
     private void addNodeToGraph(String data) { //data : "x,y,index,adjacentIndex들,weight들"
-        System.out.println(data);
         String[] temp = data.split(",");
         double x = Double.parseDouble(temp[0]);
         double y = Double.parseDouble(temp[1]);

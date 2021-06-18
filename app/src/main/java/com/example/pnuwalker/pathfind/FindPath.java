@@ -75,6 +75,7 @@ public class FindPath {
             Log.d("FindPath" , "middle " + middle.getLatitude() + ", " + middle.getLongitude());
             //두개의 PolyLine을 계산
             TMapPolyLine PNULine = findPNUPath(inPNU, middle);
+
             TMapPolyLine TMapLine = findTMapPath(outPNU, middle, needDelay);
 
             ArrayList<TMapPoint> PNUPoints = PNULine.getLinePoint();
@@ -117,7 +118,7 @@ public class FindPath {
         }
 
     }
-    
+
     //해당 포인트가 부산대 내부에 있는지 판별, 부산대 내부에 있다면 true를 리턴
     private boolean isPNUPoint(TMapPoint point) {
         ArrayList<Coordinate> border = pnuMapInfo.getBorder();
@@ -157,7 +158,9 @@ public class FindPath {
         double bestDistance = Double.MAX_VALUE;
         short bestIndex = 99;
 
-        for (short i = 99; i < 108; i++) {
+        short[] entranceIndex = {99,100,101,102,103,104,105,106,107,368};
+
+        for (short i = 0; i < entranceIndex.length; i++) {
             Coordinate exitC = nodes.get(i).getCoord();
             TMapPolyLine polyLine = new TMapPolyLine();
             polyLine.addLinePoint(new TMapPoint(exitC.getLat(), exitC.getLon()));
@@ -243,6 +246,9 @@ public class FindPath {
         f.put(startIndex, 0.0);
 
         while( !openList.isEmpty() ) {
+
+            System.out.println(closeList);
+
             if ( closeList.contains(endIndex) ) {
                 TMapPolyLine line = new TMapPolyLine();
                 line.setLineWidth(2);

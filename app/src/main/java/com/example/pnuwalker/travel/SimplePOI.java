@@ -5,7 +5,7 @@ import com.skt.Tmap.TMapPoint;
 
 import java.io.Serializable;
 
-public class SearchResult implements Serializable {
+public class SimplePOI implements Serializable {
     Double lon;
     Double lat;
 
@@ -21,8 +21,9 @@ public class SearchResult implements Serializable {
     String lowerBizName;
     String roadName;
     String buildingNo1;
+    String buildingNo2;
 
-    public SearchResult(TMapPOIItem poi) {
+    public SimplePOI(TMapPOIItem poi) {
         TMapPoint p = poi.getPOIPoint();
         lon = p.getLongitude();
         lat = p.getLatitude();
@@ -38,5 +39,17 @@ public class SearchResult implements Serializable {
         lowerBizName = poi.lowerBizName;
         roadName = poi.roadName;
         buildingNo1 = poi.buildingNo1;
+        buildingNo2 = poi.buildingNo2;
+    }
+
+    public String toString() {
+        String s = "";
+        s += name + "  : " + lon + ", " + lat + "\n";
+        s += telNo + "\n";
+        s += upperAddrName + " " + middleAddrName + " " + lowerAddrName + "\n";
+        s += firstNo + " " + secondNo + "\n";
+        s += upperBizName + " " + middleBizName + " " + lowerBizName + "\n";
+        s += roadName + " " + buildingNo1 + "-" + buildingNo2 + "\n";
+        return s;
     }
 }

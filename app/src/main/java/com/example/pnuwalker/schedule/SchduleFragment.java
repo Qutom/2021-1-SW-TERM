@@ -32,6 +32,8 @@ public class SchduleFragment extends Fragment {
     Cursor cursor;
 
     public void initializeDayArray(int count) {
+        cal.set(cal.DAY_OF_WEEK, cal.MONDAY);
+
         for (int i = 0; i < count; i++) {
             year[i] = cal.get(cal.YEAR);
             month[i] = cal.get(cal.MONTH);
@@ -245,6 +247,8 @@ public class SchduleFragment extends Fragment {
             count++;
         }
 
+        schedule.allClear();
+
         for (int a = 0; a < cursor.getCount(); a++) {
             if (a == 0) {
                 cursor.moveToFirst();
@@ -252,8 +256,13 @@ public class SchduleFragment extends Fragment {
                 cursor.moveToNext();
             }
 
-            if (cursor.getInt(10) == 1) {
-                schedule.addSchedule(cursor.getInt(2), cursor.getString(3), cursor.getString(4), cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(13), cursor.getInt(10));
+            if (cursor.getInt(10) == 1 || cursor.getInt(10) < 0) {
+                if ( cursor.getInt(10) < 0 ) {
+                    System.out.println("a" + " : " + cursor.getInt(10));
+                    schedule.addSchedule(cursor.getInt(2), cursor.getString(3), cursor.getString(4), cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(13), 1);
+                } else {
+                    schedule.addSchedule(cursor.getInt(2), cursor.getString(3), cursor.getString(4), cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(13), cursor.getInt(10));
+                }
             }
         }
 
@@ -265,7 +274,12 @@ public class SchduleFragment extends Fragment {
             }
 
             if ((cursor.getInt(10) != 1) && (Stringcmp(cursor.getString(1), 7))) {
-                schedule.addSchedule(cursor.getInt(2), cursor.getString(3), cursor.getString(4), cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(13), cursor.getInt(10));
+                if ( cursor.getInt(10) < 0 ) {
+                    System.out.println("a" + " : " + cursor.getInt(10));
+                    schedule.addSchedule(cursor.getInt(2), cursor.getString(3), cursor.getString(4), cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(13), 1);
+                } else {
+                    schedule.addSchedule(cursor.getInt(2), cursor.getString(3), cursor.getString(4), cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(13), cursor.getInt(10));
+                }
             }
         }
         schedule.setting(monday, tuesday, wednesday, thursday, friday, getContext());

@@ -3,9 +3,11 @@ package com.example.pnuwalker.controlschedule;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -243,7 +245,11 @@ public class ControlSchedule {
         //같은 date를 가지는(yyyy_mm_dd)를 비교
         System.out.println("Check Temp to Temp");
         String dateStr = String.format("%d_%02d_%02d",year, month + 1, day);
-        Cursor c = db.rawQuery("select start_time,end_time from schedule1 where date = '" + dateStr + "' AND cyclic >= 0" , null );
+        Cursor c = db.rawQuery("select start_time,end_time,name  from schedule1 where date = '" + dateStr + "' AND cyclic >= 0 ORDER BY start_time ASC" , null );
+
+        ArrayList<Pair<String>> crossedTime = new ArrayList<>();
+        ArrayList<String> crossedName= new ArrayList<>();
+        boolean result = true;
 
         if(c.moveToFirst()) {
             int startTime;
@@ -254,19 +260,42 @@ public class ControlSchedule {
                 System.out.println(String.format("%d ~ %d\n",startTime , endTime));
 
                 if ( checkTimeIsCrossed(startTime, endTime, targetStartTime, targetEndTime) ) { //시간이 겹침 -> 탈락
-                    Toast.makeText(context, "시간이 겹치는 임시 일정이 있습니다" , Toast.LENGTH_SHORT).show();
-                    c.close();
-                    return false;
+                    result = false;
+                    crossedTime.add(new Pair<>(c.getString(0).replace("_", ":"), c.getString(1).replace("_", ":")));
+                    crossedName.add(c.getString(2));
                 }
                 c.moveToNext();
             } while( !c.isAfterLast() );
         }
         c.close();
-        return true;
+
+        if ( !result ) {
+            String str = "\n" + dateStr.replace("_", "/")  + "[" + intDayOfWeekToString(temporalDayofWeek) + "]\n";
+            int limit = crossedTime.size() > 6 ? 6 : crossedTime.size();
+            for (int i = 0; i < limit; i++) {
+                Pair<String> p = crossedTime.get(i);
+                str += p.getFirst() + " ~ " + p.getSecond() + " | " + crossedName.get(i) + "\n";
+            }
+
+            if ( crossedTime.size() > 6 )
+                str += "...그외 " + (crossedTime.size() - 6) + " 개\n";
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setPositiveButton("확인", (dialog, id) -> {});
+            builder.setTitle("일정 중복");
+            builder.setMessage("추가하고자 하는 일정이 \n" + str + "\n 와 겹칩니다.");
+            builder.show();
+        }
+
+        return result;
     }
 
     private boolean checkPeriodSchedule(int targetStartTime, int targetEndTime) {
-        Cursor c = db.rawQuery("select day_week,start_time,end_time from schedule1 where cyclic = 1", null);
+        Cursor c = db.rawQuery("select day_week,start_time,end_time from schedule1 where cyclic = 1 ORDER BY day_week ASC, start_time ASC", null);
+        ArrayList<String> crossedDayWeek = new ArrayList<>();
+        ArrayList<Pair<String>> crossedTime = new ArrayList<>();
+
+        boolean result = true;
         if(c.moveToFirst()){
             int startTime;
             int endTime;
@@ -278,16 +307,36 @@ public class ControlSchedule {
                     startTime = strTimetoMinute(c.getString(1)); //start_time
                     endTime = strTimetoMinute(c.getString(2)); //end_time
                     if ( checkTimeIsCrossed(startTime, endTime, targetStartTime, targetEndTime) ) { //시간이 겹침 -> 탈락
-                        Toast.makeText(context, "시간이 겹치는 정규 일정이 있습니다" , Toast.LENGTH_SHORT).show();
-                        c.close();
-                        return false;
+                        result = false;
+                        crossedDayWeek.add(intDayOfWeekToString(dayOfWeek));
+                        crossedTime.add(new Pair<>(c.getString(1).replace("_", ":"), c.getString(2).replace("_", ":")));
                     }
                 }
                 c.moveToNext();
             }
         }
         c.close();
-        return true;
+
+        if ( !result ) {
+            String str = "\n";
+
+            int limit = crossedTime.size() > 6 ? 6 : crossedTime.size();
+
+            for (int i = 0; i < limit; i++) {
+                Pair<String> p = crossedTime.get(i);
+                str += "정규 [" + crossedDayWeek.get(i) + "] " + p.getFirst() + " ~ " + p.getSecond() + "\n";
+            }
+
+            if ( crossedTime.size() > 6 )
+                str += "...그외 " + (crossedTime.size() - 6) + " 개\n";
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setPositiveButton("확인", (dialog, id) -> {});
+            builder.setTitle("일정 중복");
+            builder.setMessage("추가하고자 하는 일정이 \n" + str + "\n 와 겹칩니다.");
+            builder.show();
+        }
+        return result;
     }
 
     private int strTimetoMinute(String str) { //hh_mm
@@ -694,8 +743,7 @@ public class ControlSchedule {
                         break;
                     }
                 }
-                System.out.println(isPeriodOverride + " PeriodIndex : " + periodIndex);
-                System.out.println(schedules.get(periodIndex+1));
+
                 if ( isPeriodOverride ) { //3-1. 존재하지 않는다면 이는 임시일정에 Override 되었음을 의미함, 각 임시일정들의 cyclic 값, additionalOverrideId를 조사 하여 targetIndex를 구하고 Override를 설정
                     for ( int n = 0; n < schedules.size(); n++ ) {
                         if ( schedules.get(n).isOverride(targetId.get(i)) ) {

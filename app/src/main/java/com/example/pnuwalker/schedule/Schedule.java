@@ -27,6 +27,21 @@ public class Schedule {
         }
     }
 
+    public void allClear() {
+        for(int i = 0; i < 25; i++) {
+            monday[i] = "";
+            tuesday[i] = "";
+            wednesday[i] = "";
+            thursday[i] = "";
+            friday[i] = "";
+            monday2[i] = 0;
+            tuesday2[i] = 0;
+            wednesday2[i] = 0;
+            thursday2[i] = 0;
+            friday2[i] = 0;
+        }
+    }
+
     public void addSchedule(int day_week, String startScheduleText, String scheduleText, String end_location, String end_location_name, String name, String room, int cyclic) {
         int day = day_week % 10;
         int array;
@@ -65,7 +80,7 @@ public class Schedule {
                         monday[array] = "(" + end_location + ")";
                         monday2[array] = cyclic;
                         if (room != null) {
-                            monday[array] = monday[array] + " " + room + "호실";
+                            monday[array] = monday[array];
                             monday2[array] = cyclic;
                         }
                     }
@@ -109,7 +124,7 @@ public class Schedule {
                         tuesday[array] = "(" + end_location;
                         tuesday2[array] = cyclic;
                         if (room != null) {
-                            tuesday[array] = tuesday[array] + " " + room + "호실";
+                            tuesday[array] = tuesday[array];
                             tuesday2[array] = cyclic;
                         }
                     }
@@ -153,7 +168,7 @@ public class Schedule {
                         wednesday[array] = "(" + end_location;
                         wednesday2[array] = cyclic;
                         if (room != null) {
-                            wednesday[array] = wednesday[array] + " " + room + "호실";
+                            wednesday[array] = wednesday[array];
                             wednesday2[array] = cyclic;
                         }
                     }
@@ -197,7 +212,7 @@ public class Schedule {
                         thursday[array] = "(" + end_location + ")";
                         thursday2[array] = cyclic;
                         if (room != null) {
-                            thursday[array] = thursday[array] + " " + room + "호실";
+                            thursday[array] = thursday[array];
                             thursday2[array] = cyclic;
                         }
                     }
@@ -241,7 +256,7 @@ public class Schedule {
                         friday[array] = "(" + end_location + ")";
                         friday2[array] = cyclic;
                         if (room != null) {
-                            friday[array] = friday[array] + " " + room + "호실";
+                            friday[array] = friday[array];
                             friday2[array] = cyclic;
                         }
                     }
@@ -288,7 +303,7 @@ public class Schedule {
                         monday[array] = "(" + end_location + ")";
                         monday2[array] = cyclic;
                         if (room != null) {
-                            monday[array] = monday[array] + " " + room + "호실";
+                            monday[array] = monday[array];
                             monday2[array] = cyclic;
                         }
                     }
@@ -333,7 +348,7 @@ public class Schedule {
                         tuesday[array] = "(" + end_location + ")";
                         tuesday2[array] = cyclic;
                         if (room != null) {
-                            tuesday[array] = tuesday[array] + " " + room + "호실";
+                            tuesday[array] = tuesday[array];
                             tuesday2[array] = cyclic;
                         }
                     }
@@ -378,7 +393,7 @@ public class Schedule {
                         wednesday[array] = "(" + end_location + ")";
                         wednesday2[array] = cyclic;
                         if (room != null) {
-                            wednesday[array] = wednesday[array] + " " + room + "호실";
+                            wednesday[array] = wednesday[array];
                             wednesday2[array] = cyclic;
                         }
                     }
@@ -423,7 +438,7 @@ public class Schedule {
                         thursday[array] = "(" + end_location + ")";
                         thursday2[array] = cyclic;
                         if (room != null) {
-                            thursday[array] = thursday[array] + " " + room + "호실";
+                            thursday[array] = thursday[array];
                             thursday2[array] = cyclic;
                         }
                     }
@@ -468,7 +483,7 @@ public class Schedule {
                         friday[array] = "(" + end_location + ")";
                         friday2[array] = cyclic;
                         if (room != null) {
-                            friday[array] = friday[array] + " " + room + "호실";
+                            friday[array] = friday[array];
                             friday2[array] = cyclic;
                         }
                     }
@@ -514,7 +529,11 @@ public class Schedule {
                 array2 = array2 * 2;
                 a = sb.substring(0, 2);
 
-                if (Integer.parseInt(a) >= 30) {
+                if (Integer.parseInt(a) == 0) {
+                    array2 = array2 - 1;
+                }
+
+                if (Integer.parseInt(a) >= 31) {
                     array2 = array2 + 1;
                 }
 
@@ -535,7 +554,7 @@ public class Schedule {
                         monday[array2] = "(" + end_location_name + ")";
                         monday2[array2] = cyclic;
                         if (room != null) {
-                            monday[array2] = monday[array2] + " " + room + "호실";
+                            monday[array2] = monday[array2];
                             monday2[array2] = cyclic;
                         }
                     }
@@ -579,7 +598,11 @@ public class Schedule {
                 array2 = array2 * 2;
                 a = sb.substring(0, 2);
 
-                if (Integer.parseInt(a) >= 30) {
+                if (Integer.parseInt(a) == 0) {
+                    array2 = array2 - 1;
+                }
+
+                if (Integer.parseInt(a) >= 31) {
                     array2 = array2 + 1;
                 }
 
@@ -600,7 +623,7 @@ public class Schedule {
                         tuesday[array2] = "(" + end_location_name + ")";
                         tuesday2[array2] = cyclic;
                         if (room != null) {
-                            tuesday[array2] = tuesday[array2] + " " + room + "호실";
+                            tuesday[array2] = tuesday[array2];
                             tuesday2[array2] = cyclic;
                         }
                     }
@@ -644,7 +667,11 @@ public class Schedule {
                 array2 = array2 * 2;
                 a = sb.substring(0, 2);
 
-                if (Integer.parseInt(a) >= 30) {
+                if (Integer.parseInt(a) == 0) {
+                    array2 = array2 - 1;
+                }
+
+                if (Integer.parseInt(a) >= 31) {
                     array2 = array2 + 1;
                 }
 
@@ -665,7 +692,7 @@ public class Schedule {
                         wednesday[array2] = "(" + end_location_name + ")";
                         wednesday2[array2] = cyclic;
                         if (room != null) {
-                            wednesday[array2] = wednesday[array2] + " " + room + "호실";
+                            wednesday[array2] = wednesday[array2];
                             wednesday2[array2] = cyclic;
                         }
                     }
@@ -712,7 +739,11 @@ public class Schedule {
                 array2 = array2 * 2;
                 a = sb.substring(0, 2);
 
-                if (Integer.parseInt(a) >= 30) {
+                if (Integer.parseInt(a) == 0) {
+                    array2 = array2 - 1;
+                }
+
+                if (Integer.parseInt(a) >= 31) {
                     array2 = array2 + 1;
                 }
 
@@ -734,7 +765,7 @@ public class Schedule {
                         thursday[array2] = "(" + end_location_name + ")";
                         thursday2[array2] = cyclic;
                         if (room != null) {
-                            thursday[array2] = thursday[array2] + " " + room + "호실";
+                            thursday[array2] = thursday[array2];
                             thursday2[array2] = cyclic;
                         }
                     }
@@ -778,7 +809,11 @@ public class Schedule {
                 array2 = array2 * 2;
                 a = sb.substring(0, 2);
 
-                if (Integer.parseInt(a) >= 30) {
+                if (Integer.parseInt(a) == 0) {
+                    array2 = array2 - 1;
+                }
+
+                if (Integer.parseInt(a) >= 31) {
                     array2 = array2 + 1;
                 }
 
@@ -799,7 +834,7 @@ public class Schedule {
                         friday[array2] = "(" + end_location_name + ")";
                         friday2[array2] = cyclic;
                         if (room != null) {
-                            friday[array2] = friday[array2] + " " + room + "호실";
+                            friday[array2] = friday[array2];
                             friday2[array2] = cyclic;
                         }
                     }
@@ -841,7 +876,11 @@ public class Schedule {
                 array2 = array2 * 2;
                 a = sb.substring(0, 2);
 
-                if (Integer.parseInt(a) >= 30) {
+                if (Integer.parseInt(a) == 0) {
+                    array2 = array2 - 1;
+                }
+
+                if (Integer.parseInt(a) >= 31) {
                     array2 = array2 + 1;
                 }
 
@@ -856,7 +895,7 @@ public class Schedule {
                         monday[array2] = "(" + end_location_name + ")";
                         monday2[array2] = cyclic;
                         if (room != null) {
-                            monday[array2] = monday[array2] + " " + room + "호실";
+                            monday[array2] = monday[array2];
                             monday2[array2] = cyclic;
                         }
                     }
@@ -896,7 +935,11 @@ public class Schedule {
                 array2 = array2 * 2;
                 a = sb.substring(0, 2);
 
-                if (Integer.parseInt(a) >= 30) {
+                if (Integer.parseInt(a) == 0) {
+                    array2 = array2 - 1;
+                }
+
+                if (Integer.parseInt(a) >= 31) {
                     array2 = array2 + 1;
                 }
 
@@ -911,7 +954,7 @@ public class Schedule {
                         tuesday[array2] = "(" + end_location_name + ")";
                         tuesday2[array2] = cyclic;
                         if (room != null) {
-                            tuesday[array2] = tuesday[array2] + " " + room + "호실";
+                            tuesday[array2] = tuesday[array2];
                             tuesday2[array2] = cyclic;
                         }
                     }
@@ -951,7 +994,11 @@ public class Schedule {
                 array2 = array2 * 2;
                 a = sb.substring(0, 2);
 
-                if (Integer.parseInt(a) >= 30) {
+                if (Integer.parseInt(a) == 0) {
+                    array2 = array2 - 1;
+                }
+
+                if (Integer.parseInt(a) >= 31) {
                     array2 = array2 + 1;
                 }
 
@@ -966,7 +1013,7 @@ public class Schedule {
                         wednesday[array2] = "(" + end_location_name + ")";
                         wednesday2[array2] = cyclic;
                         if (room != null) {
-                            wednesday[array2] = wednesday[array2] + " " + room + "호실";
+                            wednesday[array2] = wednesday[array2];
                             wednesday2[array2] = cyclic;
                         }
                     }
@@ -1006,7 +1053,11 @@ public class Schedule {
                 array2 = array2 * 2;
                 a = sb.substring(0, 2);
 
-                if (Integer.parseInt(a) >= 30) {
+                if (Integer.parseInt(a) == 0) {
+                    array2 = array2 - 1;
+                }
+
+                if (Integer.parseInt(a) >= 31) {
                     array2 = array2 + 1;
                 }
 
@@ -1021,7 +1072,7 @@ public class Schedule {
                         thursday[array2] = "(" + end_location_name + ")";
                         thursday2[array2] = cyclic;
                         if (room != null) {
-                            thursday[array2] = thursday[array2] + " " + room + "호실";
+                            thursday[array2] = thursday[array2];
                             thursday2[array2] = cyclic;
                         }
                     }
@@ -1061,7 +1112,11 @@ public class Schedule {
                 array2 = array2 * 2;
                 a = sb.substring(0, 2);
 
-                if (Integer.parseInt(a) >= 30) {
+                if (Integer.parseInt(a) == 0) {
+                    array2 = array2 - 1;
+                }
+
+                if (Integer.parseInt(a) >= 31) {
                     array2 = array2 + 1;
                 }
 
@@ -1076,7 +1131,7 @@ public class Schedule {
                         friday[array2] = "(" + end_location_name + ")";
                         friday2[array2] = cyclic;
                         if (room != null) {
-                            friday[array2] = friday[array2] + " " + room + "호실";
+                            friday[array2] = friday[array2];
                             friday2[array2] = cyclic;
                         }
                     }
@@ -1144,6 +1199,7 @@ public class Schedule {
             }
         }
         for (int i = 0; i < 25; i++) {
+            System.out.println(this.tuesday2[i]);
             if (this.tuesday2[i] >= 0) {
                 if (this.tuesday[i] != "") {
                     if (this.tuesday[i] == "1") {

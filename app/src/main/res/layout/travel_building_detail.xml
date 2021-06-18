@@ -6,23 +6,212 @@
     <LinearLayout
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:weightSum="100">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="10"
+            android:background="@drawable/layout_border_bottom">
+
+            <ImageButton
+                android:id="@+id/detail_back_btn"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="5dp"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:src="@drawable/ic_baseline_arrow_back_ios_24">
+            </ImageButton>
+            
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="상세정보"
+                android:textSize="30sp"
+                android:gravity="center">
+            </TextView>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="23"
+            android:id="@+id/detail_map_layout"
+            android:background="@color/bright_gray">
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="15"
+            android:background="@drawable/layout_border_bottom"
+            android:orientation="vertical"
+            android:paddingBottom="3dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="70">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="NAME"
+                    android:textSize="30sp"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="center_vertical"
+                    android:id="@+id/detail_name">
+                </TextView>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:text="더보기"
+                    android:autoSizeTextType="uniform"
+                    android:layout_marginRight="10dp"
+                    android:gravity="center_vertical"
+                    android:visibility="gone"
+                    android:id="@+id/detail_name_extend_btn">
+                </Button>
+            </RelativeLayout>
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="30"
+                android:layout_marginLeft="10dp"
+                android:text="BizNAME"
+                android:textSize="14sp"
+                android:textColor="@color/bright_gray"
+                android:id="@+id/detail_bizname">
+            </TextView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="10"
+            android:orientation="horizontal">
+            
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/ic_baseline_location_on_24"
+                android:id="@+id/detail_address_image">
+            </ImageView>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_marginLeft="15dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/detail_address_image"
+                    android:layout_marginTop="6dp"
+                    android:text="ADDRESS1"
+                    android:textSize="20sp"
+                    android:id="@+id/detail_address1">
+                </TextView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@id/detail_address1"
+                    android:text="ADDRESS2"
+                    android:textColor="@color/bright_gray"
+                    android:textSize="12sp"
+                    android:id="@+id/detail_address2">
+                </TextView>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="8"
+            android:weightSum="100"
+            android:orientation="horizontal"
+            android:background="@drawable/layout_border_bottom"
+            android:id="@+id/detail_telno_layout">
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="6.4"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/ic_baseline_call_24">
+            </ImageView>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="70"
+                android:text="TelNumber"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="17sp"
+                android:autoSizeMaxTextSize="25sp"
+                android:layout_marginLeft="15dp"
+                android:gravity="center_vertical"
+                android:id="@+id/detail_telNo">
+            </TextView>
+
+            <ImageButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="20"
+                android:id="@+id/detail_dial_btn"
+                android:src="@drawable/ic_baseline_call_24">
+            </ImageButton>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="20"
-            android:background="@drawable/layout_border_bottom">
+            android:weightSum="100"
+            android:orientation="horizontal"
+            android:background="@drawable/layout_border_bottom"
+            android:id="@+id/detail_time_layout">
 
-        </RelativeLayout>
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="6.4"
+                android:layout_marginLeft="10dp"
+                android:src="@drawable/ic_baseline_schedule_24">
+            </ImageView>
 
-        <RelativeLayout
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="93.6"
+                android:layout_marginTop="4dp"
+                android:layout_marginLeft="10dp"
+                android:textSize="14sp"
+                android:text="Time Information"
+                android:gravity="center_vertical"
+                android:id="@+id/detail_time_info"></TextView>
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="80"
-            android:background="@drawable/layout_border_bottom">
-
-        </RelativeLayout>
+            android:layout_height="0dp"
+            android:layout_weight="22"
+            android:layout_marginRight="5dp"
+            android:orientation="horizontal"
+            android:scrollbars="horizontal"
+            android:id="@+id/detail_image_layout">
+        </androidx.recyclerview.widget.RecyclerView>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,79 +12,85 @@
         android:orientation="vertical"
         android:weightSum="100">
 
-        <RelativeLayout
-            android:id="@+id/search_map_layout"
+        <LinearLayout
+            android:id="@+id/search_map_parent_layout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="40">
+            android:layout_weight="65">
 
             <RelativeLayout
-                android:id="@+id/search_map"
+                android:id="@+id/search_map_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/bright_gray">
-            </RelativeLayout>
+                android:layout_height="match_parent">
 
-            <LinearLayout
-                android:layout_width="380dp"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_alignParentTop="true"
-                android:background="@drawable/search_bar_bg"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
-                android:id="@+id/call_search_layout"
-                android:weightSum="100">
+                <RelativeLayout
+                    android:id="@+id/search_map"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/bright_gray">
+                </RelativeLayout>
 
-                <ImageButton
-                    android:id="@+id/search_back_btn"
-                    android:layout_width="0dp"
-                    android:layout_height="30dp"
-                    android:layout_weight="10"
-                    android:layout_marginLeft="5dp"
+                <LinearLayout
+                    android:layout_width="380dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_alignParentTop="true"
+                    android:background="@drawable/search_bar_bg"
+                    android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:src="@drawable/ic_baseline_arrow_back_ios_24"></ImageButton>
+                    android:id="@+id/call_search_layout"
+                    android:weightSum="100">
 
-                <EditText
-                    android:id="@+id/search_textinput"
-                    android:layout_width="0dp"
-                    android:layout_weight="90"
-                    android:layout_marginRight="5dp"
+                    <ImageButton
+                        android:id="@+id/search_back_btn"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_weight="10"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:src="@drawable/ic_baseline_arrow_back_ios_24"></ImageButton>
+
+                    <EditText
+                        android:id="@+id/search_textinput"
+                        android:layout_width="0dp"
+                        android:layout_weight="90"
+                        android:layout_marginRight="5dp"
+                        android:layout_height="wrap_content"
+                        android:hint="키워드 검색..."
+                        android:inputType="text"
+                        android:imeOptions="actionSearch"
+                        android:layout_gravity="center_vertical"
+                        android:textSize="20sp"
+                        android:maxLines="1">
+
+                    </EditText>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="키워드 검색..."
-                    android:inputType="text"
-                    android:imeOptions="actionSearch"
-                    android:layout_gravity="center_vertical"
-                    android:textSize="20sp"
-                    android:maxLines="1">
+                    android:layout_alignParentBottom="true"
+                    android:orientation="horizontal"
+                    android:weightSum="100">
 
-                </EditText>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:orientation="horizontal"
-                android:weightSum="100">
-
-                <TextView
-                    android:background="@color/bright_gray"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="25"
-                    android:text="검색 위치"
-                    android:textStyle="bold"
-                    android:autoSizeTextType="uniform"></TextView>
-            </LinearLayout>
-        </RelativeLayout>
+                    <TextView
+                        android:background="@color/dark_gray"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="70"
+                        android:text="지도를 길게 클릭하여 검색 위치 설정"
+                        android:textStyle="bold"
+                        android:autoSizeTextType="uniform"></TextView>
+                </LinearLayout>
+            </RelativeLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/search_option_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="60"
+            android:layout_weight="35"
             android:visibility="visible"
             android:orientation="vertical">
 
@@ -239,8 +245,8 @@
                             android:layout_marginRight="1.5dp"
                             android:autoSizeTextType="uniform"
                             android:autoSizeMaxTextSize="25sp"
-                            android:background="@drawable/search_category_button"
-                            android:text="일식">
+                            android:background="@drawable/search_clopy_button"
+                                android:text="CLOPY">
                         </Button>
 
                         <Button
@@ -253,74 +259,7 @@
                             android:autoSizeTextType="uniform"
                             android:autoSizeMaxTextSize="25sp"
                             android:background="@drawable/search_category_button"
-                            android:text="일식">
-                        </Button>
-
-                        <Button
-                            android:id="@+id/search_category12_btn"
-                            android:layout_width="0dp"
-                            android:layout_height="50dp"
-                            android:layout_weight="25"
-                            android:layout_marginLeft="1.5dp"
-                            android:layout_marginRight="1.5dp"
-                            android:autoSizeTextType="uniform"
-                            android:autoSizeMaxTextSize="25sp"
-                            android:background="@drawable/search_category_button"
-                            android:text="일식">
-                        </Button>
-                    </TableRow>
-
-                    <TableRow android:weightSum="100" android:layout_marginTop="5dp">
-                        <Button
-                            android:id="@+id/search_category13_btn"
-                            android:layout_width="0dp"
-                            android:layout_height="50dp"
-                            android:layout_weight="25"
-                            android:layout_marginLeft="1.5dp"
-                            android:layout_marginRight="1.5dp"
-                            android:autoSizeTextType="uniform"
-                            android:autoSizeMaxTextSize="25sp"
-                            android:background="@drawable/search_category_button"
-                            android:text="일식">
-                        </Button>
-
-                        <Button
-                            android:id="@+id/search_category14_btn"
-                            android:layout_width="0dp"
-                            android:layout_height="50dp"
-                            android:layout_weight="25"
-                            android:layout_marginLeft="1.5dp"
-                            android:layout_marginRight="1.5dp"
-                            android:autoSizeTextType="uniform"
-                            android:autoSizeMaxTextSize="25sp"
-                            android:background="@drawable/search_category_button"
-                            android:text="일식">
-                        </Button>
-
-                        <Button
-                            android:id="@+id/search_category15_btn"
-                            android:layout_width="0dp"
-                            android:layout_height="50dp"
-                            android:layout_weight="25"
-                            android:layout_marginLeft="1.5dp"
-                            android:layout_marginRight="1.5dp"
-                            android:autoSizeTextType="uniform"
-                            android:autoSizeMaxTextSize="25sp"
-                            android:background="@drawable/search_category_button"
-                            android:text="일식">
-                        </Button>
-
-                        <Button
-                            android:id="@+id/search_category16_btn"
-                            android:layout_width="0dp"
-                            android:layout_height="50dp"
-                            android:layout_weight="25"
-                            android:layout_marginLeft="1.5dp"
-                            android:layout_marginRight="1.5dp"
-                            android:autoSizeTextType="uniform"
-                            android:autoSizeMaxTextSize="25sp"
-                            android:background="@drawable/search_category_button"
-                            android:text="일식">
+                            android:text="문화사">
                         </Button>
                     </TableRow>
                 </TableLayout>
@@ -343,8 +282,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_marginLeft="5dp"
-                android:layout_marginTop="7dp"
-                android:layout_marginBottom="7dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
                 android:layout_weight="10"
                 android:src="@drawable/ic_baseline_arrow_back_ios_24"></ImageButton>
 

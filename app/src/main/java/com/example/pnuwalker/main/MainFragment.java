@@ -26,9 +26,8 @@ import com.example.pnuwalker.MainActivity;
 import com.example.pnuwalker.R;
 import com.example.pnuwalker.controlschedule.DaySchedule;
 import com.example.pnuwalker.controlschedule.ScheduleReader;
-
 import com.example.pnuwalker.pathfind.FindPath;
-import com.skt.Tmap.TMapData;
+
 import com.skt.Tmap.TMapGpsManager;
 import com.skt.Tmap.TMapMarkerItem;
 import com.skt.Tmap.TMapPoint;
@@ -37,6 +36,7 @@ import com.skt.Tmap.TMapView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.text.ParseException;
@@ -67,18 +67,13 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
     static String[] today_schedule_site = new String[30];
     static double[] today_schedule_site_xpoint = new double[30];
     static double[] today_schedule_site_ypoint = new double[30];
-    static TMapPolyLine[] today_schedule_polylint = new TMapPolyLine[30];
 
     private GpsTracker gpsTracker;
     public double gps_latitude = 0 ;
     public double gps_longitude = 0;
 
-//    // 나중에 시간표에 저장된 DB를 가져 올 것이므로, 함수 구상용도이고, 임의로 시간순 작성.
-//    static String[] today_schedule = new String[]{"컴알","고토","도서관자습",};
-//    static String[] today_schedule_time = new String[]{"202104281200","202104281400","202104242200",};      //테스트용. 날짜시간 맞게 변경후 시연할것.
-//    static String[] today_schedule_site = new String[]{"제도관","인문관","새벽벌",};
-//    static double[] today_schedule_site_xpoint = new double[]{129.082112,129.08134602,129.081379771,};
-//    static double[] today_schedule_site_ypoint = new double[]{35.231154,35.232287960304575,35.23577906709686,};
+    //이전-현재-다음 일정 표기용
+    static int viewschedule ;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -93,13 +88,25 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
             activity.onFragmentChange(1);
         }
 
+
         //현재시각 표시.
         TextView cur_time;
         Date curDate = new Date();
         long tmpnow = curDate.getTime();
         String get_time = nowDate.format(tmpnow);
 
+        TextView texttime = view.findViewById(R.id.did_time);
+        TextView textschedule = view.findViewById(R.id.did_schedule);
+        TextView textsite = view.findViewById(R.id.did_site);
 
+        //텍스트표기용.
+        String[] text_today_schedule = new String[3];
+        String[] text_today_schedule_time = new String[3];
+        String[] text_today_schedule_end = new String[3];
+        String[] text_today_schedule_site = new String[3];
+
+        //이전-현재-다음 일정 표기용
+        viewschedule = 1;
 
         //티맵 표시.
         frag_mapLayout = view.findViewById(R.id.frag_map_layout);
@@ -165,18 +172,14 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
             l = String.valueOf(month);
             if(l.length() < 2)    l = "0" + l;
             today_schedule_end[i] = String.valueOf(year) + l + j + h;
-
-
         }
-
-
 
         //현재시각 표시.
 
         cur_time = view.findViewById(R.id.frag_cur_time);
         cur_time.setText(get_time);
 
-        String strmon,strday,strdate = "", strtime, strmin ;
+        String strdate = "", strtime, strmin ;
 
 
         if(hour < 10){
@@ -190,11 +193,18 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
 
         strdate = strdate + strtime + strmin;
 
+        for(int tmpi = 0; tmpi <= 2; tmpi++){
+            text_today_schedule_time[tmpi] = "";
+            text_today_schedule_end[tmpi] = "";
+        }
         //이전-현재-다음 일정 표기.
         int i = 0;  // 일정이 2이상인 경우에 사용.
+        int tmpi = 0;
 
         //일정이 하나만 있는경우.
         if(schesize == 1){
+            Arrays.fill(text_today_schedule,"");
+            Arrays.fill(text_today_schedule_site,"");
             Date tmp_time = null;
             try {
                 tmp_time = simpleDate.parse(today_schedule_time[0]);
@@ -202,92 +212,122 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
                 e.printStackTrace();
             }
             String tmp = today_schedule_time[0].substring(8,12);
-            makeMaker(0);
+            String tmpend = today_schedule_end[0].substring(8,12);
+            //makeMaker(0);
             if(Integer.parseInt(tmp) > Integer.parseInt(strdate)){
-                TextView next_schedule = view.findViewById(R.id.will_do_time);
-                next_schedule.setText(today_schedule[0]);
-                TextView next_site = view.findViewById(R.id.will_do_site);
-                next_site.setText(today_schedule_site[0]);
+
+                text_today_schedule[2] = today_schedule[0];
+                text_today_schedule_site[2] = today_schedule_site[0];
+                text_today_schedule_time[2] = tmp;
+                text_today_schedule_end[2] = tmpend;
+                makeMaker(tmpi, 1);
+                tmpi++;
+
                 String bef15min = updater(today_schedule_time[i]);
             }
             else{
-                tmp = today_schedule_end[0].substring(8,12);
-                if(Integer.parseInt(tmp) > Integer.parseInt(strdate)) {
-                    TextView bef_schedule = view.findViewById(R.id.do_time);
-                    bef_schedule.setText(today_schedule[0]);
-                    TextView now_site = view.findViewById(R.id.do_site);
-                    now_site.setText(today_schedule_site[0]);
+                tmp = today_schedule_time[0].substring(8,12);
+                tmpend = today_schedule_end[0].substring(8,12);
+                if(Integer.parseInt(tmpend) > Integer.parseInt(strdate)) {
+                    text_today_schedule[1] = today_schedule[0];
+                    text_today_schedule_site[1] = today_schedule_site[0];
+                    text_today_schedule_time[1] = tmp;
+                    text_today_schedule_end[1] = tmpend;
+                    makeMaker(tmpi, 0);
+                    tmpi++;
                 }
                 else {
-                    TextView bef_schedule = view.findViewById(R.id.did_time);
-                    bef_schedule.setText(today_schedule[0]);
-                    TextView bef_site = view.findViewById(R.id.did_site);
-                    bef_site.setText(today_schedule_site[0]);
+                    text_today_schedule[0] = today_schedule[0];
+                    text_today_schedule_site[0] = today_schedule_site[0];
+                    text_today_schedule_time[0] = tmp;
+                    text_today_schedule_end[0] = tmpend;
+                    makeMaker(tmpi, 0);
+                    tmpi++;
                 }
             }
         }
         else if(schesize == 2){
+            Arrays.fill(text_today_schedule,"");
+            Arrays.fill(text_today_schedule_site,"");
             while(i< schesize){
 
                 String tmp = today_schedule_time[i].substring(8,12);
-                makeMaker(i);
+                String tmpend = today_schedule_end[i].substring(8,12);
+                //makeMaker(i);
                 if(Integer.parseInt(tmp) > Integer.parseInt(strdate)){
-                    TextView bef_schedule = view.findViewById(R.id.did_time);
-                    bef_schedule.setText("");
-                    TextView bef_site = view.findViewById(R.id.did_site);
-                    bef_site.setText("");
-                    TextView next_schedule = view.findViewById(R.id.will_do_time);
-                    next_schedule.setText(today_schedule[i]);
-                    TextView next_site = view.findViewById(R.id.will_do_site);
-                    next_site.setText(today_schedule_site[i]);
 
+                    text_today_schedule[2] = today_schedule[i];
+                    text_today_schedule_site[2] = today_schedule_site[i];
+                    text_today_schedule_time[2] = tmp;
+                    text_today_schedule_end[2] = tmpend;
+                    makeMaker(tmpi, 1);
+                    tmpi++;
                     if(i > 0) {
                         DaySchedule a = schedules.get(i);
                         polyLine = a.getPolyLine();
                         if (polyLine == null)
                             System.out.println("null");
                         else
-                            frag_tMapView.addTMapPolyLine("path"+ i, polyLine);
-                        tmp = today_schedule_end[0].substring(8,12);
-                        if(Integer.parseInt(tmp) > Integer.parseInt(strdate)) {
-                            TextView now_schedule = view.findViewById(R.id.do_time);
-                            now_schedule.setText(today_schedule[0]);
-                            TextView now_site = view.findViewById(R.id.do_site);
-                            now_site.setText(today_schedule_site[0]);
+                            frag_tMapView.addTMapPolyLine("path", polyLine);
+                        tmp = today_schedule_time[0].substring(8,12);
+                        tmpend = today_schedule_end[0].substring(8,12);
+                        if(Integer.parseInt(tmpend) > Integer.parseInt(strdate)) {
+                            text_today_schedule[1] = today_schedule[0];
+                            text_today_schedule_site[1] = today_schedule_site[0];
+                            text_today_schedule_time[1] = tmp;
+                            text_today_schedule_end[1] = tmpend;
+                            makeMaker(tmpi, 0);
+                            tmpi++;
                         }
                         else {
-                            bef_schedule = view.findViewById(R.id.did_time);
-                            bef_schedule.setText(today_schedule[i - 1]);
-                            bef_site = view.findViewById(R.id.did_site);
-                            bef_site.setText(today_schedule_site[i - 1]);
+                            text_today_schedule[0] = today_schedule[i-1];
+                            text_today_schedule_site[0] = today_schedule_site[i-1];
+                            text_today_schedule_time[0] = today_schedule_time[i-1].substring(8,12);
+                            text_today_schedule_end[0] = today_schedule_end[i-1].substring(8,12);
+                            makeMaker(tmpi, 0);
+                            tmpi++;
                         }
                     }
                     break;
                 }
                 else{
-                    TextView bef_schedule = view.findViewById(R.id.did_time);
-                    bef_schedule.setText(today_schedule[i]);
-                    TextView bef_site = view.findViewById(R.id.did_site);
-                    bef_site.setText(today_schedule_site[i]);
+                    tmp = today_schedule_time[i].substring(8,12);
+                    tmpend = today_schedule_end[i].substring(8,12);
+                    if(Integer.parseInt(tmpend) > Integer.parseInt(strdate)) {
+                        text_today_schedule[1] = today_schedule[i];
+                        text_today_schedule_site[1] = today_schedule_site[i];
+                        text_today_schedule_time[1] = tmp;
+                        text_today_schedule_end[1] = tmpend;
+                        makeMaker(tmpi, 0);
+                        tmpi++;
+                    }
+                    else {
+                        text_today_schedule[0] = today_schedule[i];
+                        text_today_schedule_site[0] = today_schedule_site[i];
+                        text_today_schedule_time[0] = today_schedule_time[i].substring(8,12);
+                        text_today_schedule_end[0] = today_schedule_end[i].substring(8,12);
+                        makeMaker(tmpi, 0);
+                        tmpi++;
+                    }
                 }
                 i++;
             }
         }
         else if (schesize >=3){
+            Arrays.fill(text_today_schedule,"");
+            Arrays.fill(text_today_schedule_site,"");
             while(i < schesize){
 
                 String tmp = today_schedule_time[i].substring(8,12);
-
+                String tmpend = today_schedule_end[i].substring(8,12);
                 if(Integer.parseInt(tmp) > Integer.parseInt(strdate)){
-                    makeMaker(i);
-                    TextView bef_schedule = view.findViewById(R.id.did_time);
-                    bef_schedule.setText("");
-                    TextView bef_site = view.findViewById(R.id.did_site);
-                    bef_site.setText("");
-                    TextView next_schedule = view.findViewById(R.id.will_do_time);
-                    next_schedule.setText(today_schedule[i]);
-                    TextView next_site = view.findViewById(R.id.will_do_site);
-                    next_site.setText(today_schedule_site[i]);
+                    //makeMaker(i);
+                    text_today_schedule[2] = today_schedule[i];
+                    text_today_schedule_site[2] = today_schedule_site[i];
+                    text_today_schedule_time[2] = tmp;
+                    text_today_schedule_end[2] = tmpend;
+                    makeMaker(tmpi, 1);
+                    tmpi++;
                     if(i > 0) {
                         DaySchedule a = schedules.get(i);
                         polyLine = a.getPolyLine();
@@ -296,38 +336,64 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
                         else
                             frag_tMapView.addTMapPolyLine("path"+ i, polyLine);
 
-                        tmp = today_schedule_end[0].substring(8,12);
-                        if(Integer.parseInt(tmp) > Integer.parseInt(strdate)) {
-                            TextView now_schedule = view.findViewById(R.id.do_time);
-                            now_schedule.setText(today_schedule[0]);
-                            TextView now_site = view.findViewById(R.id.do_site);
-                            now_site.setText(today_schedule_site[0]);
+                        tmp = today_schedule_time[i-1].substring(8,12);
+                        tmpend = today_schedule_end[i-1].substring(8,12);
+                        if(Integer.parseInt(tmpend) > Integer.parseInt(strdate)) {
+                            text_today_schedule[1] = today_schedule[i-1];
+                            text_today_schedule_site[1] = today_schedule_site[i-1];
+                            text_today_schedule_time[1] = tmp;
+                            text_today_schedule_end[1] = tmpend;
+                            makeMaker(tmpi, 0);
+                            tmpi++;
                         }
                         else {
-                            bef_schedule = view.findViewById(R.id.did_time);
-                            bef_schedule.setText(today_schedule[i - 1]);
-                            bef_site = view.findViewById(R.id.did_site);
-                            bef_site.setText(today_schedule_site[i - 1]);
+                            text_today_schedule[0] = today_schedule[i-1];
+                            text_today_schedule_site[0] = today_schedule_site[i-1];
+                            text_today_schedule_time[0] = tmp;
+                            text_today_schedule_end[0] = tmpend;
+                            makeMaker(tmpi, 0);
+                            tmpi++;
                         }
 
                         if(i > 1){
-                            TextView beff_schedule = view.findViewById(R.id.did_time);
-                            beff_schedule.setText(today_schedule[i-2]);
-                            TextView beff_site = view.findViewById(R.id.did_site);
-                            beff_site.setText(today_schedule_site[i-2]);
+                            text_today_schedule[0] = today_schedule[i-2];
+                            text_today_schedule_site[0] = today_schedule_site[i-2];
+                            text_today_schedule_time[0] = today_schedule_time[i-2].substring(8,12);
+                            text_today_schedule_end[0] = today_schedule_end[i-2].substring(8,12);
+                            makeMaker(tmpi, 0);
+                            tmpi++;
                         }
                     }
                     break;
                 }
                 else{
-                    TextView bef_schedule = view.findViewById(R.id.did_time);
-                    bef_schedule.setText(today_schedule[i]);
-                    TextView bef_site = view.findViewById(R.id.did_site);
-                    bef_site.setText(today_schedule_site[i]);
+                    tmp = today_schedule_time[i].substring(8,12);
+                    tmpend = today_schedule_end[i].substring(8,12);
+                    if(Integer.parseInt(tmpend) > Integer.parseInt(strdate)) {
+                        text_today_schedule[1] = today_schedule[i];
+                        text_today_schedule_site[1] = today_schedule_site[i];
+                        text_today_schedule_time[1] = today_schedule_time[i].substring(8,12);
+                        text_today_schedule_end[1] = today_schedule_end[i].substring(8,12);
+                        makeMaker(tmpi, 0);
+                        tmpi++;
+                    }
+                    else {
+                        text_today_schedule[0] = today_schedule[i];
+                        text_today_schedule_site[0] = today_schedule_site[i];
+                        text_today_schedule_time[0] = today_schedule_time[i].substring(8,12);
+                        text_today_schedule_end[0] = today_schedule_end[i].substring(8,12);
+                        makeMaker(tmpi, 0);
+                        tmpi++;
+                    }
                 }
                 i++;
             }
         }
+
+        String tmpstrsche = "현재 일정(" + text_today_schedule_time[1] +" ~ " + text_today_schedule_end[1] +")" ;
+        texttime.setText(tmpstrsche);
+        textschedule.setText(text_today_schedule[1]);
+        textsite.setText(text_today_schedule_site[1]);
 
         //남은시간 표기
         int jj = 0;
@@ -362,8 +428,6 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
         }
 
 
-
-
         //fragment_main.xml에 접근하기위해서는 rootView. 으로 접근해야한다
         //버튼1 초기화
         Button button1 = view.findViewById(R.id.btn_whole);
@@ -376,15 +440,58 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
             }
         });
 
-        Button button2 = view.findViewById(R.id.btn_whole);
+        Button buttonnext = view.findViewById(R.id.next_day);
 
-        //버튼1 기능 추가
-        button1.setOnClickListener(new View.OnClickListener() {
+        buttonnext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activity.onFragmentChange(1);
+                if(viewschedule < 2) {
+                    if(viewschedule == 1) {
+                        String settmp = "다음 일정(" + text_today_schedule_time[2] + " ~ " + text_today_schedule_end[2] +")";
+                        texttime.setText(settmp);
+                        textschedule.setText(text_today_schedule[2]);
+                        textsite.setText(text_today_schedule_site[2]);
+                        viewschedule = 2;
+                    }
+                    if(viewschedule == 0) {
+                        String settmp = "현재 진행 일정(" + text_today_schedule_time[1] + " ~ " + text_today_schedule_end[1] +")";
+                        texttime.setText(settmp);
+                        textschedule.setText(text_today_schedule[1]);
+                        textsite.setText(text_today_schedule_site[1]);
+                        viewschedule = 1;
+                    }
+
+                }
+
             }
         });
+
+        Button buttonbef = view.findViewById(R.id.bef_day);
+        buttonbef.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(viewschedule > 0) {
+                    if(viewschedule == 1) {
+                        String settmp = "이전 일정(" + text_today_schedule_time[0] + " ~ " + text_today_schedule_end[0] +")";
+                        texttime.setText(settmp);
+                        textschedule.setText(text_today_schedule[0]);
+                        textsite.setText(text_today_schedule_site[0]);
+                        viewschedule = 0;
+                    }
+                    if(viewschedule == 2) {
+                        String settmp = "현재 진행 일정(" + text_today_schedule_time[1] + " ~ " + text_today_schedule_end[1] +")";
+                        texttime.setText(settmp);
+                        textschedule.setText(text_today_schedule[1]);
+                        textsite.setText(text_today_schedule_site[1]);
+                        viewschedule = 1;
+                    }
+
+                }
+
+            }
+        });
+
+
 
         return view;
     }
@@ -528,8 +635,10 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
         frag_tMapView.setIconVisibility(true); //현재 위치를 표시하는 파랑색 아이콘을 표기
         frag_tMapView.setLocationPoint(129.082112, 35.231154);
         frag_tMapView.setCenterPoint(129.082112, 35.231154);
-//        frag_tMapView.setLocationPoint(gps_longitude, gps_latitude);
-//        frag_tMapView.setCenterPoint(gps_longitude, gps_latitude);
+
+        //원래는 gps.
+        frag_tMapView.setLocationPoint(gps_longitude, gps_latitude);
+        frag_tMapView.setCenterPoint(gps_longitude, gps_latitude);
 
 
         if(ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED
@@ -585,18 +694,21 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
     }
 
 
-    private void makeMaker(int cnt){
+    private void makeMaker(int cnt,int scend){
 
         Activity activity = getActivity();
 
-        while(cnt < today_schedule_time.length) {
+
+        if(cnt < today_schedule_time.length) {
             TMapMarkerItem markerItem1 = new TMapMarkerItem();
+
             TMapPoint tMapPoint1 = new TMapPoint(today_schedule_site_ypoint[cnt], today_schedule_site_xpoint[cnt]); // 마커 좌표.
 
             BitmapFactory.Options options = new BitmapFactory.Options();
 
-            options.inSampleSize = 2;
-            if(cnt == 0) {
+            options.inSampleSize = 1;
+            if(cnt%2 == 0 && scend == 0) {
+                frag_tMapView.removeMarkerItem("markerItem"+ cnt); // 기존 마커 삭제
                 Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.map_pin_red, options);
                 markerItem1.setIcon(icon); // 마커 아이콘 지정
                 markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
@@ -605,8 +717,9 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
 
                 frag_tMapView.addMarkerItem("markerItem" + cnt, markerItem1); // 지도에 마커 추가
             }
-            else if(cnt + 1 < today_schedule_time.length){
-                Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.pnu_marker_orange, options);
+            else if (scend == 0){
+                frag_tMapView.removeMarkerItem("markerItem"+ cnt); // 기존 마커 삭제
+                Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.path_start, options);
                 markerItem1.setIcon(icon); // 마커 아이콘 지정
                 markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
                 markerItem1.setTMapPoint(tMapPoint1); // 마커의 좌표 지정
@@ -615,7 +728,8 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
                 frag_tMapView.addMarkerItem("markerItem" + cnt, markerItem1); // 지도에 마커 추가
             }
             else{
-                Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.pnu_marker_green, options);
+                frag_tMapView.removeMarkerItem("markerItem"+ cnt); // 기존 마커 삭제
+                Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.path_end, options);
                 markerItem1.setIcon(icon); // 마커 아이콘 지정
                 markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
                 markerItem1.setTMapPoint(tMapPoint1); // 마커의 좌표 지정
@@ -623,7 +737,6 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
 
                 frag_tMapView.addMarkerItem("markerItem" + cnt, markerItem1); // 지도에 마커 추가
             }
-            cnt++;
         }
 
     }
