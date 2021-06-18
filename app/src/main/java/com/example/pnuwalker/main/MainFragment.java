@@ -16,7 +16,6 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -120,9 +119,6 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
 
         initmap();
 
-        int week = doDayOfWeek();
-
-
         String onlyday = onlyDate.format(tmpnow);
         int index = 0 ;
 
@@ -198,7 +194,7 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
             text_today_schedule_end[tmpi] = "";
         }
 
-        //마커는 현재와 다음일정만!
+        //마커는 현재와 다음일정만! (한 개인 경우는 다음 일정만 있을때!)
         //이전-현재-다음 일정 표기.
         int i = 0;  // 일정이 2이상인 경우에 사용.
         int tmpi = 0;
@@ -215,7 +211,6 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
             }
             String tmp = today_schedule_time[0].substring(8,12);
             String tmpend = today_schedule_end[0].substring(8,12);
-            //makeMaker(0);
             if(Integer.parseInt(tmp) > Integer.parseInt(strdate)){
                 frag_tMapView.removeAllMarkerItem();
                 text_today_schedule[2] = today_schedule[0];
@@ -223,9 +218,7 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
                 text_today_schedule_time[2] = tmp;
                 text_today_schedule_end[2] = tmpend;
                 makeMaker(tmpi, 1);
-                tmpi++;
-
-                String bef15min = updater(today_schedule_time[i]);
+                //String bef15min = updater(today_schedule_time[i]);
             }
             else{
                 tmp = today_schedule_time[0].substring(8,12);
@@ -235,8 +228,7 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
                     text_today_schedule_site[1] = today_schedule_site[0];
                     text_today_schedule_time[1] = tmp;
                     text_today_schedule_end[1] = tmpend;
-                    makeMaker(tmpi, 1);
-                    tmpi++;
+                    //makeMaker(tmpi, 1);
                 }
                 else {
                     text_today_schedule[0] = today_schedule[0];
@@ -244,9 +236,9 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
                     text_today_schedule_time[0] = tmp;
                     text_today_schedule_end[0] = tmpend;
                     //makeMaker(tmpi, 0);
-                    tmpi++;
                 }
             }
+            tmpi++;
         }
         else if(schesize == 2){
             Arrays.fill(text_today_schedule,"");
@@ -255,7 +247,6 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
 
                 String tmp = today_schedule_time[i].substring(8,12);
                 String tmpend = today_schedule_end[i].substring(8,12);
-                //makeMaker(i);
                 if(Integer.parseInt(tmp) > Integer.parseInt(strdate)){
                     frag_tMapView.removeAllMarkerItem();
                     text_today_schedule[2] = today_schedule[i];
@@ -263,7 +254,6 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
                     text_today_schedule_time[2] = tmp;
                     text_today_schedule_end[2] = tmpend;
                     makeMaker(tmpi, 1);
-                    tmpi++;
                     if(i > 0) {
                         DaySchedule a = schedules.get(i);
                         polyLine = a.getPolyLine();
@@ -280,8 +270,7 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
                             text_today_schedule_site[1] = today_schedule_site[0];
                             text_today_schedule_time[1] = tmp;
                             text_today_schedule_end[1] = tmpend;
-                            //makeMaker(tmpi, 0);
-                            tmpi++;
+                            makeMaker(tmpi-1, 0);
                         }
                         //현재일정 존재x, 이전-다음 구조.
                         else {
@@ -290,9 +279,9 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
                             text_today_schedule_time[0] = today_schedule_time[i-1].substring(8,12);
                             text_today_schedule_end[0] = today_schedule_end[i-1].substring(8,12);
                             //makeMaker(tmpi, 0);
-                            tmpi++;
                         }
                     }
+                    tmpi++;
                     break;
                 }
                 else{
@@ -305,7 +294,7 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
                         text_today_schedule_time[1] = tmp;
                         text_today_schedule_end[1] = tmpend;
                         //makeMaker(tmpi, 0);
-                        tmpi++;
+
                     }
                     //이전 인경우,
                     else {
@@ -314,9 +303,10 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
                         text_today_schedule_time[0] = today_schedule_time[i].substring(8,12);
                         text_today_schedule_end[0] = today_schedule_end[i].substring(8,12);
                         //makeMaker(tmpi, 0);
-                        tmpi++;
+
                     }
                 }
+                tmpi++;
                 i++;
             }
         }
@@ -333,9 +323,8 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
                     text_today_schedule_site[2] = today_schedule_site[i];
                     text_today_schedule_time[2] = tmp;
                     text_today_schedule_end[2] = tmpend;
-                    makeMaker(tmpi, 1);
+                    makeMaker(i, 1);
                     if(i > 0) {
-
                         tmp = today_schedule_time[i-1].substring(8,12);
                         tmpend = today_schedule_end[i-1].substring(8,12);
                         //현재-다음
@@ -350,7 +339,15 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
                             text_today_schedule_site[1] = today_schedule_site[i-1];
                             text_today_schedule_time[1] = tmp;
                             text_today_schedule_end[1] = tmpend;
-                            makeMaker(tmpi-1, 0);
+                            makeMaker(i-1, 0);
+
+                            //이전-현재-다음
+                            if(i > 1){
+                                text_today_schedule[0] = today_schedule[i-2];
+                                text_today_schedule_site[0] = today_schedule_site[i-2];
+                                text_today_schedule_time[0] = today_schedule_time[i-2].substring(8,12);
+                                text_today_schedule_end[0] = today_schedule_end[i-2].substring(8,12);
+                            }
                         }
                         //이전-다음
                         else {
@@ -358,19 +355,11 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
                             text_today_schedule_site[0] = today_schedule_site[i-1];
                             text_today_schedule_time[0] = tmp;
                             text_today_schedule_end[0] = tmpend;
-                            //makeMaker(tmpi, 0);
-                            tmpi++;
+                            break;
                         }
-                        //이전-현재-다음
-                        if(i > 1){
-                            text_today_schedule[0] = today_schedule[i-2];
-                            text_today_schedule_site[0] = today_schedule_site[i-2];
-                            text_today_schedule_time[0] = today_schedule_time[i-2].substring(8,12);
-                            text_today_schedule_end[0] = today_schedule_end[i-2].substring(8,12);
-                            //makeMaker(tmpi, 0);
-                            tmpi++;
-                        }
+
                     }
+                    tmpi++;
                     break;
                 }
                 else{
@@ -433,8 +422,6 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
 
             jj++;
         }
-
-
         //fragment_main.xml에 접근하기위해서는 rootView. 으로 접근해야한다
         //버튼1 초기화
         Button button1 = view.findViewById(R.id.btn_whole);
@@ -498,138 +485,7 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
             }
         });
 
-
-
         return view;
-    }
-
-    public String updater(String time){
-
-        String to = time;
-
-        String tmptimemin = to.substring(10,12);
-        int inttmptimemin = Integer.parseInt(tmptimemin);
-
-        String tmptimehour = to.substring(8,10);
-        int inttmptimehour = Integer.parseInt(tmptimehour);
-
-        String tmptimeday = to.substring(6,8);
-        int inttmptimeday = Integer.parseInt(tmptimeday);
-
-        String tmptimemonth = to.substring(4,6);
-        int inttmptimemonth = Integer.parseInt(tmptimemonth);
-
-        String tmptimeyear = to.substring(0,4);
-        int inttmptimeyear = Integer.parseInt(tmptimeyear);
-
-        if(inttmptimemin -15 < 0){
-            if(inttmptimehour - 1 < 0){
-                if(inttmptimeday - 1 <= 0){
-                    if(inttmptimemonth - 1 <= 0){
-                        int tmp = Integer.parseInt(tmptimemonth);
-                        if(tmp == 3) {
-                            //윤년
-                            if(inttmptimeyear % 4 ==0) {
-                                inttmptimemin = inttmptimemin + 45;
-                                inttmptimehour = inttmptimehour + 23;
-                                inttmptimeday = inttmptimeday + 28;
-                                inttmptimemonth--;
-                            }
-                            inttmptimemin = inttmptimemin + 45;
-                            inttmptimehour = inttmptimehour + 23;
-                            inttmptimeday = inttmptimeday + 27;
-                            inttmptimemonth--;
-                        }
-                        else if((tmp <=7 && tmp % 2 == 0) || (tmp >=8 && tmp %2 ==1)){
-                            inttmptimemin = inttmptimemin + 45;
-                            inttmptimehour = inttmptimehour + 23;
-                            inttmptimeday = inttmptimeday + 30;
-                            inttmptimemonth = inttmptimemonth + 11;
-                            inttmptimeyear--;
-                        }
-                        else {
-                            inttmptimemin = inttmptimemin + 45;
-                            inttmptimehour = inttmptimehour + 23;
-                            inttmptimeday = inttmptimeday + 29;
-                            inttmptimemonth = inttmptimemonth + 11;
-                            inttmptimeyear--;
-                        }
-                    }
-                    else{
-                        int tmp = Integer.parseInt(tmptimemonth);
-                        if(tmp == 3) {
-                            //윤년
-                            if(inttmptimeyear % 4 ==0) {
-                                inttmptimemin = inttmptimemin + 45;
-                                inttmptimehour = inttmptimehour + 23;
-                                inttmptimeday = inttmptimeday + 28;
-                                inttmptimemonth--;
-                            }
-                            else {
-                                inttmptimemin = inttmptimemin + 45;
-                                inttmptimehour = inttmptimehour + 23;
-                                inttmptimeday = inttmptimeday + 27;
-                                inttmptimemonth--;
-                            }
-                        }
-                        else if((tmp <=7 && tmp % 2 == 0) || (tmp >=8 && tmp %2 ==1)){
-                            inttmptimemin = inttmptimemin + 45;
-                            inttmptimehour = inttmptimehour + 23;
-                            inttmptimeday = inttmptimeday + 30;
-                            inttmptimemonth--;
-                        }
-                        else {
-                            inttmptimemin = inttmptimemin + 45;
-                            inttmptimehour = inttmptimehour + 23;
-                            inttmptimeday = inttmptimeday + 29;
-                            inttmptimemonth--;
-                        }
-                    }
-                }
-                else{
-                    inttmptimemin = inttmptimemin + 45;
-                    inttmptimehour = inttmptimehour + 23;
-                    inttmptimeday--;
-                }
-            }
-            else{
-                inttmptimemin = inttmptimemin + 45;
-                inttmptimehour--;
-            }
-        }
-        else{
-            inttmptimemin = inttmptimemin - 15;
-        }
-
-        tmptimeyear = String.valueOf(inttmptimeyear);
-        if(inttmptimemonth < 10) {
-            tmptimemonth = "0" + inttmptimemonth;
-        } else {
-            tmptimemonth = String.valueOf(inttmptimemonth);
-        }
-        if(inttmptimeday < 10) {
-            tmptimeday = "0" + inttmptimeday;
-        } else {
-            tmptimeday = String.valueOf(inttmptimeday);
-        }
-        if(inttmptimehour < 10) {
-            tmptimehour = "0" + inttmptimehour;
-        } else {
-            tmptimehour = String.valueOf(inttmptimehour);
-        }
-        if(inttmptimemin < 10) {
-            tmptimemin = "0" + inttmptimemin;
-        } else {
-            tmptimemin = String.valueOf(inttmptimemin);
-        }
-
-        String tmptime = tmptimeyear + tmptimemonth;
-        tmptime = tmptime + tmptimeday;
-        tmptime = tmptime + tmptimehour;
-        tmptime = tmptime + tmptimemin;
-
-        return tmptime;
-
     }
 
     public void initmap() {
@@ -667,16 +523,6 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
 
     }
 
-
-    private int doDayOfWeek(){
-        Calendar cal = Calendar.getInstance();
-
-
-        int nWeek = cal.get(Calendar.DAY_OF_WEEK);
-
-        return nWeek;
-
-    }
     //gps 연동
     @Override
     public void onLocationChange(Location location) {
@@ -700,7 +546,6 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
         super.onDetach();
     }
 
-
     private void makeMaker(int cnt,int scend){
 
         Activity activity = getActivity();
@@ -710,11 +555,8 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
             TMapMarkerItem markerItem1 = new TMapMarkerItem();
 
             TMapPoint tMapPoint1 = new TMapPoint(today_schedule_site_ypoint[cnt], today_schedule_site_xpoint[cnt]); // 마커 좌표.
-
             BitmapFactory.Options options = new BitmapFactory.Options();
-
             options.inSampleSize = 1;
-
             if (scend == 0){
                 frag_tMapView.removeMarkerItem("markerItem"+ cnt); // 기존 마커 삭제
                 Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.path_start, options);
@@ -732,10 +574,9 @@ public class MainFragment extends Fragment implements TMapGpsManager.onLocationC
                 markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
                 markerItem1.setTMapPoint(tMapPoint1); // 마커의 좌표 지정
                 markerItem1.setName("mark" + cnt); // 마커의 타이틀 지정
-
                 frag_tMapView.addMarkerItem("markerItem" + cnt, markerItem1); // 지도에 마커 추가
             }
         }
-
     }
+
 }

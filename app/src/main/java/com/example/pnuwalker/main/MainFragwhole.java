@@ -3,12 +3,9 @@ package com.example.pnuwalker.main;
 import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,7 +33,6 @@ import com.skt.Tmap.TMapPoint;
 import com.skt.Tmap.TMapPolyLine;
 import com.skt.Tmap.TMapView;
 
-import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -50,12 +46,9 @@ public class MainFragwhole extends Fragment {
     private  TMapGpsManager mygps;
     RelativeLayout frag_mapLayout;
 
-
-
     Button showDateDialogBtn;
 
-    SimpleDateFormat simpleDate = new SimpleDateFormat("yyyyMMddHHmm");
-    TextView next_time;
+
     Calendar cal = Calendar.getInstance();
 
     static int tmpfragchange = 0;
@@ -148,16 +141,6 @@ public class MainFragwhole extends Fragment {
             e.printStackTrace();
         }
         String onlyday = onlyDate.format(tmpnow);
-//        if(year != 0) {
-//            try {
-//                week = doDayOfWeek(year,month,day,"yyyy-MM-dd");
-//            } catch (ParseException e) {
-//                e.printStackTrace();
-//            }
-//        }
-
-
-
 
         ArrayList<DaySchedule> schedules = new ScheduleReader(activity.helper, year, month+1 , day , temporalDayofWeek, 0, 0).schedules;
 
@@ -199,7 +182,6 @@ public class MainFragwhole extends Fragment {
                 System.out.println("null");
             else
                 today_schedule_tmapline[i] = polyLine;
-            //frag_tMapView.addTMapPolyLine("path"+ i, polyLine);
 
         }
 
@@ -232,8 +214,6 @@ public class MainFragwhole extends Fragment {
             frag_tMapView.addMarkerItem("markerItem_end", markerItem2); // 지도에 마커 추가
 
         }
-
-
 
         cur_time.setText(strdate);
         Button buttonnext = rootView.findViewById(R.id.next_day);
@@ -386,30 +366,6 @@ public class MainFragwhole extends Fragment {
 
     }
 
-    private String strTimetoMinute(String str) { //hh_mm
-        String[] temp = str.split("_");
-        return temp[0] + temp[1];
-    }
-
-    private String strlocsplitfront(String str) { //hh_mm
-        String[] temp = str.split(",");
-        return temp[0] ;
-    }
-
-    private String strlocsplitback(String str) { //hh_mm
-        String[] temp = str.split(",");
-        return temp[1] ;
-    }
-
-    private int doDayOfWeek(){
-        Calendar cal = Calendar.getInstance();
-
-
-        int nWeek = cal.get(Calendar.DAY_OF_WEEK);
-
-        return nWeek;
-
-    }
 
     private int doDayOfWeek(int year, int month, int day, String dateType) throws ParseException {
 
@@ -433,50 +389,6 @@ public class MainFragwhole extends Fragment {
         return nWeek;
     }
 
-
-
-    private void makeMaker(TMapView frag_tMapView, int cnt, int size, double y, double x){
-
-        Activity activity = getActivity();
-
-        if(cnt < size) {
-            TMapMarkerItem markerItem1 = new TMapMarkerItem();
-            TMapPoint tMapPoint1 = new TMapPoint(y, x); // 마커 좌표.
-
-            BitmapFactory.Options options = new BitmapFactory.Options();
-
-            options.inSampleSize = 1;
-            // 마커 아이콘
-            if(cnt == 0) {
-                Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.map_pin_red, options);
-                markerItem1.setIcon(icon); // 마커 아이콘 지정
-                markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
-                markerItem1.setTMapPoint(tMapPoint1); // 마커의 좌표 지정
-                markerItem1.setName("mark" + cnt); // 마커의 타이틀 지정
-
-                frag_tMapView.addMarkerItem("markerItem" + cnt, markerItem1); // 지도에 마커 추가
-            }
-            else if(cnt + 1 < size){
-                Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.path_start, options);
-                markerItem1.setIcon(icon); // 마커 아이콘 지정
-                markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
-                markerItem1.setTMapPoint(tMapPoint1); // 마커의 좌표 지정
-                markerItem1.setName("mark" + cnt); // 마커의 타이틀 지정
-
-                frag_tMapView.addMarkerItem("markerItem" + cnt, markerItem1); // 지도에 마커 추가
-            }
-            else{
-                Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.path_end, options);
-                markerItem1.setIcon(icon); // 마커 아이콘 지정
-                markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
-                markerItem1.setTMapPoint(tMapPoint1); // 마커의 좌표 지정
-                markerItem1.setName("mark" + cnt); // 마커의 타이틀 지정
-
-                frag_tMapView.addMarkerItem("markerItem" + cnt, markerItem1); // 지도에 마커 추가
-            }
-        }
-
-    }
     private void showDateDialog() {
         Calendar cal = Calendar.getInstance();
         Calendar minDate = Calendar.getInstance();
@@ -511,8 +423,6 @@ public class MainFragwhole extends Fragment {
         dialog.setMessage("날짜 선택");
         dialog.show();
     }
-
-
 
     private String getDateString() {
         return String.format("%d  /  %d  / %d",year, month + 1, day); //ex) 2020  /  12  /  5
