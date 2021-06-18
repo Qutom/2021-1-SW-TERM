@@ -219,6 +219,18 @@ public class MainFragwhole extends Fragment {
             name_schedule.setText(today_schedule[viewschedule]);
             site_schedule.setText(today_schedule_site[viewschedule]);
 
+            TMapMarkerItem markerItem2 = new TMapMarkerItem();
+            Pair<Double> p2 = coordinate.get(scheline);
+            Log.d("C", p2.toString());
+            TMapPoint tMapPoint2 = new TMapPoint(p2.getFirst(), p2.getSecond()); // 마커 좌표.
+
+            TMapMarkerItem markerItem1 = new TMapMarkerItem();
+            Bitmap icon2 = BitmapFactory.decodeResource(activity.getResources(), R.drawable.path_end);
+            markerItem2.setIcon(icon2); // 마커 아이콘 지정
+            markerItem2.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
+            markerItem2.setTMapPoint(tMapPoint2); // 마커의 좌표 지정
+            frag_tMapView.addMarkerItem("markerItem_end", markerItem2); // 지도에 마커 추가
+
         }
 
 
@@ -261,9 +273,9 @@ public class MainFragwhole extends Fragment {
                         frag_tMapView.addMarkerItem("markerItem_start" , markerItem1); // 지도에 마커 추가
 
                         Bitmap icon2 = BitmapFactory.decodeResource(activity.getResources(), R.drawable.path_end);
-                        markerItem1.setIcon(icon2); // 마커 아이콘 지정
-                        markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
-                        markerItem1.setTMapPoint(tMapPoint2); // 마커의 좌표 지정
+                        markerItem2.setIcon(icon2); // 마커 아이콘 지정
+                        markerItem2.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
+                        markerItem2.setTMapPoint(tMapPoint2); // 마커의 좌표 지정
                         frag_tMapView.addMarkerItem("markerItem_end", markerItem2); // 지도에 마커 추가
                     }
 
@@ -282,22 +294,23 @@ public class MainFragwhole extends Fragment {
             @Override
             public void onClick(View v) {
 
-                frag_tMapView.removeTMapPolyLine("path"+1);
-                frag_tMapView.removeAllMarkerItem();
-
                 if(viewschedule > 0) {
+                    frag_tMapView.removeTMapPolyLine("path"+1);
+                    frag_tMapView.removeAllMarkerItem();
                     viewschedule = viewschedule - 1;
                     bef_schedule.setText(String.valueOf(viewschedule) + today_schedule_time[viewschedule]);
                     name_schedule.setText(today_schedule[viewschedule]);
                     site_schedule.setText(today_schedule_site[viewschedule]);
 
-                    if (scheline >= 1) {
+                    if(scheline >= schesize) scheline = schesize-1;
+
+                    if (scheline >= 2) {
                         TMapMarkerItem markerItem1 = new TMapMarkerItem();
-                        Pair<Double> p1 = coordinate.get(scheline-1);
+                        Pair<Double> p1 = coordinate.get(scheline-2);
                         TMapPoint tMapPoint1 = new TMapPoint(p1.getFirst(), p1.getSecond()); // 마커 좌표
 
                         TMapMarkerItem markerItem2 = new TMapMarkerItem();
-                        Pair<Double> p2 = coordinate.get(scheline);
+                        Pair<Double> p2 = coordinate.get(scheline-1);
                         TMapPoint tMapPoint2 = new TMapPoint(p2.getFirst(), p2.getSecond()); // 마커 좌표.
 
                         Bitmap icon = BitmapFactory.decodeResource(activity.getResources(), R.drawable.path_start);
@@ -308,9 +321,22 @@ public class MainFragwhole extends Fragment {
                         frag_tMapView.addMarkerItem("markerItem_start" , markerItem1); // 지도에 마커 추가
 
                         Bitmap icon2 = BitmapFactory.decodeResource(activity.getResources(), R.drawable.path_end);
-                        markerItem1.setIcon(icon2); // 마커 아이콘 지정
-                        markerItem1.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
-                        markerItem1.setTMapPoint(tMapPoint2); // 마커의 좌표 지정
+                        markerItem2.setIcon(icon2); // 마커 아이콘 지정
+                        markerItem2.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
+                        markerItem2.setTMapPoint(tMapPoint2); // 마커의 좌표 지정
+                        frag_tMapView.addMarkerItem("markerItem_end", markerItem2); // 지도에 마커 추가
+                    }
+                    else if(scheline >= 1){
+                        TMapMarkerItem markerItem2 = new TMapMarkerItem();
+                        Pair<Double> p2 = coordinate.get(scheline-1);
+                        Log.d("C", p2.toString());
+                        TMapPoint tMapPoint2 = new TMapPoint(p2.getFirst(), p2.getSecond()); // 마커 좌표.
+
+                        TMapMarkerItem markerItem1 = new TMapMarkerItem();
+                        Bitmap icon2 = BitmapFactory.decodeResource(activity.getResources(), R.drawable.path_end);
+                        markerItem2.setIcon(icon2); // 마커 아이콘 지정
+                        markerItem2.setPosition(0.5f, 1.0f); // 마커의 중심점을 중앙, 하단으로 설정
+                        markerItem2.setTMapPoint(tMapPoint2); // 마커의 좌표 지정
                         frag_tMapView.addMarkerItem("markerItem_end", markerItem2); // 지도에 마커 추가
                     }
 
