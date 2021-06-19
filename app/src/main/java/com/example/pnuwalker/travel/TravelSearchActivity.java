@@ -234,7 +234,7 @@ public class TravelSearchActivity extends AppCompatActivity {
 
     private void search(TMapPoint point, String keyWord) {
         Log.d("Search", "Start Search");
-        tMapData.findAroundKeywordPOI(point, keyWord , 10, 200, arrayList -> {
+        tMapData.findAroundKeywordPOI(point, keyWord , 4, 200, arrayList -> {
             searchResult = arrayList;
             if (searchResult.size() == 0) {
                 Handler mHandler = new Handler(Looper.getMainLooper());
