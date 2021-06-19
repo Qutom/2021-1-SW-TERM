@@ -24,7 +24,7 @@
 
         <activity android:name=".travel.TravelDetailActivity"></activity>
         <activity android:name=".travel.TravelSearchActivity"></activity>
-        <activity android:name=".AddScheduleActivity"></activity>
+        <activity android:name=".travel.AddScheduleActivity"></activity>
         <activity android:name=".travel.TravelDetailLargeImageActivity"></activity>
 
         <receiver android:name=".alarm.AlarmReceiver"

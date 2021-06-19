@@ -1,4 +1,4 @@
-package com.example.pnuwalker;
+package com.example.pnuwalker.travel;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.pnuwalker.DataBaseHelper;
+import com.example.pnuwalker.R;
 import com.example.pnuwalker.controlschedule.ControlSchedule;
 import com.example.pnuwalker.controlschedule.PeriodScheduleData;
 import com.example.pnuwalker.controlschedule.TemporalScheduleData;
